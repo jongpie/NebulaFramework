@@ -5,6 +5,7 @@
         <name>ApexClass</name>
     </types>
     <types>
+        <members>RecordTypesSettings__c</members>
         <members>TriggerSettings__c</members>
         <name>CustomObject</name>
     </types>
