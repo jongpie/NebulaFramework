@@ -1,14 +1,18 @@
-public abstract class SObjectRecordTypes {
+global abstract class SObjectRecordTypes {
 
     private static Map<String, List<RecordType>> cachedRecordTypesBySObjectMap = new Map<String, List<RecordType>>();
 
-    public Map<Id, RecordType> ALL_RECORD_TYPES_BY_ID;
-    public Map<String, RecordType> ALL_RECORD_TYPES_BY_DEVELOPER_NAME;
+    global Map<Id, RecordType> ALL_RECORD_TYPES_BY_ID;
+    global Map<String, RecordType> ALL_RECORD_TYPES_BY_DEVELOPER_NAME;
 
     private String sobjectName;
     private RecordTypesSettings__c recordTypesSettings;
 
-    protected SObjectRecordTypes(Schema.DescribeSObjectResult describeSObjectResult) {
+    global SObjectRecordTypes() {
+        this(null);
+    }
+
+    global SObjectRecordTypes(Schema.DescribeSObjectResult describeSObjectResult) {
         this.sobjectName = describeSObjectResult.getName();
 
         this.getRecordTypeSettings();
@@ -17,7 +21,6 @@ public abstract class SObjectRecordTypes {
         this.setAllRecordTypesById();
         this.setAllRecordTypesByDeveloperName();
     }
-
 
     private void getRecordTypeSettings() {
         this.recordTypesSettings = RecordTypesSettings__c.getInstance();

@@ -1,22 +1,22 @@
-public class Environment {
+global class Environment {
 
-    public static String BaseUrl {
+    global static String BaseUrl {
         get {return URL.getSalesforceBaseUrl().toExternalForm();}
     }
 
-    public static String InstanceName {
+    global static String InstanceName {
         get {return organization.InstanceName;}
     }
 
-    public static Boolean IsSandbox {
+    global static Boolean IsSandbox {
         get {return organization.IsSandbox;}
     }
 
-    public static String Name {
+    global static String Name {
         get {return organization.Name;}
     }
 
-    public static String Type {
+    global static String Type {
         get {return organization.OrganizationType;}
     }
 
