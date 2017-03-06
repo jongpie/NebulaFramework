@@ -8,10 +8,6 @@ global abstract class SObjectRecordTypes {
     private String sobjectName;
     private RecordTypesSettings__c recordTypesSettings;
 
-    global SObjectRecordTypes() {
-        this(null);
-    }
-
     global SObjectRecordTypes(Schema.DescribeSObjectResult describeSObjectResult) {
         this.sobjectName = describeSObjectResult.getName();
 
