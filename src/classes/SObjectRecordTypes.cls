@@ -2,8 +2,8 @@ global abstract class SObjectRecordTypes {
 
     private static Map<String, List<RecordType>> cachedRecordTypesBySObjectMap = new Map<String, List<RecordType>>();
 
-    global Map<Id, RecordType> ALL_RECORD_TYPES_BY_ID;
-    global Map<String, RecordType> ALL_RECORD_TYPES_BY_DEVELOPER_NAME;
+    global final Map<Id, RecordType> ALL_RECORD_TYPES_BY_ID;
+    global final Map<String, RecordType> ALL_RECORD_TYPES_BY_DEVELOPER_NAME;
 
     private String sobjectName;
     private RecordTypesSettings__c recordTypesSettings;
@@ -18,8 +18,8 @@ global abstract class SObjectRecordTypes {
         this.getRecordTypeSettings();
         this.populateCache();
 
-        this.setAllRecordTypesById();
-        this.setAllRecordTypesByDeveloperName();
+        this.ALL_RECORD_TYPES_BY_ID             = this.getAllRecordTypesById();
+        this.ALL_RECORD_TYPES_BY_DEVELOPER_NAME = this.getAllRecordTypesByDeveloperName();
     }
 
     private void getRecordTypeSettings() {
@@ -55,14 +55,15 @@ global abstract class SObjectRecordTypes {
         return (List<RecordType>)Database.query(query);
     }
 
-    private void setAllRecordTypesById() {
-        this.ALL_RECORD_TYPES_BY_ID = new Map<Id, RecordType>(cachedRecordTypesBySObjectMap.get(this.sobjectName));
-        System.debug('ALL_RECORD_TYPES_BY_ID=' + this.ALL_RECORD_TYPES_BY_ID);
+    private Map<Id, RecordType> getAllRecordTypesById() {
+        return new Map<Id, RecordType>(cachedRecordTypesBySObjectMap.get(this.sobjectName));
     }
 
-    private void setAllRecordTypesByDeveloperName() {
-        this.ALL_RECORD_TYPES_BY_DEVELOPER_NAME = new Map<String, RecordType>();
-        for(RecordType recordType : this.ALL_RECORD_TYPES_BY_ID.values()) this.ALL_RECORD_TYPES_BY_DEVELOPER_NAME.put(recordType.DeveloperName, recordType);
+    private Map<String, RecordType> getAllRecordTypesByDeveloperName() {
+        Map<String, RecordType> allRecordTypesByDeveloperName= new Map<String, RecordType>();
+        for(RecordType recordType : this.getAllRecordTypesById().values()) allRecordTypesByDeveloperName.put(recordType.DeveloperName, recordType);
+
+        return allRecordTypesByDeveloperName;
     }
 
     private class RecordTypeException extends Exception {}
