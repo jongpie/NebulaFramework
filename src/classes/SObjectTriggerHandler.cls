@@ -178,8 +178,11 @@ global abstract class SObjectTriggerHandler {
     }
 
     private Boolean haveRecordsAlreadyBeenProcessed() {
+        if(!this.triggerHandlerSettings.PreventRecursion__c) return false;
+
         // This method is a safeguard that checks to see if we have recursion problems and stops if we do
         // It allows each context to occur once for a given hash code
+
         if(this.context == TriggerContext.BEFORE_INSERT) {
             // BEFORE_INSERT doesn't have record IDs yet, so the hash here will never match the other hashes
             // Since Salesforce makes it impossible to recursively run "insert record", we can let the platform handle it

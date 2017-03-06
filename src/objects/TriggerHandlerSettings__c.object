@@ -29,6 +29,14 @@
         <trackTrending>false</trackTrending>
         <type>TextArea</type>
     </fields>
+    <fields>
+        <fullName>PreventRecursion__c</fullName>
+        <defaultValue>true</defaultValue>
+        <externalId>false</externalId>
+        <label>Prevent Recursion</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
     <label>Trigger Handler Settings</label>
     <visibility>Public</visibility>
 </CustomObject>
