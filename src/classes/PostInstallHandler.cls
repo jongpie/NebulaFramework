@@ -24,7 +24,7 @@ global without sharing class PostInstallHandler implements System.InstallHandler
         mail.setReplyTo(user.Email);
         mail.setSenderDisplayName(user.Name);
         mail.setSubject('Nebula Framework Package (version ' + System.requestVersion() +'): uninstalled successfully');
-        mail.setPlainTextBody(user.Username + ' (' + user.Email + ') has uninstalled Nebula Framework from org ID' + context.organizationId());
+        mail.setPlainTextBody(user.Username + ' (' + user.Email + ') has uninstalled Nebula Framework from org ID: ' + context.organizationId());
         Messaging.sendEmail(new Messaging.Email[] { mail });
     }
 
