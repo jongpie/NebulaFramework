@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
     <customSettingsType>Hierarchy</customSettingsType>
+    <description>Controls the behavior of the class SObjectTriggerHandler.cls</description>
     <enableFeeds>false</enableFeeds>
     <fields>
         <fullName>EnableDebugging__c</fullName>
         <defaultValue>true</defaultValue>
         <externalId>false</externalId>
-        <inlineHelpText>Controls if debug statements from TriggerHandler are shown in the logs</inlineHelpText>
         <label>Enable Debugging</label>
         <trackTrending>false</trackTrending>
         <type>Checkbox</type>
@@ -14,7 +14,9 @@
     <fields>
         <fullName>ExecuteTriggers__c</fullName>
         <defaultValue>true</defaultValue>
+        <description>Controls if any trigger handler classes run its execute() method. This should always be enabled unless you are doing a data fix, etc and need to temporarily disable all triggers.</description>
         <externalId>false</externalId>
+        <inlineHelpText>Controls if any trigger handler classes run its execute() method. This should always be enabled unless you are doing a data fix, etc and need to temporarily disable all triggers.</inlineHelpText>
         <label>Execute Triggers</label>
         <trackTrending>false</trackTrending>
         <type>Checkbox</type>
@@ -22,14 +24,11 @@
     <fields>
         <fullName>HandlerClassesToSkip__c</fullName>
         <externalId>false</externalId>
-        <inlineHelpText>Enter any handler classes that should be skipped (1 per line). For example:
-LeadTriggerHandler
-TaskTriggerHandler</inlineHelpText>
         <label>Handler Classes to Skip</label>
         <required>false</required>
         <trackTrending>false</trackTrending>
         <type>TextArea</type>
     </fields>
-    <label>Trigger Settings</label>
-    <visibility>Protected</visibility>
+    <label>Trigger Handler Settings</label>
+    <visibility>Public</visibility>
 </CustomObject>

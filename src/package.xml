@@ -6,7 +6,8 @@
     </types>
     <types>
         <members>RecordTypesSettings__c</members>
-        <members>TriggerSettings__c</members>
+        <members>RepositorySettings__c</members>
+        <members>TriggerHandlerSettings__c</members>
         <name>CustomObject</name>
     </types>
     <version>38.0</version>
