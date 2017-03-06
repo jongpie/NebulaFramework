@@ -1,4 +1,4 @@
-global interface ISObjectRepository {
+public interface ISObjectRepository {
 
     // SOQL
     SObject getRecord(Id recordId);
