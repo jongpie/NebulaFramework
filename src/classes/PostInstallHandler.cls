@@ -1,11 +1,16 @@
 global without sharing class PostInstallHandler implements System.InstallHandler {
 
     global void onInstall(InstallContext context) {
-        if(context.previousVersion() == null) {
-            this.createCustomSettings();
-        }
+        if(context.isUpgrade()) this.deleteExistingCustomSettings();
 
+        this.createCustomSettings();
         this.sendEmailAlert(context);
+    }
+
+    private void deleteExistingCustomSettings() {
+        delete [SELECT Id FROM RecordTypesSettings__c];
+        delete [SELECT Id FROM RepositorySettings__c];
+        delete [SELECT Id FROM TriggerHandlerSettings__c];
     }
 
     private void createCustomSettings() {
