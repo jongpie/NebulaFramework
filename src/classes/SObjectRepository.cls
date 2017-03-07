@@ -43,7 +43,7 @@ global abstract class SObjectRepository implements ISObjectRepository {
     }
 
     global protected SObjectRepository whereIdEquals(Id recordId) {
-        return this.whereFieldEquals(sobjectTypeFieldMap.get('Id'), this.toSOQLString(recordId));
+        return this.whereFieldEquals(sobjectTypeFieldMap.get('Id'), SOQLUtils.toSOQLString(recordId));
     }
 
     global protected SObjectRepository whereIdIn(Set<Id> recordIdSet) {
@@ -55,43 +55,43 @@ global abstract class SObjectRepository implements ISObjectRepository {
     }
 
     global protected SObjectRepository whereFieldEquals(Schema.SObjectField field, Object value) {
-        return this.addCondition(field, '=', this.toSOQLString(value));
+        return this.addCondition(field, '=', SOQLUtils.toSOQLString(value));
     }
 
     global protected SObjectRepository whereFieldDoesNotEqual(Schema.SObjectField field, Object value) {
-        return this.addCondition(field, '!=', this.toSOQLString(value));
+        return this.addCondition(field, '!=', SOQLUtils.toSOQLString(value));
     }
 
     global protected SObjectRepository whereFieldGreaterThan(Schema.SObjectField field, Object value) {
-        return this.addCondition(field, '>', this.toSOQLString(value));
+        return this.addCondition(field, '>', SOQLUtils.toSOQLString(value));
     }
 
     global protected SObjectRepository whereFieldGreaterThanOrEqualTo(Schema.SObjectField field, Object value) {
-        return this.addCondition(field, '>=', this.toSOQLString(value));
+        return this.addCondition(field, '>=', SOQLUtils.toSOQLString(value));
     }
 
     global protected SObjectRepository whereFieldLessThan(Schema.SObjectField field, Object value) {
-        return this.addCondition(field, '<', this.toSOQLString(value));
+        return this.addCondition(field, '<', SOQLUtils.toSOQLString(value));
     }
 
     global protected SObjectRepository whereFieldLessThanOrEqualTo(Schema.SObjectField field, Object value) {
-        return this.addCondition(field, '<=', this.toSOQLString(value));
+        return this.addCondition(field, '<=', SOQLUtils.toSOQLString(value));
     }
 
     global protected SObjectRepository whereFieldIn(Schema.SObjectField field, List<Object> valueList) {
-        return this.addCondition(field, 'IN', this.toSOQLString(valueList));
+        return this.addCondition(field, 'IN', SOQLUtils.toSOQLString(valueList));
     }
 
     global protected SObjectRepository whereFieldNotIn(Schema.SObjectField field, List<Object> valueList) {
-        return this.addCondition(field, 'NOT IN', this.toSOQLString(valueList));
+        return this.addCondition(field, 'NOT IN', SOQLUtils.toSOQLString(valueList));
     }
 
     global protected SObjectRepository whereFieldIncludes(Schema.SObjectField field, List<Object> valueList) {
-        return this.addCondition(field, 'INCLUDES', this.toSOQLString(valueList));
+        return this.addCondition(field, 'INCLUDES', SOQLUtils.toSOQLString(valueList));
     }
 
     global protected SObjectRepository whereFieldExcludes(Schema.SObjectField field, List<Object> valueList) {
-        return this.addCondition(field, 'EXCLUDES', this.toSOQLString(valueList));
+        return this.addCondition(field, 'EXCLUDES', SOQLUtils.toSOQLString(valueList));
     }
 
     global protected SObjectRepository whereFieldLike(Schema.SObjectField field, String comparisonValue) {
@@ -189,40 +189,10 @@ global abstract class SObjectRepository implements ISObjectRepository {
         return this;
     }
 
-    private String toSOQLString(List<Object> valueList) {
-        List<String> parsedValueList = new List<String>();
-        for(Object value : valueList) parsedValueList.add(toSOQLString(value));
-        return '(' + String.join(parsedValueList, ',') + ')';
-    }
-
-    private String toSOQLString(Object value) {
-        if(value == null) return null;
-        else if(value instanceof Boolean) return String.valueOf((Boolean)value);
-        else if(value instanceof Date) return String.valueOf((Date)value);
-        else if(value instanceof Datetime) {
-            Datetime datetimeValue = (Datetime)value;
-            return datetimeValue.format('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'', 'Greenwich Mean Time');
-        }
-        else if(value instanceof Decimal) return String.valueOf((Decimal) value);
-        else if(value instanceof Double) return String.valueOf((Double) value);
-        else if(value instanceof Integer) return String.valueOf((Integer) value);
-        else if(value instanceof Long) return String.valueOf((Long) value);
-        else if(value instanceof SObject) {
-            SObject record = (SObject)value;
-            return wrapInSingleQuotes(record.Id);
-        }
-        else if(value instanceof String) return wrapInSingleQuotes((String)value);
-        else return String.valueOf(value);
-    }
-
-    private String wrapInSingleQuotes(String input) {
-        if(input.left(1) != '\'') input = '\'' + input;
-        if(input.right(1) != '\'') input = input + '\'';
-        return input;
-    }
-
     private String getQueryFieldString() {
-        return String.join(new List<String>(this.queryFields), ',');
+        List<String> queryFieldList = new List<String>(this.queryFields);
+        if(this.repositorySettings.SortQueryFields__c) queryFieldList.sort();
+        return String.join(queryFieldList, ',');
     }
 
     private String getWhereClauseString() {
@@ -263,7 +233,7 @@ global abstract class SObjectRepository implements ISObjectRepository {
     }
 
     private String getSearchQuery(String searchTerm, SObjectRepository.SearchGroup searchGroup) {
-        this.query = 'FIND ' + this.toSOQLString(searchTerm)
+        this.query = 'FIND ' + SOQLUtils.toSOQLString(searchTerm)
             + ' IN ' + searchGroup.name().replace('_', ' ')
             + ' RETURNING ' + this.sobjectType + '('
                 + this.getQueryFieldString()
