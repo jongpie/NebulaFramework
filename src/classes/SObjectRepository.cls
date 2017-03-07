@@ -1,9 +1,9 @@
-global abstract class SObjectRepository implements ISObjectRepository {
+public abstract class SObjectRepository extends Core implements ISObjectRepository {
 
-    global enum SortOrder { ASCENDING, DESCENDING }
-    global enum NullsSortOrder { FIRST, LAST }
+    public enum SortOrder { ASCENDING, DESCENDING }
+    public enum NullsSortOrder { FIRST, LAST }
 
-    global enum SearchGroup { ALL_FIELDS, NAME_FIELDS, EMAIL_FIELDS, PHONE_FIELDS, SIDEBAR_FIELDS }
+    public enum SearchGroup { ALL_FIELDS, NAME_FIELDS, EMAIL_FIELDS, PHONE_FIELDS, SIDEBAR_FIELDS }
 
     private RepositorySettings__c repositorySettings;
     private SObjectType sobjectType;
@@ -17,11 +17,11 @@ global abstract class SObjectRepository implements ISObjectRepository {
     private Integer limitCount;
     private Boolean forUpdate;
 
-    global SObjectRepository(Schema.SObjectType sobjectType, Schema.FieldSet fieldSet) {
+    public SObjectRepository(Schema.SObjectType sobjectType, Schema.FieldSet fieldSet) {
         this(sobjectType, fieldSet, null);
     }
 
-    global SObjectRepository(Schema.SObjectType sobjectType, List<Schema.SObjectField> sobjectFieldList) {
+    public SObjectRepository(Schema.SObjectType sobjectType, List<Schema.SObjectField> sobjectFieldList) {
         this(sobjectType, null, sobjectFieldList);
     }
 
@@ -42,75 +42,75 @@ global abstract class SObjectRepository implements ISObjectRepository {
         this.addSObjectFields();
     }
 
-    global protected SObjectRepository whereIdEquals(Id recordId) {
+    protected SObjectRepository whereIdEquals(Id recordId) {
         return this.whereFieldEquals(sobjectTypeFieldMap.get('Id'), SOQLUtils.toSOQLString(recordId));
     }
 
-    global protected SObjectRepository whereIdIn(Set<Id> recordIdSet) {
+    protected SObjectRepository whereIdIn(Set<Id> recordIdSet) {
         return this.whereFieldIn(sobjectTypeFieldMap.get('Id'), new List<Id>(recordIdSet));
     }
 
-    global protected SObjectRepository whereIdIn(List<Id> recordList) {
+    protected SObjectRepository whereIdIn(List<Id> recordList) {
         return this.whereFieldIn(sobjectTypeFieldMap.get('Id'), recordList);
     }
 
-    global protected SObjectRepository whereFieldEquals(Schema.SObjectField field, Object value) {
+    protected SObjectRepository whereFieldEquals(Schema.SObjectField field, Object value) {
         return this.addCondition(field, '=', SOQLUtils.toSOQLString(value));
     }
 
-    global protected SObjectRepository whereFieldDoesNotEqual(Schema.SObjectField field, Object value) {
+    protected SObjectRepository whereFieldDoesNotEqual(Schema.SObjectField field, Object value) {
         return this.addCondition(field, '!=', SOQLUtils.toSOQLString(value));
     }
 
-    global protected SObjectRepository whereFieldGreaterThan(Schema.SObjectField field, Object value) {
+    protected SObjectRepository whereFieldGreaterThan(Schema.SObjectField field, Object value) {
         return this.addCondition(field, '>', SOQLUtils.toSOQLString(value));
     }
 
-    global protected SObjectRepository whereFieldGreaterThanOrEqualTo(Schema.SObjectField field, Object value) {
+    protected SObjectRepository whereFieldGreaterThanOrEqualTo(Schema.SObjectField field, Object value) {
         return this.addCondition(field, '>=', SOQLUtils.toSOQLString(value));
     }
 
-    global protected SObjectRepository whereFieldLessThan(Schema.SObjectField field, Object value) {
+    protected SObjectRepository whereFieldLessThan(Schema.SObjectField field, Object value) {
         return this.addCondition(field, '<', SOQLUtils.toSOQLString(value));
     }
 
-    global protected SObjectRepository whereFieldLessThanOrEqualTo(Schema.SObjectField field, Object value) {
+    protected SObjectRepository whereFieldLessThanOrEqualTo(Schema.SObjectField field, Object value) {
         return this.addCondition(field, '<=', SOQLUtils.toSOQLString(value));
     }
 
-    global protected SObjectRepository whereFieldIn(Schema.SObjectField field, List<Object> valueList) {
+    protected SObjectRepository whereFieldIn(Schema.SObjectField field, List<Object> valueList) {
         return this.addCondition(field, 'IN', SOQLUtils.toSOQLString(valueList));
     }
 
-    global protected SObjectRepository whereFieldNotIn(Schema.SObjectField field, List<Object> valueList) {
+    protected SObjectRepository whereFieldNotIn(Schema.SObjectField field, List<Object> valueList) {
         return this.addCondition(field, 'NOT IN', SOQLUtils.toSOQLString(valueList));
     }
 
-    global protected SObjectRepository whereFieldIncludes(Schema.SObjectField field, List<Object> valueList) {
+    protected SObjectRepository whereFieldIncludes(Schema.SObjectField field, List<Object> valueList) {
         return this.addCondition(field, 'INCLUDES', SOQLUtils.toSOQLString(valueList));
     }
 
-    global protected SObjectRepository whereFieldExcludes(Schema.SObjectField field, List<Object> valueList) {
+    protected SObjectRepository whereFieldExcludes(Schema.SObjectField field, List<Object> valueList) {
         return this.addCondition(field, 'EXCLUDES', SOQLUtils.toSOQLString(valueList));
     }
 
-    global protected SObjectRepository whereFieldLike(Schema.SObjectField field, String comparisonValue) {
+    protected SObjectRepository whereFieldLike(Schema.SObjectField field, String comparisonValue) {
         return this.addCondition(field, 'LIKE', comparisonValue);
     }
 
-    global protected SObjectRepository whereFieldNotLike(Schema.SObjectField field, String comparisonValue) {
+    protected SObjectRepository whereFieldNotLike(Schema.SObjectField field, String comparisonValue) {
         return this.addCondition(field, 'NOT LIKE', comparisonValue);
     }
 
-    global protected SObjectRepository orderBy(Schema.SObjectField orderByField) {
+    protected SObjectRepository orderBy(Schema.SObjectField orderByField) {
         return this.orderBy(orderByField, null, null);
     }
 
-    global protected SObjectRepository orderBy(Schema.SObjectField orderByField, SObjectRepository.SortOrder sortOrder) {
+    protected SObjectRepository orderBy(Schema.SObjectField orderByField, SObjectRepository.SortOrder sortOrder) {
         return orderBy(orderByField, sortOrder, null);
     }
 
-    global protected SObjectRepository orderBy(Schema.SObjectField orderByField, SObjectRepository.SortOrder sortOrder, SObjectRepository.NullsSortOrder nullsSortOrder) {
+    protected SObjectRepository orderBy(Schema.SObjectField orderByField, SObjectRepository.SortOrder sortOrder, SObjectRepository.NullsSortOrder nullsSortOrder) {
         String sortOrderSoql = '';
         if(sortOrder == SObjectRepository.SortOrder.ASCENDING) sortOrderSoql = ' ASC';
         else if(sortOrder == SObjectRepository.SortOrder.DESCENDING) sortOrderSoql = ' DESC';
@@ -122,25 +122,25 @@ global abstract class SObjectRepository implements ISObjectRepository {
         return this;
     }
 
-    global protected SObjectRepository limitCount(Integer limitCount) {
+    protected SObjectRepository limitCount(Integer limitCount) {
         this.limitCount = limitCount;
         return this;
     }
 
-    global protected SObjectRepository setAsUpdate() {
+    protected SObjectRepository setAsUpdate() {
         this.forUpdate = true;
         return this;
     }
 
-    global protected SObject getFirstQueryResult() {
+    protected SObject getFirstQueryResult() {
         return this.getQueryResults()[0];
     }
 
-    global protected List<SObject> getQueryResults() {
+    protected List<SObject> getQueryResults() {
         return Database.query(this.getQuery());
     }
 
-    global protected List<SObject> getSearchResults(String searchTerm, SObjectRepository.SearchGroup searchGroup) {
+    protected List<SObject> getSearchResults(String searchTerm, SObjectRepository.SearchGroup searchGroup) {
         return Search.query(this.getSearchQuery(searchTerm, searchGroup))[0];
     }
 
@@ -169,7 +169,7 @@ global abstract class SObjectRepository implements ISObjectRepository {
 
             this.queryFields.add(commonFieldName);
         }
-        system.debug(this.queryFields);
+        System.debug(this.queryFields);
     }
 
     private void addFieldSetMembers() {
