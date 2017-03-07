@@ -1,10 +1,10 @@
-global without sharing class UUID {
+public without sharing class UUID {
 
-    global static Boolean isEmpty(String uuid) {
+    public static Boolean isEmpty(String uuid) {
         return String.isBlank(uuid) || uuid == '00000000-0000-0000-0000-000000000000';
     }
 
-    global static Boolean isValid(String uuid) {
+    public static Boolean isValid(String uuid) {
         if(isEmpty(uuid)) return false;
 
         String uuidRegEx = '[A-F0-9]{8}(?:-[A-F0-9]{4}){3}-[A-F0-9]{12}';
@@ -14,7 +14,7 @@ global without sharing class UUID {
         return uuidMatcher.matches();
     }
 
-    global String getValue() {
+    public String getValue() {
         Blob generatedBlob = Crypto.GenerateAESKey(128);
         String hex = EncodingUtil.ConvertTohex(generatedBlob);
         String uuid = hex.substring(0, 8)

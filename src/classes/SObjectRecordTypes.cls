@@ -1,4 +1,4 @@
-global abstract class SObjectRecordTypes {
+global abstract class SObjectRecordTypes extends Core {
 
     private static Map<String, List<RecordType>> cachedRecordTypesBySObjectMap = new Map<String, List<RecordType>>();
 
@@ -9,16 +9,22 @@ global abstract class SObjectRecordTypes {
     private RecordTypesSettings__c recordTypesSettings;
 
     global SObjectRecordTypes(Schema.DescribeSObjectResult describeSObjectResult) {
+        this.currentModule = Core.Module.RECORD_TYPES;
+
         this.sobjectName = describeSObjectResult.getName();
 
-        this.getRecordTypeSettings();
+        this.addLogEntry('Getting record types for ' + this.sobjectName);
+
+        this.getRecordTypesSettings();
         this.populateCache();
 
         this.ALL_RECORD_TYPES_BY_ID             = this.getAllRecordTypesById();
         this.ALL_RECORD_TYPES_BY_DEVELOPER_NAME = this.getAllRecordTypesByDeveloperName();
+
+        this.saveLogs();
     }
 
-    private void getRecordTypeSettings() {
+    private void getRecordTypesSettings() {
         this.recordTypesSettings = RecordTypesSettings__c.getInstance();
 
         if(this.recordTypesSettings.Id == null) {
@@ -28,14 +34,16 @@ global abstract class SObjectRecordTypes {
             // Call getInstance() again to get the settings with the field defaults
             this.recordTypesSettings = RecordTypesSettings__c.getInstance();
         }
+
+        this.addLogEntry('RecordTypesSettings__c.getInstance():\n' + JSON.serialize(this.recordTypesSettings).replace(',', ', ').replace(':', ': '));
     }
 
+    // TODO clean up all this mess for cache, getRecordTypes, getAllRecordTypesByDeveloperName, etc
+    // Too many similarly named methods going on
     private void populateCache() {
         if(cachedRecordTypesBySObjectMap.containsKey(this.sobjectName)) return;
-        else cachedRecordTypesBySObjectMap.put(this.sobjectName, this.getRecordTypes());
-    }
 
-    private List<RecordType> getRecordTypes() {
+        // If we don't have the SObject cached, then we need to query
         List<String> fieldList = new List<String>(Schema.SObjectType.RecordType.fields.getMap().keySet());
 
         String query = 'SELECT ' + String.join(fieldList, ', ') + ' FROM RecordType';
@@ -48,7 +56,9 @@ global abstract class SObjectRecordTypes {
         query += ' ORDER BY DeveloperName';
 
         System.debug(query);
-        return (List<RecordType>)Database.query(query);
+        List<RecordType> recordTypeList = (List<RecordType>)Database.query(query);
+
+        cachedRecordTypesBySObjectMap.put(this.sobjectName, recordTypeList);
     }
 
     private Map<Id, RecordType> getAllRecordTypesById() {
@@ -56,7 +66,7 @@ global abstract class SObjectRecordTypes {
     }
 
     private Map<String, RecordType> getAllRecordTypesByDeveloperName() {
-        Map<String, RecordType> allRecordTypesByDeveloperName= new Map<String, RecordType>();
+        Map<String, RecordType> allRecordTypesByDeveloperName = new Map<String, RecordType>();
         for(RecordType recordType : this.getAllRecordTypesById().values()) allRecordTypesByDeveloperName.put(recordType.DeveloperName, recordType);
 
         return allRecordTypesByDeveloperName;

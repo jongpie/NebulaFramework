@@ -26,6 +26,8 @@ public abstract class SObjectRepository extends Core implements ISObjectReposito
     }
 
     private SObjectRepository(Schema.SObjectType sobjectType, Schema.FieldSet fieldSet, List<Schema.SObjectField> sobjectFieldList) {
+        this.currentModule = Core.Module.REPOSITORY;
+
         this.sobjectType      = sobjectType;
         this.fieldSet         = fieldSet;
         this.sobjectFieldList = sobjectFieldList;
@@ -137,7 +139,13 @@ public abstract class SObjectRepository extends Core implements ISObjectReposito
     }
 
     protected List<SObject> getQueryResults() {
-        return Database.query(this.getQuery());
+        List<SObject> results = Database.query(this.getQuery());
+        String logMessage =
+            'Query:\n' + this.query
+            + '\n\nResults:\n' + results;
+        this.addLogEntry(logMessage);
+        this.saveLogs();
+        return results;
     }
 
     protected List<SObject> getSearchResults(String searchTerm, SObjectRepository.SearchGroup searchGroup) {
@@ -154,6 +162,8 @@ public abstract class SObjectRepository extends Core implements ISObjectReposito
             // Call getInstance() again to get the settings with the field defaults
             this.repositorySettings = RepositorySettings__c.getInstance();
         }
+
+        this.addLogEntry('RepositorySettings__c.getInstance():\n' + JSON.serialize(this.repositorySettings).replace(',', ', ').replace(':', ': '));
     }
 
     private void addCommonQueryFields() {
@@ -248,6 +258,7 @@ public abstract class SObjectRepository extends Core implements ISObjectReposito
 
         // TODO: add custom setting to disable debug statements
         System.debug(this.query);
+        this.addLogEntry(this.query);
 
         return this.query;
     }

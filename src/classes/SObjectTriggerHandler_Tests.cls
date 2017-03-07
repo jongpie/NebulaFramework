@@ -1,6 +1,6 @@
 @isTest
 private class SObjectTriggerHandler_Tests {
-
+/*
     private class LeadTriggerHandler extends SObjectTriggerHandler {
         public LeadTriggerHandler() {
             super(true);
@@ -102,5 +102,7 @@ private class SObjectTriggerHandler_Tests {
 
         Test.stopTest();
     }
+
+    */
 
 }

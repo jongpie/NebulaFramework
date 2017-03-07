@@ -1,4 +1,4 @@
-global abstract class SObjectTriggerHandler {
+public abstract class SObjectTriggerHandler extends Core {
 
     private static Map<Integer, Set<TriggerContext>> hashCodesForProcessedRecords = new Map<Integer, Set<TriggerContext>>();
 
@@ -21,11 +21,13 @@ global abstract class SObjectTriggerHandler {
     @testVisible
     private Map<Id, SObject> recordMap, oldRecordMap;
 
-    global SObjectTriggerHandler() {
+    public SObjectTriggerHandler() {
         this(false);
     }
 
-    public SObjectTriggerHandler(Boolean isTestMode) {
+    private SObjectTriggerHandler(Boolean isTestMode) {
+        this.currentModule = Core.Module.TRIGGER_HANDLER;
+
         this.isTestMode         = isTestMode;
         this.isTriggerExecuting = Trigger.isExecuting;
 
@@ -43,7 +45,7 @@ global abstract class SObjectTriggerHandler {
         this.setTriggerRecords();
     }
 
-    global void execute() {
+    public void execute() {
         this.addDebugStatement('Execute method called for ' + this.className);
         // Check the custom setting. If it's disabled, stop everything, show's over
         // You don't have to go home but you can't stay here
@@ -78,19 +80,18 @@ global abstract class SObjectTriggerHandler {
         else if(this.context == TriggerContext.AFTER_UPDATE) this.executeAfterUpdate(this.recordList, this.recordMap, this.oldRecordList, this.oldRecordMap);
         else if(this.context == TriggerContext.AFTER_DELETE) this.executeAfterDelete(this.oldRecordList, this.oldRecordMap);
         else if(this.context == TriggerContext.AFTER_UNDELETE) this.executeAfterUndelete(this.recordList, this.recordMap);
+
+        if(this.getClassName() == 'LogTriggerHandler') return;
+        else if(Trigger.isAfter) this.saveLogs();
     }
 
-    global protected virtual void executeBeforeInsert(List<SObject> newRecordList) {}
-    global protected virtual void executeBeforeUpdate(List<SObject> updatedRecordList, Map<Id, SObject> updatedRecordMap, List<SObject> oldRecordList, Map<Id, SObject> oldRecordMap) {}
-    global protected virtual void executeBeforeDelete(List<SObject> deletedRecordList, Map<Id, SObject> deletedRecordMap) {}
-    global protected virtual void executeAfterInsert(List<SObject> newRecordList, Map<Id, SObject> newRecordMap) {}
-    global protected virtual void executeAfterUpdate(List<SObject> updatedRecordList, Map<Id, SObject> updatedRecordMap, List<SObject> oldRecordList, Map<Id, SObject> oldRecordMap) {}
-    global protected virtual void executeAfterDelete(List<SObject> deletedRecordList, Map<Id, SObject> deletedRecordMap) {}
-    global protected virtual void executeAfterUndelete(List<SObject> undeletedRecordList, Map<Id, SObject> undeletedRecordMap) {}
-
-    private void getClassName() {
-        this.className = String.valueOf(this).split(':')[0];
-    }
+    protected virtual void executeBeforeInsert(List<SObject> newRecordList) {}
+    protected virtual void executeBeforeUpdate(List<SObject> updatedRecordList, Map<Id, SObject> updatedRecordMap, List<SObject> oldRecordList, Map<Id, SObject> oldRecordMap) {}
+    protected virtual void executeBeforeDelete(List<SObject> deletedRecordList, Map<Id, SObject> deletedRecordMap) {}
+    protected virtual void executeAfterInsert(List<SObject> newRecordList, Map<Id, SObject> newRecordMap) {}
+    protected virtual void executeAfterUpdate(List<SObject> updatedRecordList, Map<Id, SObject> updatedRecordMap, List<SObject> oldRecordList, Map<Id, SObject> oldRecordMap) {}
+    protected virtual void executeAfterDelete(List<SObject> deletedRecordList, Map<Id, SObject> deletedRecordMap) {}
+    protected virtual void executeAfterUndelete(List<SObject> undeletedRecordList, Map<Id, SObject> undeletedRecordMap) {}
 
     private void getTriggerHandlerSettings() {
         this.triggerHandlerSettings = TriggerHandlerSettings__c.getInstance();
@@ -102,10 +103,12 @@ global abstract class SObjectTriggerHandler {
             // Call getInstance() again to get the settings with the field defaults
             this.triggerHandlerSettings = TriggerHandlerSettings__c.getInstance();
         }
+
+        //this.addLogEntry('TriggerHandlerSettings__c.getInstance():\n' + JSON.serialize(this.triggerHandlerSettings).replace(',', ', ').replace(':', ': '));
     }
 
     private void addDebugStatement(String debugStatement) {
-        if(!this.triggerHandlerSettings.EnableDebugging__c) return;
+        //if(!this.triggerHandlerSettings.EnableDebugging__c) return;
 
         System.debug(debugStatement);
     }
@@ -145,7 +148,7 @@ global abstract class SObjectTriggerHandler {
         this.addDebugStatement('triggerHandlerSettings.HandlerClassesToSkip__c=' + this.triggerHandlerSettings.HandlerClassesToSkip__c);
 
         // If ExecuteTriggers == true and the current class isn't in the list of handlers to skip, then execute
-        return this.triggerHandlerSettings.ExecuteTriggers__c && !handlerClassesToSkip.contains(this.className.toLowerCase());
+        return this.triggerHandlerSettings.ExecuteTriggers__c && !handlerClassesToSkip.contains(this.getClassName().toLowerCase());
     }
 
     private void setHashCode() {
