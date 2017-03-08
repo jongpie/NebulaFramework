@@ -81,7 +81,7 @@ public abstract class SObjectTriggerHandler extends Core {
         else if(this.context == TriggerContext.AFTER_DELETE) this.executeAfterDelete(this.oldRecordList, this.oldRecordMap);
         else if(this.context == TriggerContext.AFTER_UNDELETE) this.executeAfterUndelete(this.recordList, this.recordMap);
 
-        if(this.getClassName() == 'LogTriggerHandler') return;
+        if(sobjectType == Schema.Log__c.SObjectType.getDescribe().getName()) return;
         else if(Trigger.isAfter) this.saveLogs();
     }
 
