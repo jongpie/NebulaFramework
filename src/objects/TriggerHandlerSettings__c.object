@@ -4,14 +4,6 @@
     <description>Controls the behavior of the class SObjectTriggerHandler.cls</description>
     <enableFeeds>false</enableFeeds>
     <fields>
-        <fullName>EnableDebugging__c</fullName>
-        <defaultValue>true</defaultValue>
-        <externalId>false</externalId>
-        <label>Enable Debugging</label>
-        <trackTrending>false</trackTrending>
-        <type>Checkbox</type>
-    </fields>
-    <fields>
         <fullName>ExecuteTriggers__c</fullName>
         <defaultValue>true</defaultValue>
         <description>Controls if any trigger handler classes run its execute() method. This should always be enabled unless you are doing a data fix, etc and need to temporarily disable all triggers.</description>
