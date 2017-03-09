@@ -41,13 +41,6 @@ public without sharing class QueryBuilder extends NebulaCore {
         return this;
     }
 
-    public QueryBuilder whereField(Schema.SObjectField field, String operator, List<Object> valueList) {
-        String parsedValue = SOQLUtils.toSOQLString(valueList);
-
-        this.whereClauseList.add(field + ' ' + operator.trim() + ' ' + parsedValue);
-        return this;
-    }
-
     public QueryBuilder orderBy(Schema.SObjectField orderByField) {
         return this.orderBy(orderByField, null, null);
     }

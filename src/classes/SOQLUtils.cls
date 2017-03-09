@@ -8,6 +8,7 @@ public without sharing class SOQLUtils {
 
     public static String toSOQLString(Object value) {
         if(value == null) return null;
+        else if(value instanceof List<Object>) return toSOQLString((List<Object>)value);
         else if(value instanceof DateLiterals) {
             DateLiterals dateLiteral = (DateLiterals)value;
             return dateLiteral.getValue();
@@ -31,8 +32,6 @@ public without sharing class SOQLUtils {
     }
 
     public static String wrapInSingleQuotes(String input) {
-        if(input.toLowerCase() == 'null') return input;
-
         if(input.left(1) != '\'') input = '\'' + input;
         if(input.right(1) != '\'') input = input + '\'';
         return input;
