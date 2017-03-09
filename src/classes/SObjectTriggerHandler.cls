@@ -1,4 +1,4 @@
-public abstract class SObjectTriggerHandler extends NebulaCore {
+public abstract class SObjectTriggerHandler extends NebulaCore implements ISObjectTriggerHandler {
 
     private static Map<Integer, Set<TriggerContext>> hashCodesForProcessedRecords = new Map<Integer, Set<TriggerContext>>();
 

@@ -67,6 +67,27 @@
         <unique>false</unique>
     </fields>
     <fields>
+        <fullName>InitialModule__c</fullName>
+        <externalId>false</externalId>
+        <label>Initial Module</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>RecordTypesSettings__c</fullName>
+        <externalId>false</externalId>
+        <label>Record Types Settings</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
         <fullName>RepositorySettings__c</fullName>
         <externalId>false</externalId>
         <label>Repository Settings</label>
@@ -88,8 +109,18 @@
         <type>Text</type>
         <unique>true</unique>
     </fields>
+    <fields>
+        <fullName>TriggerHandlerSettings__c</fullName>
+        <externalId>false</externalId>
+        <label>Trigger Handler Settings</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>5</visibleLines>
+    </fields>
     <gender>Masculine</gender>
-    <label>Log</label>
+    <label>Nebula Log</label>
     <listViews>
         <fullName>All_Logs</fullName>
         <columns>NAME</columns>
@@ -119,7 +150,7 @@
         <trackHistory>false</trackHistory>
         <type>AutoNumber</type>
     </nameField>
-    <pluralLabel>Logs</pluralLabel>
+    <pluralLabel>Nebula Logs</pluralLabel>
     <searchLayouts/>
     <sharingModel>ReadWrite</sharingModel>
 </CustomObject>

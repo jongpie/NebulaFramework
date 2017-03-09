@@ -26,7 +26,7 @@ public without sharing class Logger implements ILogger {
     private void saveTransactionLog() {
         if(Logger.logId != null) return;
 
-        Log__c newLog = new Log__c(
+        NebulaLog__c newLog = new NebulaLog__c(
             InitialClass__c  = NebulaCore.INITIAL_CLASS,
             InitialModule__c = NebulaCore.INITIAL_MODULE == null ? null : NebulaCore.INITIAL_MODULE.name(),
             TransactionId__c = NebulaCore.TRANSACTION_ID
