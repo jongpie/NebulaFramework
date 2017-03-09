@@ -1,266 +1,49 @@
 public abstract class SObjectRepository extends Core implements ISObjectRepository {
 
-    public enum SortOrder { ASCENDING, DESCENDING }
-    public enum NullsSortOrder { FIRST, LAST }
+    // Predefined SOQL operators
+    protected final String EQUALS                   = '=';
+    protected final String NOT_EQUAL_TO             = '!=';
+    protected final String GREATER_THAN             = '>';
+    protected final String GREATER_THAN_OR_EQUAL_TO = '>=';
+    protected final String LESS_THAN                = '<';
+    protected final String LESS_THAN_OR_EQUAL_TO    = '<=';
+    protected final String IS_IN                    = 'IN';
+    protected final String IS_NOT_IN                = 'NOT IN';
+    protected final String INCLUDES                 = 'INCLUDES';
+    protected final String EXCLUDES                 = 'EXCLUDES';
+    protected final String IS_LIKE                  = 'LIKE';
+    protected final String IS_NOT_LIKE              = 'NOT LIKE';
 
-    public enum SearchGroup { ALL_FIELDS, NAME_FIELDS, EMAIL_FIELDS, PHONE_FIELDS, SIDEBAR_FIELDS }
+    protected QueryBuilder queryBuilder;
 
-    private RepositorySettings__c repositorySettings;
-    private SObjectType sobjectType;
-    private Map<String, Schema.SObjectField> sobjectTypeFieldMap;
-    private Set<String> queryFields;
-    private String query;
-    private Schema.FieldSet fieldSet;
-    private List<Schema.SObjectField> sobjectFieldList;
-    private List<String> whereClauseList;
-    private List<String> orderByList;
-    private Integer limitCount;
-    private Boolean forUpdate;
-
-    public SObjectRepository(Schema.SObjectType sobjectType, Schema.FieldSet fieldSet) {
+    protected SObjectRepository(Schema.SObjectType sobjectType, Schema.FieldSet fieldSet) {
         this(sobjectType, fieldSet, null);
     }
 
-    public SObjectRepository(Schema.SObjectType sobjectType, List<Schema.SObjectField> sobjectFieldList) {
+    protected SObjectRepository(Schema.SObjectType sobjectType, List<Schema.SObjectField> sobjectFieldList) {
         this(sobjectType, null, sobjectFieldList);
     }
 
     private SObjectRepository(Schema.SObjectType sobjectType, Schema.FieldSet fieldSet, List<Schema.SObjectField> sobjectFieldList) {
         this.currentModule = Core.Module.REPOSITORY;
 
-        this.sobjectType      = sobjectType;
-        this.fieldSet         = fieldSet;
-        this.sobjectFieldList = sobjectFieldList;
-
-        this.sobjectTypeFieldMap = this.sobjectType.getDescribe().fields.getMap();
-        this.queryFields         = new Set<String>();
-        this.whereClauseList     = new List<String>();
-        this.orderByList         = new List<String>();
-        this.forUpdate           = false;
-
-        this.getRepositorySettings();
-        this.addCommonQueryFields();
-        this.addFieldSetMembers();
-        this.addSObjectFields();
+        this.queryBuilder = new QueryBuilder(sobjectType, fieldSet, sobjectFieldList);
     }
 
-    protected SObjectRepository whereIdEquals(Id recordId) {
-        return this.whereFieldEquals(sobjectTypeFieldMap.get('Id'), SOQLUtils.toSOQLString(recordId));
+    public virtual void doInsert(SObject record) {this.doInsert(new List<SObject>{record});}
+    public virtual void doInsert(List<SObject> recordList) {Database.insert(recordList);}
+    public virtual void doUpdate(SObject record) {this.doUpdate(new List<SObject>{record});}
+    public virtual void doUpdate(List<SObject> recordList) {Database.update(recordList);}
+    public virtual void doUpsert(SObject record) {this.doUpsert(new List<SObject>{record});}
+    public virtual void doUpsert(List<SObject> recordList) {Database.upsert(recordList);}
+    public virtual void doDelete(SObject record) {this.doDelete(new List<SObject>{record});}
+    public virtual void doDelete(List<SObject> recordList) {Database.delete(recordList);}
+    public virtual void doHardDelete(SObject record) {this.doHardDelete(new List<SObject>{record});}
+    public virtual void doHardDelete(List<SObject> recordList) {
+        Database.delete(recordList);
+        if(!recordList.isEmpty()) Database.emptyRecycleBin(recordList);
     }
-
-    protected SObjectRepository whereIdIn(Set<Id> recordIdSet) {
-        return this.whereFieldIn(sobjectTypeFieldMap.get('Id'), new List<Id>(recordIdSet));
-    }
-
-    protected SObjectRepository whereIdIn(List<Id> recordList) {
-        return this.whereFieldIn(sobjectTypeFieldMap.get('Id'), recordList);
-    }
-
-    protected SObjectRepository whereFieldEquals(Schema.SObjectField field, Object value) {
-        return this.addCondition(field, '=', SOQLUtils.toSOQLString(value));
-    }
-
-    protected SObjectRepository whereFieldDoesNotEqual(Schema.SObjectField field, Object value) {
-        return this.addCondition(field, '!=', SOQLUtils.toSOQLString(value));
-    }
-
-    protected SObjectRepository whereFieldGreaterThan(Schema.SObjectField field, Object value) {
-        return this.addCondition(field, '>', SOQLUtils.toSOQLString(value));
-    }
-
-    protected SObjectRepository whereFieldGreaterThanOrEqualTo(Schema.SObjectField field, Object value) {
-        return this.addCondition(field, '>=', SOQLUtils.toSOQLString(value));
-    }
-
-    protected SObjectRepository whereFieldLessThan(Schema.SObjectField field, Object value) {
-        return this.addCondition(field, '<', SOQLUtils.toSOQLString(value));
-    }
-
-    protected SObjectRepository whereFieldLessThanOrEqualTo(Schema.SObjectField field, Object value) {
-        return this.addCondition(field, '<=', SOQLUtils.toSOQLString(value));
-    }
-
-    protected SObjectRepository whereFieldIn(Schema.SObjectField field, List<Object> valueList) {
-        return this.addCondition(field, 'IN', SOQLUtils.toSOQLString(valueList));
-    }
-
-    protected SObjectRepository whereFieldNotIn(Schema.SObjectField field, List<Object> valueList) {
-        return this.addCondition(field, 'NOT IN', SOQLUtils.toSOQLString(valueList));
-    }
-
-    protected SObjectRepository whereFieldIncludes(Schema.SObjectField field, List<Object> valueList) {
-        return this.addCondition(field, 'INCLUDES', SOQLUtils.toSOQLString(valueList));
-    }
-
-    protected SObjectRepository whereFieldExcludes(Schema.SObjectField field, List<Object> valueList) {
-        return this.addCondition(field, 'EXCLUDES', SOQLUtils.toSOQLString(valueList));
-    }
-
-    protected SObjectRepository whereFieldLike(Schema.SObjectField field, String comparisonValue) {
-        return this.addCondition(field, 'LIKE', comparisonValue);
-    }
-
-    protected SObjectRepository whereFieldNotLike(Schema.SObjectField field, String comparisonValue) {
-        return this.addCondition(field, 'NOT LIKE', comparisonValue);
-    }
-
-    protected SObjectRepository orderBy(Schema.SObjectField orderByField) {
-        return this.orderBy(orderByField, null, null);
-    }
-
-    protected SObjectRepository orderBy(Schema.SObjectField orderByField, SObjectRepository.SortOrder sortOrder) {
-        return orderBy(orderByField, sortOrder, null);
-    }
-
-    protected SObjectRepository orderBy(Schema.SObjectField orderByField, SObjectRepository.SortOrder sortOrder, SObjectRepository.NullsSortOrder nullsSortOrder) {
-        String sortOrderSoql = '';
-        if(sortOrder == SObjectRepository.SortOrder.ASCENDING) sortOrderSoql = ' ASC';
-        else if(sortOrder == SObjectRepository.SortOrder.DESCENDING) sortOrderSoql = ' DESC';
-
-        if(nullsSortOrder != null) sortOrderSoql += ' NULLS ' + nullsSortOrder;
-
-        this.orderByList.add(orderByField.getDescribe().getName() + sortOrderSoql);
-
-        return this;
-    }
-
-    protected SObjectRepository limitCount(Integer limitCount) {
-        this.limitCount = limitCount;
-        return this;
-    }
-
-    protected SObjectRepository setAsUpdate() {
-        this.forUpdate = true;
-        return this;
-    }
-
-    protected SObject getFirstQueryResult() {
-        return this.getQueryResults()[0];
-    }
-
-    protected List<SObject> getQueryResults() {
-        List<SObject> results = Database.query(this.getQuery());
-        String logMessage =
-            'Query:\n' + this.query
-            + '\n\nResults:\n' + results;
-        this.addLogEntry(logMessage);
-        this.saveLogs();
-        return results;
-    }
-
-    protected List<SObject> getSearchResults(String searchTerm, SObjectRepository.SearchGroup searchGroup) {
-        return Search.query(this.getSearchQuery(searchTerm, searchGroup))[0];
-    }
-
-    private void getRepositorySettings() {
-        this.repositorySettings = RepositorySettings__c.getInstance();
-
-        if(this.repositorySettings.Id == null) {
-            // If there's no ID, then there are settings setup for the current user at the user, profile or org level
-            // Upsert the org defaults - the default field values will be used
-            upsert RepositorySettings__c.getOrgDefaults();
-            // Call getInstance() again to get the settings with the field defaults
-            this.repositorySettings = RepositorySettings__c.getInstance();
-        }
-
-        this.addLogEntry('RepositorySettings__c.getInstance():\n' + JSON.serialize(this.repositorySettings).replace(',', ', ').replace(':', ': '));
-    }
-
-    private void addCommonQueryFields() {
-        if(!this.repositorySettings.IncludeCommonFields__c) return;
-
-        // Auto-add the common fields that are available for the SObject Type
-        List<String> commonFieldNameList = new List<String>{
-            'Id', 'CaseNumber', 'CreatedById', 'CreatedDate', 'IsClosed', 'LastModifiedById', 'LastModifiedDate',
-            'Name', 'OwnerId', 'Subject', 'RecordTypeId', 'SystemModStamp'
-        };
-        for(String commonFieldName : commonFieldNameList) {
-            if(!this.sobjectTypeFieldMap.containsKey(commonFieldName)) continue;
-
-            this.queryFields.add(commonFieldName);
-        }
-        System.debug(this.queryFields);
-    }
-
-    private void addFieldSetMembers() {
-        if(this.fieldSet == null) return;
-
-        for(Schema.FieldSetMember field : this.fieldSet.getFields()) this.queryFields.add(field.getFieldPath());
-    }
-
-    private void addSObjectFields() {
-        if(this.sobjectFieldList == null) return;
-
-        for(Schema.SObjectField field : this.sobjectFieldList) this.queryFields.add(field.getDescribe().getName());
-    }
-
-    private SObjectRepository addCondition(Schema.SObjectField field, String operator, String value) {
-        this.whereClauseList.add('(' + field + ' ' + operator.trim() + ' ' + value + ')');
-        return this;
-    }
-
-    private String getQueryFieldString() {
-        List<String> queryFieldList = new List<String>(this.queryFields);
-        if(this.repositorySettings.SortQueryFields__c) queryFieldList.sort();
-        return String.join(queryFieldList, ',');
-    }
-
-    private String getWhereClauseString() {
-        String whereClauseString = '';
-        if(!this.whereClauseList.isEmpty()) whereClauseString = '\nWHERE ' + String.join(this.whereClauseList, '\nAND ');
-        return whereClauseString;
-    }
-
-    private String getOrderByString() {
-        String orderByString = '';
-        if(!this.orderByList.isEmpty()) orderByString = '\nORDER BY ' + String.join(new List<String>(orderByList), ', ');
-        return orderByString;
-    }
-
-    private String getLimitCountString() {
-        String limitString = '';
-        if(this.limitCount != null) limitString = '\nLIMIT '+ this.limitCount;
-        return limitString;
-    }
-
-    private String getForUpdateString() {
-        String forUpdateString = '';
-        if(this.orderByList.isEmpty() && this.forUpdate) forUpdateString = '\nFOR UPDATE';
-        return forUpdateString;
-    }
-
-    private String getQuery() {
-        this.query = 'SELECT ' + this.getQueryFieldString()
-            + ' FROM ' + this.sobjectType
-            + this.getWhereClauseString()
-            + this.getOrderByString()
-            + this.getLimitCountString()
-            + this.getForUpdateString();
-
-        System.debug(LoggingLevel.INFO, this.query); // TODO: add custom setting to disable debug statements
-
-        return this.query;
-    }
-
-    private String getSearchQuery(String searchTerm, SObjectRepository.SearchGroup searchGroup) {
-        this.query = 'FIND ' + SOQLUtils.toSOQLString(searchTerm)
-            + ' IN ' + searchGroup.name().replace('_', ' ')
-            + ' RETURNING ' + this.sobjectType + '('
-                + this.getQueryFieldString()
-                + this.getWhereClauseString()
-                + this.getOrderByString()
-                + this.getLimitCountString()
-            + ')';
-
-        // TODO: add custom setting to disable debug statements
-        // TODO: consider putting debug messages into custom labels
-        if(this.forUpdate) System.debug(LoggingLevel.WARN, 'SOSL Search Query method flagged as FOR UPDATE. SOSL cannot use FOR UPDATE, ignoring');
-
-        // TODO: add custom setting to disable debug statements
-        System.debug(this.query);
-        this.addLogEntry(this.query);
-
-        return this.query;
-    }
+    public virtual void doUndelete(SObject record) {this.doUndelete(new List<SObject>{record});}
+    public virtual void doUndelete(List<SObject> recordList) {Database.undelete(recordList);}
 
 }

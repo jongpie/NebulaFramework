@@ -8,25 +8,25 @@ private class SObjectRepository_Tests {
         }
 
         public Lead getRecord(Id leadId) {
-            return (Lead)this
-                .whereIdEquals(leadId)
+            return (Lead)this.queryBuilder
+                .whereField(Schema.Lead.Id, EQUALS, leadId)
                 .setAsUpdate()
                 .getFirstQueryResult();
         }
 
         public List<Lead> getList(List<Id> leadIdList) {
-            return (List<Lead>)this
-                .whereIdIn(leadIdList)
+            return (List<Lead>)this.queryBuilder
+                .whereField(Schema.Lead.Id, IS_IN, leadIdList)
                 .setAsUpdate()
                 .getQueryResults();
         }
 
         public List<Lead> searchInAllFields(String searchTerm) {
-            return (List<Lead>)this
-                .orderBy(Schema.Lead.CreatedDate, SObjectRepository.SortOrder.DESCENDING)
+            return (List<Lead>)this.queryBuilder
+                .orderBy(Schema.Lead.CreatedDate, Nebula.QueryBuilder.SortOrder.DESCENDING)
                 .limitCount(10)
                 .setAsUpdate() // SOSL cannot use FOR UPDATE. This will execute, but a warning debug statement will indicate that it is ignored
-                .getSearchResults(searchTerm, SObjectRepository.SearchGroup.ALL_FIELDS);
+                .getSearchResults(searchTerm, Nebula.QueryBuilder.SearchGroup.ALL_FIELDS);
         }
     }
 
