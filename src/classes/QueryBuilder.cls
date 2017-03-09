@@ -18,6 +18,7 @@ public without sharing class QueryBuilder extends Core {
     private Boolean forUpdate;
 
     public QueryBuilder(Schema.SObjectType sobjectType, Schema.FieldSet fieldSet, List<Schema.SObjectField> sobjectFieldList) {
+        this.currentModule = Core.Module.REPOSITORY;
 
         this.sobjectType      = sobjectType;
         this.fieldSet         = fieldSet;
