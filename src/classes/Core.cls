@@ -9,13 +9,14 @@ public abstract class Core implements ICore {
         System.debug('Core.TRANSACTION_ID=' + Core.TRANSACTION_ID);
     }
 
-    public enum Module { RECORD_TYPES, REPOSITORY, TRIGGER_HANDLER }
+    public enum Module { RECORD_TYPES, REPOSITORY, SETTINGS, TRIGGER_HANDLER }
 
     protected final Module currentModule;
     private final ILogger logger;
 
     protected Core() {
         this.logger = new Logger();
+
         if(Core.INITIAL_CLASS == null) Core.INITIAL_CLASS = this.getClassName();
         if(Core.INITIAL_MODULE == null) Core.INITIAL_MODULE = this.getClassModule();
     }

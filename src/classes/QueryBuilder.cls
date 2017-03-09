@@ -5,7 +5,6 @@ public without sharing class QueryBuilder extends Core {
 
     public enum SearchGroup {ALL_FIELDS, NAME_FIELDS, EMAIL_FIELDS, PHONE_FIELDS, SIDEBAR_FIELDS}
 
-    private RepositorySettings__c repositorySettings;
     private SObjectType sobjectType;
     private Map<String, Schema.SObjectField> sobjectTypeFieldMap;
     private Set<String> queryFields;
@@ -30,7 +29,6 @@ public without sharing class QueryBuilder extends Core {
         this.orderByList         = new List<String>();
         this.forUpdate           = false;
 
-        this.getRepositorySettings();
         this.addCommonQueryFields();
         this.addFieldSetMembers();
         this.addSObjectFields();
@@ -107,7 +105,7 @@ public without sharing class QueryBuilder extends Core {
 
     private String getQueryFieldString() {
         List<String> queryFieldList = new List<String>(this.queryFields);
-        if(this.repositorySettings.SortQueryFields__c) queryFieldList.sort();
+        if(new NebulaSettings().repositorySettings.SortQueryFields__c) queryFieldList.sort();
         return String.join(queryFieldList, ',');
     }
 
@@ -169,22 +167,8 @@ public without sharing class QueryBuilder extends Core {
         return this.query;
     }
 
-    private void getRepositorySettings() {
-        this.repositorySettings = RepositorySettings__c.getInstance();
-
-        if(this.repositorySettings.Id == null) {
-            // If there's no ID, then there are settings setup for the current user at the user, profile or org level
-            // Upsert the org defaults - the default field values will be used
-            upsert RepositorySettings__c.getOrgDefaults();
-            // Call getInstance() again to get the settings with the field defaults
-            this.repositorySettings = RepositorySettings__c.getInstance();
-        }
-
-        this.addLogEntry('RepositorySettings__c.getInstance():\n' + JSON.serialize(this.repositorySettings).replace(',', ', ').replace(':', ': '));
-    }
-
     private void addCommonQueryFields() {
-        if(!this.repositorySettings.IncludeCommonFields__c) return;
+        if(!new NebulaSettings().repositorySettings.IncludeCommonFields__c) return;
 
         // Auto-add the common fields that are available for the SObject Type
         List<String> commonFieldNameList = new List<String>{

@@ -10,11 +10,9 @@ public abstract class SObjectTriggerHandler extends Core {
     @testVisible
     private TriggerContext context; // The current context of the trigger
 
-    private String className;
     private Integer hashCode; // The hash code for the current records
     private Boolean isTestMode;
     private Boolean isTriggerExecuting; // Checks if the code was called by a trigger
-    private TriggerHandlerSettings__c triggerHandlerSettings;
 
     @testVisible
     private List<SObject> recordList, oldRecordList;
@@ -37,24 +35,23 @@ public abstract class SObjectTriggerHandler extends Core {
         this.oldRecordMap  = new Map<Id, SObject>();
 
         this.getClassName();
-        this.getTriggerHandlerSettings();
 
-        this.addDebugStatement('Initializing ' + this.className);
+        this.addLogEntry('Initializing ' + this.getClassName());
         this.setTriggerContext();
         this.validateTriggerContext();
         this.setTriggerRecords();
     }
 
     public void execute() {
-        this.addDebugStatement('Execute method called for ' + this.className);
+        this.addLogEntry('Execute method called for ' + this.getClassName());
         // Check the custom setting. If it's disabled, stop everything, show's over
         // You don't have to go home but you can't stay here
         if(!shouldExecuteTriggers()) {
-            this.addDebugStatement('Skipping execution of class ' + this.className);
+            this.addLogEntry('Skipping execution of class ' + this.getClassName());
             return;
         }
 
-        this.addDebugStatement(this.className + ' is enabled, proceeding with execution');
+        this.addLogEntry(this.getClassName() + ' is enabled, proceeding with execution');
 
         this.setHashCode();
 
@@ -62,16 +59,16 @@ public abstract class SObjectTriggerHandler extends Core {
         if(this.isTestMode) sobjectType = String.valueOf(Schema.Lead.SObjectType);
         else sobjectType = Trigger.new == null ? String.valueOf(Trigger.old.getSObjectType()) : String.valueOf(Trigger.new.getSObjectType());
 
-        this.addDebugStatement('Starting execute method for: ' + sobjectType);
-        this.addDebugStatement('Hash codes already processed: ' + SObjectTriggerHandler.hashCodesForProcessedRecords);
-        this.addDebugStatement('Hash code for current records: ' + this.hashCode);
-        this.addDebugStatement('Trigger context for current records: ' + this.context);
-        this.addDebugStatement('Number of current records: ' + Trigger.size);
+        this.addLogEntry('Starting execute method for: ' + sobjectType);
+        this.addLogEntry('Hash codes already processed: ' + SObjectTriggerHandler.hashCodesForProcessedRecords);
+        this.addLogEntry('Hash code for current records: ' + this.hashCode);
+        this.addLogEntry('Trigger context for current records: ' + this.context);
+        this.addLogEntry('Number of current records: ' + Trigger.size);
 
         if(this.haveRecordsAlreadyBeenProcessed()) {
-            this.addDebugStatement('Records already processed for this context, skipping');
+            this.addLogEntry('Records already processed for this context, skipping');
             return;
-        } else this.addDebugStatement('Records have not been processed for this context, continuing');
+        } else this.addLogEntry('Records have not been processed for this context, continuing');
 
         if(this.context == TriggerContext.BEFORE_INSERT) this.executeBeforeInsert(this.recordList);
         else if(this.context == TriggerContext.BEFORE_UPDATE) this.executeBeforeUpdate(this.recordList, this.recordMap, this.oldRecordList, this.oldRecordMap);
@@ -81,8 +78,9 @@ public abstract class SObjectTriggerHandler extends Core {
         else if(this.context == TriggerContext.AFTER_DELETE) this.executeAfterDelete(this.oldRecordList, this.oldRecordMap);
         else if(this.context == TriggerContext.AFTER_UNDELETE) this.executeAfterUndelete(this.recordList, this.recordMap);
 
-        if(sobjectType == Schema.Log__c.SObjectType.getDescribe().getName()) return;
-        else if(Trigger.isAfter) this.saveLogs();
+ this.saveLogs();
+        /*if(sobjectType == Schema.Log__c.SObjectType.getDescribe().getName()) return;
+        else if(Trigger.isAfter) this.saveLogs();*/
     }
 
     protected virtual void executeBeforeInsert(List<SObject> newRecordList) {}
@@ -92,26 +90,6 @@ public abstract class SObjectTriggerHandler extends Core {
     protected virtual void executeAfterUpdate(List<SObject> updatedRecordList, Map<Id, SObject> updatedRecordMap, List<SObject> oldRecordList, Map<Id, SObject> oldRecordMap) {}
     protected virtual void executeAfterDelete(List<SObject> deletedRecordList, Map<Id, SObject> deletedRecordMap) {}
     protected virtual void executeAfterUndelete(List<SObject> undeletedRecordList, Map<Id, SObject> undeletedRecordMap) {}
-
-    private void getTriggerHandlerSettings() {
-        this.triggerHandlerSettings = TriggerHandlerSettings__c.getInstance();
-
-        if(this.triggerHandlerSettings.Id == null) {
-            // If there's no ID, then there are settings setup for the current user at the user, profile or org level
-            // Upsert the org defaults - the default field values will be used
-            upsert TriggerHandlerSettings__c.getOrgDefaults();
-            // Call getInstance() again to get the settings with the field defaults
-            this.triggerHandlerSettings = TriggerHandlerSettings__c.getInstance();
-        }
-
-        //this.addLogEntry('TriggerHandlerSettings__c.getInstance():\n' + JSON.serialize(this.triggerHandlerSettings).replace(',', ', ').replace(':', ': '));
-    }
-
-    private void addDebugStatement(String debugStatement) {
-        //if(!this.triggerHandlerSettings.EnableDebugging__c) return;
-
-        System.debug(debugStatement);
-    }
 
     private void setTriggerContext() {
         if(this.isTestMode || !this.isTriggerExecuting) return;
@@ -140,15 +118,15 @@ public abstract class SObjectTriggerHandler extends Core {
     }
 
     private Boolean shouldExecuteTriggers() {
-        this.addDebugStatement('triggerHandlerSettings.ExecuteTriggers__c=' + this.triggerHandlerSettings.ExecuteTriggers__c);
+        this.addLogEntry('nebulaSettings.triggerHandlerSettings.ExecuteTriggers__c=' + new NebulaSettings().triggerHandlerSettings.ExecuteTriggers__c);
 
-        String handlerClassesToSkipString = this.triggerHandlerSettings.HandlerClassesToSkip__c;
+        String handlerClassesToSkipString = new NebulaSettings().triggerHandlerSettings.HandlerClassesToSkip__c;
         if(handlerClassesToSkipString == null) handlerClassesToSkipString = '';
         Set<String> handlerClassesToSkip = new Set<String>(handlerClassesToSkipString.toLowerCase().split('\n'));
-        this.addDebugStatement('triggerHandlerSettings.HandlerClassesToSkip__c=' + this.triggerHandlerSettings.HandlerClassesToSkip__c);
+        this.addLogEntry('nebulaSettings.triggerHandlerSettings.HandlerClassesToSkip__c=' + new NebulaSettings().triggerHandlerSettings.HandlerClassesToSkip__c);
 
         // If ExecuteTriggers == true and the current class isn't in the list of handlers to skip, then execute
-        return this.triggerHandlerSettings.ExecuteTriggers__c && !handlerClassesToSkip.contains(this.getClassName().toLowerCase());
+        return new NebulaSettings().triggerHandlerSettings.ExecuteTriggers__c && !handlerClassesToSkip.contains(this.getClassName().toLowerCase());
     }
 
     private void setHashCode() {
@@ -181,7 +159,7 @@ public abstract class SObjectTriggerHandler extends Core {
     }
 
     private Boolean haveRecordsAlreadyBeenProcessed() {
-        if(!this.triggerHandlerSettings.PreventRecursion__c) return false;
+        if(!new NebulaSettings().triggerHandlerSettings.PreventRecursion__c) return false;
 
         // This method is a safeguard that checks to see if we have recursion problems and stops if we do
         // It allows each context to occur once for a given hash code

@@ -6,7 +6,6 @@ global abstract class SObjectRecordTypes extends Core {
     global final Map<String, RecordType> ALL_RECORD_TYPES_BY_DEVELOPER_NAME;
 
     private String sobjectName;
-    private RecordTypesSettings__c recordTypesSettings;
 
     global SObjectRecordTypes(Schema.DescribeSObjectResult describeSObjectResult) {
         this.currentModule = Core.Module.RECORD_TYPES;
@@ -15,27 +14,12 @@ global abstract class SObjectRecordTypes extends Core {
 
         this.addLogEntry('Getting record types for ' + this.sobjectName);
 
-        this.getRecordTypesSettings();
         this.populateCache();
 
         this.ALL_RECORD_TYPES_BY_ID             = this.getAllRecordTypesById();
         this.ALL_RECORD_TYPES_BY_DEVELOPER_NAME = this.getAllRecordTypesByDeveloperName();
 
         this.saveLogs();
-    }
-
-    private void getRecordTypesSettings() {
-        this.recordTypesSettings = RecordTypesSettings__c.getInstance();
-
-        if(this.recordTypesSettings.Id == null) {
-            // If there's no ID, then there are settings setup for the current user at the user, profile or org level
-            // Upsert the org defaults - the default field values will be used
-            upsert RecordTypesSettings__c.getOrgDefaults();
-            // Call getInstance() again to get the settings with the field defaults
-            this.recordTypesSettings = RecordTypesSettings__c.getInstance();
-        }
-
-        this.addLogEntry('RecordTypesSettings__c.getInstance():\n' + JSON.serialize(this.recordTypesSettings).replace(',', ', ').replace(':', ': '));
     }
 
     // TODO clean up all this mess for cache, getRecordTypes, getAllRecordTypesByDeveloperName, etc
@@ -49,8 +33,8 @@ global abstract class SObjectRecordTypes extends Core {
         String query = 'SELECT ' + String.join(fieldList, ', ') + ' FROM RecordType';
 
         List<String> whereClauseList = new List<String>();
-        if(this.recordTypesSettings.LazyLoad__c) whereClauseList.add('SObjectType = \'' + this.sobjectName + '\'');
-        if(this.recordTypesSettings.ExcludeManagedRecordTypes__c) whereClauseList.add('NamespacePrefix = null');
+        if(new NebulaSettings().recordTypesSettings.LazyLoad__c) whereClauseList.add('SObjectType = \'' + this.sobjectName + '\'');
+        if(new NebulaSettings().recordTypesSettings.ExcludeManagedRecordTypes__c) whereClauseList.add('NamespacePrefix = null');
         if(!whereClauseList.isEmpty()) query += ' WHERE ' + String.join(whereClauseList, ' AND ');
 
         query += ' ORDER BY DeveloperName';
