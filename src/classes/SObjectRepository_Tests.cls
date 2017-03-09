@@ -7,14 +7,14 @@ private class SObjectRepository_Tests {
             super(Schema.Lead.SObjectType, new List<Schema.SObjectField>{Schema.Lead.Status});
         }
 
-        public Lead getRecord(Id leadId) {
+        public Lead getById(Id leadId) {
             return (Lead)this.queryBuilder
                 .whereField(Schema.Lead.Id, EQUALS, leadId)
                 .setAsUpdate()
                 .getFirstQueryResult();
         }
 
-        public List<Lead> getList(List<Id> leadIdList) {
+        public List<Lead> getById(List<Id> leadIdList) {
             return (List<Lead>)this.queryBuilder
                 .whereField(Schema.Lead.Id, IS_IN, leadIdList)
                 .setAsUpdate()
@@ -22,10 +22,10 @@ private class SObjectRepository_Tests {
         }
 
         public List<Lead> searchInAllFields(String searchTerm) {
-            return this.searchInAllFieldsBySearchGroup(Nebula.QueryBuilder.SearchGroup.ALL_FIELDS);
+            return this.searchInFieldsBySearchGroup(searchTerm, Nebula.QueryBuilder.SearchGroup.ALL_FIELDS);
         }
 
-        public List<Lead> searchInAllFieldsBySearchGroup(String searchTerm, Nebula.QueryBuilder.SearchGroup searchGroup) {
+        public List<Lead> searchInFieldsBySearchGroup(String searchTerm, Nebula.QueryBuilder.SearchGroup searchGroup) {
             return (List<Lead>)this.queryBuilder
                 .orderBy(Schema.Lead.CreatedDate, Nebula.QueryBuilder.SortOrder.DESCENDING)
                 .limitCount(10)
@@ -48,19 +48,19 @@ private class SObjectRepository_Tests {
     }
 
     @isTest
-    static void getRecord() {
+    static void getById_when_id() {
         Lead expectedLead = [SELECT Id FROM Lead LIMIT 1];
         // Implement test code
         //System.assert(false, 'Finish writing your test!');
-        Lead returnedLead = new SObjectRepository_Tests.LeadRepository().getRecord(expectedLead.Id);
+        Lead returnedLead = new SObjectRepository_Tests.LeadRepository().getById(expectedLead.Id);
     }
 
     @isTest
-    static void getList() {
+    static void getById_when_list_of_id() {
         Map<Id, Lead> expectedLeadList = new Map<Id, Lead>([SELECT Id FROM Lead]);
         // Implement test code
         //System.assert(false, 'Finish writing your test!');
-        List<Lead> returnedLeadList = new SObjectRepository_Tests.LeadRepository().getList(new List<Id>(expectedLeadList.keySet()));
+        List<Lead> returnedLeadList = new SObjectRepository_Tests.LeadRepository().getById(new List<Id>(expectedLeadList.keySet()));
     }
 
     @isTest
