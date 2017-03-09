@@ -1,12 +1,12 @@
-public abstract class Core implements ICore {
+public abstract class NebulaCore implements INebulaCore {
 
     public static final String TRANSACTION_ID;
     public static String INITIAL_CLASS {public get; private set;}
     public static Module INITIAL_MODULE {public get; private set;}
 
     static {
-        Core.TRANSACTION_ID = new UUID().getValue();
-        System.debug('Core.TRANSACTION_ID=' + Core.TRANSACTION_ID);
+        NebulaCore.TRANSACTION_ID = new UUID().getValue();
+        System.debug('NebulaCore.TRANSACTION_ID=' + NebulaCore.TRANSACTION_ID);
     }
 
     public enum Module { RECORD_TYPES, REPOSITORY, SETTINGS, TRIGGER_HANDLER }
@@ -14,27 +14,27 @@ public abstract class Core implements ICore {
     protected final Module currentModule;
     private final ILogger logger;
 
-    protected Core() {
-        this.logger = new Logger();
+    protected NebulaCore() {
+        //this.logger = new Logger();
 
-        if(Core.INITIAL_CLASS == null) Core.INITIAL_CLASS = this.getClassName();
-        if(Core.INITIAL_MODULE == null) Core.INITIAL_MODULE = this.getClassModule();
+        if(NebulaCore.INITIAL_CLASS == null) NebulaCore.INITIAL_CLASS = this.getClassName();
+        if(NebulaCore.INITIAL_MODULE == null) NebulaCore.INITIAL_MODULE = this.getClassModule();
     }
 
     public String getClassName() {
         return String.valueOf(this).split(':')[0];
     }
 
-    public Core.Module getClassModule() {
+    public NebulaCore.Module getClassModule() {
         return this.getModule();
     }
 
-    public Core.Module getModule() {
+    public NebulaCore.Module getModule() {
         return this.currentModule;
     }
 
     protected void addLogEntry(String message) {
-        this.logger.addEntry(this, message);
+        //this.logger.addEntry(this, message);
 
     }
 

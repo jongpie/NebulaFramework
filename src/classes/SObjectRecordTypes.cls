@@ -1,4 +1,4 @@
-global abstract class SObjectRecordTypes extends Core {
+global abstract class SObjectRecordTypes extends NebulaCore {
 
     private static Map<String, List<RecordType>> cachedRecordTypesBySObjectMap = new Map<String, List<RecordType>>();
 
@@ -8,7 +8,7 @@ global abstract class SObjectRecordTypes extends Core {
     private String sobjectName;
 
     global SObjectRecordTypes(Schema.DescribeSObjectResult describeSObjectResult) {
-        this.currentModule = Core.Module.RECORD_TYPES;
+        this.currentModule = NebulaCore.Module.RECORD_TYPES;
 
         this.sobjectName = describeSObjectResult.getName();
 

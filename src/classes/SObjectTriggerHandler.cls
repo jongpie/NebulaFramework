@@ -1,4 +1,4 @@
-public abstract class SObjectTriggerHandler extends Core {
+public abstract class SObjectTriggerHandler extends NebulaCore {
 
     private static Map<Integer, Set<TriggerContext>> hashCodesForProcessedRecords = new Map<Integer, Set<TriggerContext>>();
 
@@ -24,7 +24,7 @@ public abstract class SObjectTriggerHandler extends Core {
     }
 
     private SObjectTriggerHandler(Boolean isTestMode) {
-        this.currentModule = Core.Module.TRIGGER_HANDLER;
+        this.currentModule = NebulaCore.Module.TRIGGER_HANDLER;
 
         this.isTestMode         = isTestMode;
         this.isTriggerExecuting = Trigger.isExecuting;

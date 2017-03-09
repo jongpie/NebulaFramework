@@ -1,4 +1,4 @@
-public without sharing class QueryBuilder extends Core {
+public without sharing class QueryBuilder extends NebulaCore {
 
     public enum SortOrder {ASCENDING, DESCENDING}
     public enum NullsSortOrder {FIRST, LAST}
@@ -17,7 +17,7 @@ public without sharing class QueryBuilder extends Core {
     private Boolean forUpdate;
 
     public QueryBuilder(Schema.SObjectType sobjectType, Schema.FieldSet fieldSet, List<Schema.SObjectField> sobjectFieldList) {
-        this.currentModule = Core.Module.REPOSITORY;
+        this.currentModule = NebulaCore.Module.REPOSITORY;
 
         this.sobjectType      = sobjectType;
         this.fieldSet         = fieldSet;

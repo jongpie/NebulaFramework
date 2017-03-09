@@ -9,12 +9,12 @@ public without sharing class Logger implements ILogger {
         Logger.logAttachment = Logger.logAttachment == null ? this.createLogAttachment() : Logger.logAttachment;
     }
 
-    public void addEntry(ICore moduleClass, String message) {
+    public void addEntry(INebulaCore moduleClass, String message) {
         Logger.Message logMessage = new Logger.Message(moduleClass, message);
         Logger.logMessages.add(logMessage);
     }
 
-    public void addEntry(ICore moduleClass, String message, Exception ex) {
+    public void addEntry(INebulaCore moduleClass, String message, Exception ex) {
         // TODO finish implementing
     }
 
@@ -27,9 +27,9 @@ public without sharing class Logger implements ILogger {
         if(Logger.logId != null) return;
 
         Log__c newLog = new Log__c(
-            InitialClass__c  = Core.INITIAL_CLASS,
-            InitialModule__c = Core.INITIAL_MODULE == null ? null : Core.INITIAL_MODULE.name(),
-            TransactionId__c = Core.TRANSACTION_ID
+            InitialClass__c  = NebulaCore.INITIAL_CLASS,
+            InitialModule__c = NebulaCore.INITIAL_MODULE == null ? null : NebulaCore.INITIAL_MODULE.name(),
+            TransactionId__c = NebulaCore.TRANSACTION_ID
         );
         insert newLog;
         Logger.logId = newLog.Id;
@@ -37,8 +37,8 @@ public without sharing class Logger implements ILogger {
 
     private void saveSingleLogFile() {
         String parsedMessageString =
-            'Core.TRANSACTION_ID: ' + Core.TRANSACTION_ID
-            + '\nInitial Class: ' + Core.INITIAL_CLASS;
+            'NebulaCore.TRANSACTION_ID: ' + NebulaCore.TRANSACTION_ID
+            + '\nInitial Class: ' + NebulaCore.INITIAL_CLASS;
         String divider = '\n______________________________\n';
 
         for(Logger.Message logMessage : logMessages) {
@@ -52,7 +52,7 @@ public without sharing class Logger implements ILogger {
         }
 
         if(Logger.logAttachment.Id == null) {
-            Logger.logAttachment.Name = Core.TRANSACTION_ID;
+            Logger.logAttachment.Name = NebulaCore.TRANSACTION_ID;
             Logger.logAttachment.ParentId = Logger.logId;
         }
 
@@ -72,12 +72,12 @@ public without sharing class Logger implements ILogger {
     }
 
     private class Message {
-        private Core.Module classModule;
+        private NebulaCore.Module classModule;
         private String className;
         private String message;
         private Datetime timestamp;
 
-        public Message(ICore moduleClass, String message) {
+        public Message(INebulaCore moduleClass, String message) {
             this.classModule = moduleClass.getClassModule();
             this.className   = moduleClass.getClassName();
             this.message     = message;

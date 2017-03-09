@@ -1,4 +1,4 @@
-public abstract class SObjectRepository extends Core implements ISObjectRepository {
+public abstract class SObjectRepository extends NebulaCore implements ISObjectRepository {
 
     // Predefined SOQL operators
     protected final String EQUALS                   = '=';
@@ -25,7 +25,7 @@ public abstract class SObjectRepository extends Core implements ISObjectReposito
     }
 
     private SObjectRepository(Schema.SObjectType sobjectType, Schema.FieldSet fieldSet, List<Schema.SObjectField> sobjectFieldList) {
-        this.currentModule = Core.Module.REPOSITORY;
+        this.currentModule = NebulaCore.Module.REPOSITORY;
 
         this.queryBuilder = new QueryBuilder(sobjectType, fieldSet, sobjectFieldList);
     }
