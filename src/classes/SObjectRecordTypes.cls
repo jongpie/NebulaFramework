@@ -31,7 +31,11 @@ public abstract class SObjectRecordTypes extends NebulaCore {
         String query = 'SELECT ' + String.join(fieldList, ', ') + ' FROM RecordType';
 
         List<String> whereClauseList = new List<String>();
-        if(new NebulaSettings().recordTypesSettings.LazyLoad__c) whereClauseList.add('SObjectType = \'' + this.sobjectName + '\'');
+        if(new NebulaSettings().recordTypesSettings.LazyLoad__c){
+            whereClauseList.add('SObjectType = \'' + this.sobjectName + '\'');
+            this.addLogEntry('new NebulaSettings().recordTypesSettings.LazyLoad__c=' + new NebulaSettings().recordTypesSettings.LazyLoad__c);
+            this.addLogEntry('this.sobjectName=' + this.sobjectName);
+        }
         if(new NebulaSettings().recordTypesSettings.ExcludeManagedRecordTypes__c) whereClauseList.add('NamespacePrefix = null');
         if(!whereClauseList.isEmpty()) query += ' WHERE ' + String.join(whereClauseList, ' AND ');
 
@@ -39,8 +43,14 @@ public abstract class SObjectRecordTypes extends NebulaCore {
 
         this.addLogEntry('SObjectRecordTypes query=' + query);
         List<RecordType> recordTypeList = (List<RecordType>)Database.query(query);
-
-        cachedRecordTypesBySObjectMap.put(this.sobjectName, recordTypeList);
+        for(RecordType recordType : recordTypeList) {
+            if(!cachedRecordTypesBySObjectMap.containsKey(recordType.SObjectType)) {
+                cachedRecordTypesBySObjectMap.put(recordType.SObjectType, new List<RecordType>{recordType});
+            } else {
+                cachedRecordTypesBySObjectMap.get(recordType.SObjectType).add(recordType);
+            }
+        }
+        this.addLogEntry('cachedRecordTypesBySObjectMap=' + cachedRecordTypesBySObjectMap);
     }
 
     private Map<Id, RecordType> getAllRecordTypesById() {
@@ -49,7 +59,11 @@ public abstract class SObjectRecordTypes extends NebulaCore {
 
     private Map<String, RecordType> getAllRecordTypesByDeveloperName() {
         Map<String, RecordType> allRecordTypesByDeveloperName = new Map<String, RecordType>();
-        for(RecordType recordType : this.getAllRecordTypesById().values()) allRecordTypesByDeveloperName.put(recordType.DeveloperName, recordType);
+        for(RecordType recordType : this.getAllRecordTypesById().values()) {
+            if(recordType.SObjectType != this.sobjectName) continue;
+
+            allRecordTypesByDeveloperName.put(recordType.DeveloperName, recordType);
+        }
 
         return allRecordTypesByDeveloperName;
     }
