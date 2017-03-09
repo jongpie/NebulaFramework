@@ -1,9 +1,9 @@
 public without sharing class QueryBuilder extends Core {
 
-    public enum SortOrder { ASCENDING, DESCENDING }
-    public enum NullsSortOrder { FIRST, LAST }
+    public enum SortOrder {ASCENDING, DESCENDING}
+    public enum NullsSortOrder {FIRST, LAST}
 
-    public enum SearchGroup { ALL_FIELDS, NAME_FIELDS, EMAIL_FIELDS, PHONE_FIELDS, SIDEBAR_FIELDS }
+    public enum SearchGroup {ALL_FIELDS, NAME_FIELDS, EMAIL_FIELDS, PHONE_FIELDS, SIDEBAR_FIELDS}
 
     private RepositorySettings__c repositorySettings;
     private SObjectType sobjectType;
