@@ -18,8 +18,6 @@ global abstract class SObjectRecordTypes extends NebulaCore {
 
         this.ALL_RECORD_TYPES_BY_ID             = this.getAllRecordTypesById();
         this.ALL_RECORD_TYPES_BY_DEVELOPER_NAME = this.getAllRecordTypesByDeveloperName();
-
-        this.saveLogs();
     }
 
     // TODO clean up all this mess for cache, getRecordTypes, getAllRecordTypesByDeveloperName, etc
@@ -39,7 +37,7 @@ global abstract class SObjectRecordTypes extends NebulaCore {
 
         query += ' ORDER BY DeveloperName';
 
-        System.debug(query);
+        this.addLogEntry('SObjectRecordTypes query=' + query);
         List<RecordType> recordTypeList = (List<RecordType>)Database.query(query);
 
         cachedRecordTypesBySObjectMap.put(this.sobjectName, recordTypeList);

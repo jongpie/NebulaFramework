@@ -88,7 +88,6 @@ public without sharing class QueryBuilder extends NebulaCore {
 
         String logEntry = 'Query:\n' + this.query + '\n\nResults:\n' + results;
         this.addLogEntry(logEntry);
-        this.saveLogs();
 
         return results;
     }
@@ -98,7 +97,6 @@ public without sharing class QueryBuilder extends NebulaCore {
 
         String logEntry = 'Query:\n' + this.query + '\n\nResults:\n' + results;
         this.addLogEntry(logEntry);
-        this.saveLogs();
 
         return results;
     }
@@ -135,33 +133,29 @@ public without sharing class QueryBuilder extends NebulaCore {
 
     private String getQuery() {
         this.query = 'SELECT ' + this.getQueryFieldString()
-            + ' FROM ' + this.sobjectType
+            + '\nFROM ' + this.sobjectType
             + this.getWhereClauseString()
             + this.getOrderByString()
             + this.getLimitCountString()
             + this.getForUpdateString();
 
-        System.debug(LoggingLevel.INFO, this.query); // TODO: add custom setting to disable debug statements
+        this.addLogEntry(this.query);
 
         return this.query;
     }
 
     private String getSearchQuery(String searchTerm, SearchGroup searchGroup) {
         this.query = 'FIND ' + SOQLUtils.toSOQLString(searchTerm)
-            + ' IN ' + searchGroup.name().replace('_', ' ')
-            + ' RETURNING ' + this.sobjectType + '('
+            + '\nIN ' + searchGroup.name().replace('_', ' ')
+            + '\nRETURNING ' + this.sobjectType + '('
                 + this.getQueryFieldString()
                 + this.getWhereClauseString()
                 + this.getOrderByString()
                 + this.getLimitCountString()
             + ')';
 
-        // TODO: add custom setting to disable debug statements
-        // TODO: consider putting debug messages into custom labels
-        if(this.forUpdate) System.debug(LoggingLevel.WARN, 'SOSL Search Query method flagged as FOR UPDATE. SOSL cannot use FOR UPDATE, ignoring');
+        if(this.forUpdate) this.addLogEntry('SOSL Search Query method flagged as FOR UPDATE. SOSL cannot use FOR UPDATE, ignoring');
 
-        // TODO: add custom setting to disable debug statements
-        System.debug(this.query);
         this.addLogEntry(this.query);
 
         return this.query;
@@ -180,7 +174,7 @@ public without sharing class QueryBuilder extends NebulaCore {
 
             this.queryFields.add(commonFieldName.toLowerCase());
         }
-        System.debug(this.queryFields);
+        this.addLogEntry('this.queryFields=' + this.queryFields);
     }
 
     private void addFieldSetMembers() {

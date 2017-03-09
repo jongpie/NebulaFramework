@@ -10,12 +10,12 @@ public without sharing class Logger implements ILogger {
     }
 
     public void addEntry(INebulaCore moduleClass, String message) {
-        Logger.Message logMessage = new Logger.Message(moduleClass, message);
-        Logger.logMessages.add(logMessage);
+        this.addEntry(moduleClass, message, null);
     }
 
     public void addEntry(INebulaCore moduleClass, String message, Exception ex) {
-        // TODO finish implementing
+        Logger.Message logMessage = new Logger.Message(moduleClass, message, ex);
+        Logger.logMessages.add(logMessage);
     }
 
     public void saveLogs() {
@@ -74,12 +74,14 @@ public without sharing class Logger implements ILogger {
     private class Message {
         private NebulaCore.Module classModule;
         private String className;
+        private Exception ex; // TODO need to add exception info to log
         private String message;
         private Datetime timestamp;
 
-        public Message(INebulaCore moduleClass, String message) {
+        public Message(INebulaCore moduleClass, String message, Exception ex) {
             this.classModule = moduleClass.getClassModule();
             this.className   = moduleClass.getClassName();
+            this.ex          = ex;
             this.message     = message;
             this.timestamp   = System.now();
         }

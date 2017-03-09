@@ -77,10 +77,6 @@ public abstract class SObjectTriggerHandler extends NebulaCore implements ISObje
         else if(this.context == TriggerContext.AFTER_UPDATE) this.executeAfterUpdate(this.recordList, this.recordMap, this.oldRecordList, this.oldRecordMap);
         else if(this.context == TriggerContext.AFTER_DELETE) this.executeAfterDelete(this.oldRecordList, this.oldRecordMap);
         else if(this.context == TriggerContext.AFTER_UNDELETE) this.executeAfterUndelete(this.recordList, this.recordMap);
-
- this.saveLogs();
-        /*if(sobjectType == Schema.Log__c.SObjectType.getDescribe().getName()) return;
-        else if(Trigger.isAfter) this.saveLogs();*/
     }
 
     protected virtual void executeBeforeInsert(List<SObject> newRecordList) {}
@@ -133,7 +129,7 @@ public abstract class SObjectTriggerHandler extends NebulaCore implements ISObje
         List<SObject> recordToParseList;
         if(this.isTestMode) recordToParseList = this.recordList;
         else recordToParseList = Trigger.new != null ? Trigger.new : Trigger.old;
-//System.assert(!recordToParseList.isEmpty(), recordToParseList);
+
         List<String> parsedRecordsJson = new List<String>();
         for(SObject record : recordToParseList) {
             // Some fields can cause the hash code to change even when the record itself has not

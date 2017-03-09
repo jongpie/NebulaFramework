@@ -1,6 +1,6 @@
 public without sharing class LogTriggerHandler extends SObjectTriggerHandler {
 
-    protected override void executeBeforeInsert(List<SObject> newRecordList) {
+    /*protected override void executeBeforeInsert(List<SObject> newRecordList) {
         List<Log__c> newLogList = (List<Log__c>)newRecordList;
 
         for(Log__c newLog : newLogList) {
@@ -31,6 +31,6 @@ public without sharing class LogTriggerHandler extends SObjectTriggerHandler {
         if(UUID.isValid(log.TransactionId__c)) return;
 
         log.TransactionId__c = new UUID().getValue();
-    }
+    }*/
 
 }

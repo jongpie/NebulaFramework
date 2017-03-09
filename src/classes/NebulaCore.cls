@@ -15,7 +15,7 @@ public abstract class NebulaCore implements INebulaCore {
     private final ILogger logger;
 
     protected NebulaCore() {
-        //this.logger = new Logger();
+        this.logger = new Logger();
 
         if(NebulaCore.INITIAL_CLASS == null) NebulaCore.INITIAL_CLASS = this.getClassName();
         if(NebulaCore.INITIAL_MODULE == null) NebulaCore.INITIAL_MODULE = this.getClassModule();
@@ -34,15 +34,10 @@ public abstract class NebulaCore implements INebulaCore {
     }
 
     protected void addLogEntry(String message) {
-        //this.logger.addEntry(this, message);
-
+        this.logger.addEntry(this, message);
     }
 
     protected void saveLogs() {
-        // Don't waste a save call if a query was executed & a trigger started the transaction
-        // Trigger handlers already savethe logs at the end of their execution
-        if(this.getClassModule() == Module.REPOSITORY && INITIAL_MODULE == Module.TRIGGER_HANDLER) return;
-
         this.logger.saveLogs();
     }
 
