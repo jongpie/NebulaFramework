@@ -5,14 +5,6 @@
         <name>ApexClass</name>
     </types>
     <types>
-        <members>*</members>
-        <name>ApexPage</name>
-    </types>
-    <types>
-        <members>*</members>
-        <name>ApexTrigger</name>
-    </types>
-    <types>
         <members>LoggerSettings__c</members>
         <members>NebulaLog__c</members>
         <members>RecordTypesSettings__c</members>
@@ -24,5 +16,5 @@
         <members>NebulaLog__c-Log Layout</members>
         <name>Layout</name>
     </types>
-    <version>37.0</version>
+	<version>38.0</version>
 </Package>
