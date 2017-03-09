@@ -11,7 +11,11 @@ public class DateLiterals {
     private final String YEARS           = 'YEARS';
     private final String FISCAL_YEARS    = 'FISCAL_YEARS';
 
-    public String value {get; private set;}
+    private String value;
+
+    public String getValue() {
+        return this.value;
+    }
 
     //Actual constant literals
     public DateLiterals YESTERDAY {

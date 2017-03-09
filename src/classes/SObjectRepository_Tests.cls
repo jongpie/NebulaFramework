@@ -21,6 +21,14 @@ private class SObjectRepository_Tests {
                 .getQueryResults();
         }
 
+        public List<Lead> getNewThisWeekById(List<Id> leadIdList) {
+            return (List<Lead>)this.queryBuilder
+                .whereField(Schema.Lead.Id, IS_IN, leadIdList)
+                .whereField(Schema.Lead.CreatedDate, EQUALS, new DateLiterals().THIS_WEEK)
+                .setAsUpdate()
+                .getQueryResults();
+        }
+
         public List<Lead> searchInAllFields(String searchTerm) {
             return this.searchInFieldsBySearchGroup(searchTerm, Nebula.QueryBuilder.SearchGroup.ALL_FIELDS);
         }
@@ -61,6 +69,14 @@ private class SObjectRepository_Tests {
         // Implement test code
         //System.assert(false, 'Finish writing your test!');
         List<Lead> returnedLeadList = new SObjectRepository_Tests.LeadRepository().getById(new List<Id>(expectedLeadList.keySet()));
+    }
+
+    @isTest
+    static void getNewThisWeekById() {
+        Map<Id, Lead> expectedLeadList = new Map<Id, Lead>([SELECT Id FROM Lead]);
+        // Implement test code
+        //System.assert(false, 'Finish writing your test!');
+        List<Lead> returnedLeadList = new SObjectRepository_Tests.LeadRepository().getNewThisWeekById(new List<Id>(expectedLeadList.keySet()));
     }
 
     @isTest
