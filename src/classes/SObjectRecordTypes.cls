@@ -1,13 +1,13 @@
-global abstract class SObjectRecordTypes extends NebulaCore {
+public abstract class SObjectRecordTypes extends NebulaCore {
 
     private static Map<String, List<RecordType>> cachedRecordTypesBySObjectMap = new Map<String, List<RecordType>>();
 
-    global final Map<Id, RecordType> ALL_RECORD_TYPES_BY_ID;
-    global final Map<String, RecordType> ALL_RECORD_TYPES_BY_DEVELOPER_NAME;
+    public final Map<Id, RecordType> ALL_RECORD_TYPES_BY_ID;
+    public final Map<String, RecordType> ALL_RECORD_TYPES_BY_DEVELOPER_NAME;
 
     private String sobjectName;
 
-    global SObjectRecordTypes(Schema.DescribeSObjectResult describeSObjectResult) {
+    public SObjectRecordTypes(Schema.DescribeSObjectResult describeSObjectResult) {
         this.currentModule = NebulaCore.Module.RECORD_TYPES;
 
         this.sobjectName = describeSObjectResult.getName();
