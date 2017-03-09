@@ -27,6 +27,8 @@ public without sharing class SOQLUtils {
     }
 
     public static String wrapInSingleQuotes(String input) {
+        if(input.toLowerCase() == 'null') return input;
+
         if(input.left(1) != '\'') input = '\'' + input;
         if(input.right(1) != '\'') input = input + '\'';
         return input;

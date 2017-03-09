@@ -34,13 +34,12 @@ public abstract class Core implements ICore {
 
     protected void addLogEntry(String message) {
         this.logger.addEntry(this, message);
-        // TODO this will add a lot of DML statements
-        // Need to look into Queueable interface & other options
 
     }
 
     protected void saveLogs() {
-        if(this.getClassName() == 'LogTriggerHandler') return;
+        // Don't waste a save call if a query was executed & a trigger started the transaction
+        // Trigger handlers already savethe logs at the end of their execution
         if(this.getClassModule() == Module.REPOSITORY && INITIAL_MODULE == Module.TRIGGER_HANDLER) return;
 
         this.logger.saveLogs();

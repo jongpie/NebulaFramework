@@ -30,7 +30,7 @@ public without sharing class Logger implements ILogger {
 
     public void saveLogs() {
         System.debug('Logger.loopCount =' + Logger.loopCount);
-        if(Logger.loopCount == 2) return;
+        //if(Logger.loopCount == 2) return;
         if(Logger.logMessages.isEmpty()) return;
         if(Logger.logAttachment == null) return;
 

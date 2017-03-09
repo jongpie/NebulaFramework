@@ -1,11 +1,12 @@
 public interface ISObjectRepository {
 
     // SOQL
-    SObject getRecord(Id recordId);
-    List<SObject> getList(List<Id> recordIdList);
+    SObject getById(Id recordId);
+    List<SObject> getById(List<Id> recordIdList);
 
     // SOSL
     List<SObject> searchInAllFields(String searchTerm);
+    List<SObject> searchInFieldsBySearchGroup(String searchTerm, QueryBuilder.SearchGroup searchGroup);
 
     // DML
     void doInsert(SObject record);

@@ -22,11 +22,15 @@ private class SObjectRepository_Tests {
         }
 
         public List<Lead> searchInAllFields(String searchTerm) {
+            return this.searchInAllFieldsBySearchGroup(Nebula.QueryBuilder.SearchGroup.ALL_FIELDS);
+        }
+
+        public List<Lead> searchInAllFieldsBySearchGroup(String searchTerm, Nebula.QueryBuilder.SearchGroup searchGroup) {
             return (List<Lead>)this.queryBuilder
                 .orderBy(Schema.Lead.CreatedDate, Nebula.QueryBuilder.SortOrder.DESCENDING)
                 .limitCount(10)
                 .setAsUpdate() // SOSL cannot use FOR UPDATE. This will execute, but a warning debug statement will indicate that it is ignored
-                .getSearchResults(searchTerm, Nebula.QueryBuilder.SearchGroup.ALL_FIELDS);
+                .getSearchResults(searchTerm, searchGroup);
         }
     }
 

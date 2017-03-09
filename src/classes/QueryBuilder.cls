@@ -38,14 +38,14 @@ public without sharing class QueryBuilder extends Core {
     public QueryBuilder whereField(Schema.SObjectField field, String operator, Object value) {
         String parsedValue = SOQLUtils.toSOQLString(value);
 
-        this.whereClauseList.add('(' + field + ' ' + operator.trim() + ' ' + parsedValue + ')');
+        this.whereClauseList.add(field + ' ' + operator.trim() + ' ' + parsedValue);
         return this;
     }
 
     public QueryBuilder whereField(Schema.SObjectField field, String operator, List<Object> valueList) {
         String parsedValue = SOQLUtils.toSOQLString(valueList);
 
-        this.whereClauseList.add('(' + field + ' ' + operator.trim() + ' ' + parsedValue + ')');
+        this.whereClauseList.add(field + ' ' + operator.trim() + ' ' + parsedValue);
         return this;
     }
 
@@ -193,7 +193,7 @@ public without sharing class QueryBuilder extends Core {
         for(String commonFieldName : commonFieldNameList) {
             if(!this.sobjectTypeFieldMap.containsKey(commonFieldName)) continue;
 
-            this.queryFields.add(commonFieldName);
+            this.queryFields.add(commonFieldName.toLowerCase());
         }
         System.debug(this.queryFields);
     }
@@ -201,13 +201,13 @@ public without sharing class QueryBuilder extends Core {
     private void addFieldSetMembers() {
         if(this.fieldSet == null) return;
 
-        for(Schema.FieldSetMember field : this.fieldSet.getFields()) this.queryFields.add(field.getFieldPath());
+        for(Schema.FieldSetMember field : this.fieldSet.getFields()) this.queryFields.add(field.getFieldPath().toLowerCase());
     }
 
     private void addSObjectFields() {
         if(this.sobjectFieldList == null) return;
 
-        for(Schema.SObjectField field : this.sobjectFieldList) this.queryFields.add(field.getDescribe().getName());
+        for(Schema.SObjectField field : this.sobjectFieldList) this.queryFields.add(field.getDescribe().getName().toLowerCase());
     }
 
 }
