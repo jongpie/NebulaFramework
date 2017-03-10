@@ -14,7 +14,7 @@ public abstract class SObjectRepository extends NebulaCore implements ISObjectRe
     protected final String IS_LIKE                  = 'LIKE';
     protected final String IS_NOT_LIKE              = 'NOT LIKE';
 
-    protected QueryBuilder queryBuilder;
+    protected QueryBuilder queryGenerator;
 
     protected SObjectRepository(Schema.SObjectType sobjectType, Schema.FieldSet fieldSet) {
         this(sobjectType, fieldSet, null);
@@ -27,7 +27,7 @@ public abstract class SObjectRepository extends NebulaCore implements ISObjectRe
     private SObjectRepository(Schema.SObjectType sobjectType, Schema.FieldSet fieldSet, List<Schema.SObjectField> sobjectFieldList) {
         this.currentModule = NebulaCore.Module.REPOSITORY;
 
-        this.queryBuilder = new QueryBuilder(sobjectType, fieldSet, sobjectFieldList);
+        this.queryGenerator = new QueryBuilder(sobjectType, fieldSet, sobjectFieldList);
     }
 
     public virtual void doInsert(SObject record) {this.doInsert(new List<SObject>{record});}
