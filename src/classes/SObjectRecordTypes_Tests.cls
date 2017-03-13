@@ -38,7 +38,7 @@ private class SObjectRecordTypes_Tests {
 
     @isTest
     static void queryIsCached_when_lazyLoadEnabled() {
-        RecordTypesSettings__c recordTypesSettings = RecordTypesSettings__c.getInstance();
+        NebulaRecordTypesSettings__c recordTypesSettings = NebulaRecordTypesSettings__c.getInstance();
         recordTypesSettings.LazyLoad__c = true;
         upsert recordTypesSettings;
 
@@ -56,7 +56,7 @@ private class SObjectRecordTypes_Tests {
 
     @isTest
     static void queryIsCached_when_lazyLoadDisabled() {
-        RecordTypesSettings__c recordTypesSettings = RecordTypesSettings__c.getInstance();
+        NebulaRecordTypesSettings__c recordTypesSettings = NebulaRecordTypesSettings__c.getInstance();
         recordTypesSettings.LazyLoad__c = false;
         upsert recordTypesSettings;
 

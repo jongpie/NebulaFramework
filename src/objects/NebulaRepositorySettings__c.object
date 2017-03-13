@@ -55,6 +55,6 @@ becomes
         <trackTrending>false</trackTrending>
         <type>Checkbox</type>
     </fields>
-    <label>Repository Settings</label>
+    <label>Nebula Repository Settings</label>
     <visibility>Public</visibility>
 </CustomObject>

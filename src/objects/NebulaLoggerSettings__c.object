@@ -10,6 +10,6 @@
         <trackTrending>false</trackTrending>
         <type>Checkbox</type>
     </fields>
-    <label>Logger Settings</label>
+    <label>Nebula Logger Settings</label>
     <visibility>Public</visibility>
 </CustomObject>

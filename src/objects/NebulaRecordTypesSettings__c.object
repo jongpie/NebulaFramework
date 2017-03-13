@@ -23,6 +23,6 @@
         <trackTrending>false</trackTrending>
         <type>Checkbox</type>
     </fields>
-    <label>Record Types Settings</label>
+    <label>Nebula Record Types Settings</label>
     <visibility>Public</visibility>
 </CustomObject>
