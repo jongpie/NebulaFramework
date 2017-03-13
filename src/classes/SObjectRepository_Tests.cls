@@ -8,37 +8,47 @@ private class SObjectRepository_Tests {
         }
 
         public Lead getById(Id leadId) {
-            return (Lead)this.queryGenerator
-                .whereField(Schema.Lead.Id, EQUALS, leadId)
+            return (Lead)this.queryBuilder
+                .whereField(Schema.Lead.Id, new QueryOperator().EQUALS, leadId)
                 .setAsUpdate()
                 .getFirstQueryResult();
         }
 
         public List<Lead> getById(List<Id> leadIdList) {
-            return (List<Lead>)this.queryGenerator
-                .whereField(Schema.Lead.Id, IS_IN, leadIdList)
+            return (List<Lead>)this.queryBuilder
+                .whereField(Schema.Lead.Id, new QueryOperator().IS_IN, leadIdList)
                 .setAsUpdate()
                 .getQueryResults();
         }
 
         public List<Lead> getNewThisWeekById(List<Id> leadIdList) {
-            return (List<Lead>)this.queryGenerator
-                .whereField(Schema.Lead.Id, IS_IN, leadIdList)
-                .whereField(Schema.Lead.CreatedDate, EQUALS, new DateLiterals().THIS_WEEK)
+            return (List<Lead>)this.queryBuilder
+                .whereField(Schema.Lead.Id, new QueryOperator().IS_IN, leadIdList)
+                .whereField(Schema.Lead.CreatedDate, new QueryOperator().EQUALS, new QueryDateLiteral().THIS_WEEK)
                 .setAsUpdate()
                 .getQueryResults();
         }
 
         public List<Lead> searchInAllFields(String searchTerm) {
-            return this.searchInFieldsBySearchGroup(searchTerm, QueryBuilder.SearchGroup.ALL_FIELDS);
+            return this.searchInFieldsBySearchGroup(searchTerm, QuerySearchGroup.ALL_FIELDS);
         }
 
-        public List<Lead> searchInFieldsBySearchGroup(String searchTerm, QueryBuilder.SearchGroup searchGroup) {
-            return (List<Lead>)this.queryGenerator
-                .orderBy(Schema.Lead.CreatedDate, QueryBuilder.SortOrder.DESCENDING)
+        public List<Lead> searchInFieldsBySearchGroup(String searchTerm, QuerySearchGroup searchGroup) {
+            return (List<Lead>)this.queryBuilder
+                .orderBy(Schema.Lead.CreatedDate, QuerySortOrder.DESCENDING)
                 .limitCount(10)
                 .setAsUpdate() // SOSL cannot use FOR UPDATE. This will execute, but a warning debug statement will indicate that it is ignored
                 .getSearchResults(searchTerm, searchGroup);
+        }
+
+        public override void doUpsert(SObject record) {
+            Lead lead = (Lead)record;
+            upsert lead;
+        }
+
+        public override void doUpsert(List<SObject> recordList) {
+            List<Lead> leadList = (List<Lead>)recordList;
+            upsert leadList;
         }
     }
 

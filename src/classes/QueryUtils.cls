@@ -1,16 +1,16 @@
-public without sharing class SOQLUtils {
+public without sharing class QueryUtils {
 
-    public static String toSOQLString(List<Object> valueList) {
+    public static String toQueryString(List<Object> valueList) {
         List<String> parsedValueList = new List<String>();
-        for(Object value : valueList) parsedValueList.add(toSOQLString(value));
+        for(Object value : valueList) parsedValueList.add(toQueryString(value));
         return '(' + String.join(parsedValueList, ',') + ')';
     }
 
-    public static String toSOQLString(Object value) {
+    public static String toQueryString(Object value) {
         if(value == null) return null;
-        else if(value instanceof List<Object>) return toSOQLString((List<Object>)value);
-        else if(value instanceof DateLiterals) {
-            DateLiterals dateLiteral = (DateLiterals)value;
+        else if(value instanceof List<Object>) return toQueryString((List<Object>)value);
+        else if(value instanceof QueryDateLiteral) {
+            QueryDateLiteral dateLiteral = (QueryDateLiteral)value;
             return dateLiteral.getValue();
         }
         else if(value instanceof Boolean) return String.valueOf((Boolean)value);

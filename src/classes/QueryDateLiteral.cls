@@ -1,4 +1,4 @@
-public class DateLiterals {
+public without sharing class QueryDateLiteral {
 
     private final String LAST_N = 'LAST_N_{0}: {1}';
     private final String NEXT_N = 'NEXT_N_{0}: {1}';
@@ -18,165 +18,165 @@ public class DateLiterals {
     }
 
     //Actual constant literals
-    public DateLiterals YESTERDAY {
+    public QueryDateLiteral YESTERDAY {
         get {return this.setValue('YESTERDAY');}
     }
 
-    public DateLiterals TODAY {
+    public QueryDateLiteral TODAY {
         get {return this.setValue('TODAY');}
     }
 
-    public DateLiterals TOMORROW {
+    public QueryDateLiteral TOMORROW {
         get {return this.setValue('TOMORROW');}
     }
 
-    public DateLiterals LAST_WEEK {
+    public QueryDateLiteral LAST_WEEK {
         get {return this.setValue('LAST_WEEK');}
     }
 
-    public DateLiterals THIS_WEEK {
+    public QueryDateLiteral THIS_WEEK {
         get {return this.setValue('THIS_WEEK');}
     }
 
-    public DateLiterals NEXT_WEEK {
+    public QueryDateLiteral NEXT_WEEK {
         get {return this.setValue('NEXT_WEEK');}
     }
 
-    public DateLiterals LAST_MONTH {
+    public QueryDateLiteral LAST_MONTH {
         get {return this.setValue('LAST_MONTH');}
     }
 
-    public DateLiterals THIS_MONTH {
+    public QueryDateLiteral THIS_MONTH {
         get {return this.setValue('THIS_MONTH');}
     }
 
-    public DateLiterals NEXT_MONTH {
+    public QueryDateLiteral NEXT_MONTH {
         get {return this.setValue('NEXT_MONTH');}
     }
 
-    public DateLiterals LAST_90_DAYS {
+    public QueryDateLiteral LAST_90_DAYS {
         get {return this.setValue('LAST_90_DAYS');}
     }
 
-    public DateLiterals NEXT_90_DAYS {
+    public QueryDateLiteral NEXT_90_DAYS {
         get {return this.setValue('NEXT_90_DAYS');}
     }
 
-    public DateLiterals THIS_QUARTER {
+    public QueryDateLiteral THIS_QUARTER {
         get {return this.setValue('THIS_QUARTER');}
     }
 
-    public DateLiterals THIS_FISCAL_QUARTER {
+    public QueryDateLiteral THIS_FISCAL_QUARTER {
         get {return this.setValue('THIS_FISCAL_QUARTER');}
     }
 
-    public DateLiterals LAST_QUARTER {
+    public QueryDateLiteral LAST_QUARTER {
         get {return this.setValue('LAST_QUARTER');}
     }
 
-    public DateLiterals LAST_FISCAL_QUARTER {
+    public QueryDateLiteral LAST_FISCAL_QUARTER {
         get {return this.setValue('LAST_FISCAL_QUARTER');}
     }
 
-    public DateLiterals NEXT_QUARTER {
+    public QueryDateLiteral NEXT_QUARTER {
         get {return this.setValue('NEXT_QUARTER');}
     }
 
-    public DateLiterals NEXT_FISCAL_QUARTER {
+    public QueryDateLiteral NEXT_FISCAL_QUARTER {
         get {return this.setValue('NEXT_FISCAL_QUARTER');}
     }
 
-    public DateLiterals THIS_YEAR {
+    public QueryDateLiteral THIS_YEAR {
         get {return this.setValue('THIS_YEAR');}
     }
 
-    public DateLiterals THIS_FISCAL_YEAR {
+    public QueryDateLiteral THIS_FISCAL_YEAR {
         get {return this.setValue('THIS_FISCAL_YEAR');}
     }
 
-    public DateLiterals LAST_YEAR {
+    public QueryDateLiteral LAST_YEAR {
         get {return this.setValue('LAST_YEAR');}
     }
 
-    public DateLiterals LAST_FISCAL_YEAR {
+    public QueryDateLiteral LAST_FISCAL_YEAR {
         get {return this.setValue('LAST_FISCAL_YEAR');}
     }
 
-    public DateLiterals NEXT_YEAR {
+    public QueryDateLiteral NEXT_YEAR {
         get {return this.setValue('NEXT_YEAR');}
     }
 
-    public DateLiterals NEXT_FISCAL_YEAR {
+    public QueryDateLiteral NEXT_FISCAL_YEAR {
         get {return this.setValue('NEXT_FISCAL_YEAR');}
     }
 
     ////Buildable literals
-    public DateLiterals LAST_N_DAYS(Integer num) {
+    public QueryDateLiteral LAST_N_DAYS(Integer num) {
         String parsedValue = String.format(LAST_N, new List<String>{DAYS,String.valueOf(num)});
         return this.setValue(parsedValue);
     }
 
-    public DateLiterals LAST_N_WEEKS(Integer num) {
+    public QueryDateLiteral LAST_N_WEEKS(Integer num) {
         String parsedValue = String.format(LAST_N, new List<String>{WEEKS, String.valueof(num)});
         return this.setValue(parsedValue);
     }
 
-    public DateLiterals LAST_N_MONTHS(Integer num) {
+    public QueryDateLiteral LAST_N_MONTHS(Integer num) {
         String parsedValue = String.format(LAST_N, new List<String>{MONTHS, String.valueOf(num)});
         return this.setValue(parsedValue);
     }
 
-    public DateLiterals LAST_N_QUARTERS(Integer num) {
+    public QueryDateLiteral LAST_N_QUARTERS(Integer num) {
         String parsedValue = String.format(LAST_N, new List<String>{QUARTERS, String.valueOf(num)});
         return this.setValue(parsedValue);
     }
 
-    public DateLiterals LAST_N_YEARS(Integer num) {
+    public QueryDateLiteral LAST_N_YEARS(Integer num) {
         String parsedValue = String.format(LAST_N, new List<String>{YEARS, String.valueOf(num)});
         return this.setValue(parsedValue);
     }
 
-    public DateLiterals LAST_N_FISCAL_YEARS(Integer num) {
+    public QueryDateLiteral LAST_N_FISCAL_YEARS(Integer num) {
         String parsedValue = String.format(LAST_N, new List<String>{FISCAL_YEARS, String.valueOf(num)});
         return this.setValue(parsedValue);
     }
 
-    public DateLiterals NEXT_N_DAYS(Integer num) {
+    public QueryDateLiteral NEXT_N_DAYS(Integer num) {
         String parsedValue = String.format(NEXT_N, new List<String>{DAYS, String.valueOf(num)});
         return this.setValue(parsedValue);
     }
 
-    public DateLiterals NEXT_N_WEEKS(Integer num) {
+    public QueryDateLiteral NEXT_N_WEEKS(Integer num) {
         String parsedValue = String.format(NEXT_N, new List<String>{WEEKS, String.valueOf(num)});
         return this.setValue(parsedValue);
     }
 
-    public DateLiterals NEXT_N_MONTHS(Integer num) {
+    public QueryDateLiteral NEXT_N_MONTHS(Integer num) {
         String parsedValue = String.format(NEXT_N, new List<String>{MONTHS, String.valueOf(num)});
         return this.setValue(parsedValue);
     }
 
-    public DateLiterals NEXT_N_QUARTERS(Integer num) {
+    public QueryDateLiteral NEXT_N_QUARTERS(Integer num) {
         String parsedValue = String.format(NEXT_N, new List<String>{QUARTERS, String.valueOf(num)});
         return this.setValue(parsedValue);
     }
 
-    public DateLiterals NEXT_N_FISCAL_QUARTERS(Integer num) {
+    public QueryDateLiteral NEXT_N_FISCAL_QUARTERS(Integer num) {
         String parsedValue = String.format(NEXT_N, new List<String>{FISCAL_QUARTERS, String.valueOf(num)});
         return this.setValue(parsedValue);
     }
 
-    public DateLiterals NEXT_N_YEARS(Integer num) {
+    public QueryDateLiteral NEXT_N_YEARS(Integer num) {
         String parsedValue = String.format(NEXT_N, new List<String>{YEARS, String.valueOf(num)});
         return this.setValue(parsedValue);
     }
 
-    public DateLiterals NEXT_N_FISCAL_YEARS(Integer num) {
+    public QueryDateLiteral NEXT_N_FISCAL_YEARS(Integer num) {
         String parsedValue = String.format(NEXT_N, new List<String>{FISCAL_YEARS, String.valueOf(num)});
         return this.setValue(parsedValue);
     }
 
-    private DateLiterals setValue(String value) {
+    private QueryDateLiteral setValue(String value) {
         this.value = value;
         return this;
     }

@@ -6,7 +6,7 @@ public interface ISObjectRepository {
 
     // SOSL
     List<SObject> searchInAllFields(String searchTerm);
-    List<SObject> searchInFieldsBySearchGroup(String searchTerm, QueryBuilder.SearchGroup searchGroup);
+    List<SObject> searchInFieldsBySearchGroup(String searchTerm, QuerySearchGroup searchGroup);
 
     // DML
     void doInsert(SObject record);

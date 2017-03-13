@@ -1,9 +1,4 @@
-public without sharing class QueryBuilder extends NebulaCore {
-
-    public enum SortOrder {ASCENDING, DESCENDING}
-    public enum NullsSortOrder {FIRST, LAST}
-
-    public enum SearchGroup {ALL_FIELDS, NAME_FIELDS, EMAIL_FIELDS, PHONE_FIELDS, SIDEBAR_FIELDS}
+public without sharing class QueryBuilder extends NebulaCore implements IQueryBuilder {
 
     private SObjectType sobjectType;
     private Map<String, Schema.SObjectField> sobjectTypeFieldMap;
@@ -34,10 +29,10 @@ public without sharing class QueryBuilder extends NebulaCore {
         this.addSObjectFields();
     }
 
-    public QueryBuilder whereField(Schema.SObjectField field, String operator, Object value) {
-        String parsedValue = SOQLUtils.toSOQLString(value);
+    public QueryBuilder whereField(Schema.SObjectField field, QueryOperator operator, Object value) {
+        String parsedValue = QueryUtils.toQueryString(value);
 
-        this.whereClauseList.add(field + ' ' + operator.trim() + ' ' + parsedValue);
+        this.whereClauseList.add(field + ' ' + operator.getValue() + ' ' + parsedValue);
         return this;
     }
 
@@ -45,16 +40,16 @@ public without sharing class QueryBuilder extends NebulaCore {
         return this.orderBy(orderByField, null, null);
     }
 
-    public QueryBuilder orderBy(Schema.SObjectField orderByField, QueryBuilder.SortOrder sortOrder) {
+    public QueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder) {
         return orderBy(orderByField, sortOrder, null);
     }
 
-    public QueryBuilder orderBy(Schema.SObjectField orderByField, QueryBuilder.SortOrder sortOrder, QueryBuilder.NullsSortOrder nullsSortOrder) {
+    public QueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder, QueryNullSortOrder nullSortOrder) {
         String sortOrderSoql = '';
-        if(sortOrder == QueryBuilder.SortOrder.ASCENDING) sortOrderSoql = ' ASC';
-        else if(sortOrder == QueryBuilder.SortOrder.DESCENDING) sortOrderSoql = ' DESC';
+        if(sortOrder == QuerySortOrder.ASCENDING) sortOrderSoql = ' ASC';
+        else if(sortOrder == QuerySortOrder.DESCENDING) sortOrderSoql = ' DESC';
 
-        if(nullsSortOrder != null) sortOrderSoql += ' NULLS ' + nullsSortOrder;
+        if(nullSortOrder != null) sortOrderSoql += ' NULLS ' + nullSortOrder.name();
 
         this.orderByList.add(orderByField.getDescribe().getName() + sortOrderSoql);
 
@@ -85,7 +80,7 @@ public without sharing class QueryBuilder extends NebulaCore {
         return results;
     }
 
-    public List<SObject> getSearchResults(String searchTerm, SearchGroup searchGroup) {
+    public List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup) {
         List<SObject> results = Search.query(this.getSearchQuery(searchTerm, searchGroup))[0];
 
         String logEntry = 'Query:\n' + this.query + '\n\nResults:\n' + results;
@@ -137,8 +132,8 @@ public without sharing class QueryBuilder extends NebulaCore {
         return this.query;
     }
 
-    private String getSearchQuery(String searchTerm, SearchGroup searchGroup) {
-        this.query = 'FIND ' + SOQLUtils.toSOQLString(searchTerm)
+    private String getSearchQuery(String searchTerm, QuerySearchGroup searchGroup) {
+        this.query = 'FIND ' + QueryUtils.toQueryString(searchTerm)
             + '\nIN ' + searchGroup.name().replace('_', ' ')
             + '\nRETURNING ' + this.sobjectType + '('
                 + this.getQueryFieldString()
