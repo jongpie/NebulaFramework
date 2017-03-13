@@ -8,35 +8,35 @@ public without sharing class QueryOperator {
 
     //Actual constant literals
     public QueryOperator EQUALS {
-        get {return this.setValue('EQUALS');}
+        get {return this.setValue('=');}
     }
 
     public QueryOperator NOT_EQUAL_TO {
-        get {return this.setValue('NOT_EQUAL_TO');}
+        get {return this.setValue('!=');}
     }
 
     public QueryOperator GREATER_THAN {
-        get {return this.setValue('GREATER_THAN');}
+        get {return this.setValue('>');}
     }
 
     public QueryOperator GREATER_THAN_OR_EQUAL_TO {
-        get {return this.setValue('GREATER_THAN_OR_EQUAL_TO');}
+        get {return this.setValue('>=');}
     }
 
     public QueryOperator LESS_THAN {
-        get {return this.setValue('LESS_THAN');}
+        get {return this.setValue('<');}
     }
 
     public QueryOperator LESS_THAN_OR_EQUAL_TO {
-        get {return this.setValue('LESS_THAN_OR_EQUAL_TO');}
+        get {return this.setValue('<=');}
     }
 
     public QueryOperator IS_IN {
-        get {return this.setValue('IS_IN');}
+        get {return this.setValue('IN');}
     }
 
     public QueryOperator IS_NOT_IN {
-        get {return this.setValue('IS_NOT_IN');}
+        get {return this.setValue('NOT IN');}
     }
 
     public QueryOperator INCLUDES {
@@ -48,11 +48,11 @@ public without sharing class QueryOperator {
     }
 
     public QueryOperator IS_LIKE {
-        get {return this.setValue('IS_LIKE');}
+        get {return this.setValue('LIKE');}
     }
 
     public QueryOperator IS_NOT_LIKE {
-        get {return this.setValue('IS_NOT_LIKE');}
+        get {return this.setValue('NOT LIKE');}
     }
 
     private QueryOperator setValue(String value) {
