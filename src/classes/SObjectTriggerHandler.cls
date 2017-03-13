@@ -81,6 +81,8 @@ public abstract class SObjectTriggerHandler extends NebulaCore implements ISObje
         else if(this.context == TriggerContext.AFTER_UPDATE) this.executeAfterUpdate(this.recordList, this.recordMap, this.oldRecordList, this.oldRecordMap);
         else if(this.context == TriggerContext.AFTER_DELETE) this.executeAfterDelete(this.oldRecordList, this.oldRecordMap);
         else if(this.context == TriggerContext.AFTER_UNDELETE) this.executeAfterUndelete(this.recordList, this.recordMap);
+
+        if(Trigger.isAfter) this.saveLogs();
     }
 
     protected virtual void executeBeforeInsert(List<SObject> newRecordList) {}
