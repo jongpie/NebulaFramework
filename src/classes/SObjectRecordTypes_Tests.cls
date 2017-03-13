@@ -1,8 +1,12 @@
+/*************************************************************************************************
+* This file is part of the Nebula Framework project, released under the MIT License.             *
+* See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
+*************************************************************************************************/
 @isTest
 private class SObjectRecordTypes_Tests {
 
     private class LeadRecordTypes extends SObjectRecordTypes {
-        // Test subclass that extends RecordType
+        // Test subclass that extends SObjectRecordTypes
         public LeadRecordTypes() {
             super(Schema.SObjectType.Lead);
         }
@@ -38,7 +42,7 @@ private class SObjectRecordTypes_Tests {
 
     @isTest
     static void queryIsCached_when_lazyLoadEnabled() {
-        RecordTypesSettings__c recordTypesSettings = RecordTypesSettings__c.getInstance();
+        NebulaRecordTypesSettings__c recordTypesSettings = NebulaRecordTypesSettings__c.getInstance();
         recordTypesSettings.LazyLoad__c = true;
         upsert recordTypesSettings;
 
@@ -56,7 +60,7 @@ private class SObjectRecordTypes_Tests {
 
     @isTest
     static void queryIsCached_when_lazyLoadDisabled() {
-        RecordTypesSettings__c recordTypesSettings = RecordTypesSettings__c.getInstance();
+        NebulaRecordTypesSettings__c recordTypesSettings = NebulaRecordTypesSettings__c.getInstance();
         recordTypesSettings.LazyLoad__c = false;
         upsert recordTypesSettings;
 

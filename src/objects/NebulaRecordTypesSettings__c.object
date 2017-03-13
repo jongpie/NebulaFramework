@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customSettingsType>Hierarchy</customSettingsType>
+    <description>Controls the behavior of the class SObjectRecordTypes.cls</description>
+    <enableFeeds>false</enableFeeds>
+    <fields>
+        <fullName>ExcludeManagedRecordTypes__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>Determines if managed record types are excluded from queries. If you do not use any managed record types, then you should enabled this.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Determines if managed record types are excluded from queries. If you do not use any managed record types, then you should enabled this.</inlineHelpText>
+        <label>Exclude Managed Record Types</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>LazyLoad__c</fullName>
+        <defaultValue>true</defaultValue>
+        <description>Determines if a separate query is executed for each SObject (lazy load enabled), or if a single query is used to pre-load all record types (lazy load disabled)</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Determines if a separate query is executed for each SObject (lazy load enabled), or if a single query is used to pre-load all record types (lazy load disabled)</inlineHelpText>
+        <label>Lazy Load</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <label>Nebula Record Types Settings</label>
+    <visibility>Public</visibility>
+</CustomObject>

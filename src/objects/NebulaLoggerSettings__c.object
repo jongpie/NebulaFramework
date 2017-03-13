@@ -3,21 +3,13 @@
     <customSettingsType>Hierarchy</customSettingsType>
     <enableFeeds>false</enableFeeds>
     <fields>
-        <fullName>ExcludeManagedRecordTypes__c</fullName>
+        <fullName>EnableLogging__c</fullName>
         <defaultValue>false</defaultValue>
         <externalId>false</externalId>
-        <label>Exclude Managed Record Types</label>
+        <label>Enable Logging</label>
         <trackTrending>false</trackTrending>
         <type>Checkbox</type>
     </fields>
-    <fields>
-        <fullName>LazyLoad__c</fullName>
-        <defaultValue>true</defaultValue>
-        <externalId>false</externalId>
-        <label>Lazy Load</label>
-        <trackTrending>false</trackTrending>
-        <type>Checkbox</type>
-    </fields>
-    <label>Record Types Settings</label>
+    <label>Nebula Logger Settings</label>
     <visibility>Public</visibility>
 </CustomObject>
