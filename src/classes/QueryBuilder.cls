@@ -7,7 +7,6 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
     private SObjectType sobjectType;
     private Map<String, Schema.SObjectField> sobjectTypeFieldMap;
     private Set<String> queryFields;
-    private String query;
     private Schema.FieldSet fieldSet;
     private List<Schema.SObjectField> sobjectFieldList;
     private List<String> whereClauseList;
@@ -76,18 +75,20 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
     }
 
     public List<SObject> getQueryResults() {
-        List<SObject> results = Database.query(this.getQuery());
+        String query = this.getQueryString();
+        List<SObject> results = Database.query(query);
 
-        String logEntry = 'Query:\n' + this.query + '\n\nResults:\n' + results;
+        String logEntry = 'Query:\n' + query + '\n\nResults:\n' + results;
         this.addLogEntry(logEntry);
 
         return results;
     }
 
     public List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup) {
-        List<SObject> results = Search.query(this.getSearchQuery(searchTerm, searchGroup))[0];
+        String query = this.getSearchQueryString(searchTerm, searchGroup);
+        List<SObject> results = Search.query(query)[0];
 
-        String logEntry = 'Query:\n' + this.query + '\n\nResults:\n' + results;
+        String logEntry = 'Query:\n' + query + '\n\nResults:\n' + results;
         this.addLogEntry(logEntry);
 
         return results;
@@ -123,21 +124,21 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
         return forUpdateString;
     }
 
-    private String getQuery() {
-        this.query = 'SELECT ' + this.getQueryFieldString()
+    private String getQueryString() {
+        String query = 'SELECT ' + this.getQueryFieldString()
             + '\nFROM ' + this.sobjectType
             + this.getWhereClauseString()
             + this.getOrderByString()
             + this.getLimitCountString()
             + this.getForUpdateString();
 
-        this.addLogEntry(this.query);
+        this.addLogEntry(query);
 
-        return this.query;
+        return query;
     }
 
-    private String getSearchQuery(String searchTerm, QuerySearchGroup searchGroup) {
-        this.query = 'FIND ' + QueryUtils.toQueryString(searchTerm)
+    private String getSearchQueryString(String searchTerm, QuerySearchGroup searchGroup) {
+        String query = 'FIND ' + QueryUtils.toQueryString(searchTerm)
             + '\nIN ' + searchGroup.name().replace('_', ' ')
             + '\nRETURNING ' + this.sobjectType + '('
                 + this.getQueryFieldString()
@@ -148,9 +149,9 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
 
         if(this.forUpdate) this.addLogEntry('SOSL Search Query method flagged as FOR UPDATE. SOSL cannot use FOR UPDATE, ignoring');
 
-        this.addLogEntry(this.query);
+        this.addLogEntry(query);
 
-        return this.query;
+        return query;
     }
 
     private void addCommonQueryFields() {
