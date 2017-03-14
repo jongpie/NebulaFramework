@@ -13,6 +13,7 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
     private List<String> orderByList;
     private Integer limitCount;
     private Boolean forUpdate;
+    private QueryFilterScope filterScope;
 
     public QueryBuilder(Schema.SObjectType sobjectType, Schema.FieldSet fieldSet, List<Schema.SObjectField> sobjectFieldList) {
         this.currentModule = NebulaCore.Module.REPOSITORY;
@@ -66,6 +67,11 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
 
     public QueryBuilder setAsUpdate() {
         this.forUpdate = true;
+        return this;
+    }
+
+    public IQueryBuilder usingScope(QueryFilterScope filterScope) {
+        this.filterScope = filterScope;
         return this;
     }
 
@@ -124,9 +130,17 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
         return forUpdateString;
     }
 
+    private String getUsingScopeString() {
+        String usingScopeString = '';
+        if(this.filterScope != null) usingScopeString = '\nUSING SCOPE ' + this.filterScope.name();
+        return usingScopeString;
+// TODO figure out what to do for SOSL https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_sosl_syntax.htm
+    }
+
     private String getQueryString() {
         String query = 'SELECT ' + this.getQueryFieldString()
             + '\nFROM ' + this.sobjectType
+            + this.getUsingScopeString()
             + this.getWhereClauseString()
             + this.getOrderByString()
             + this.getLimitCountString()
@@ -148,6 +162,7 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
             + ')';
 
         if(this.forUpdate) this.addLogEntry('SOSL Search Query method flagged as FOR UPDATE. SOSL cannot use FOR UPDATE, ignoring');
+        if(this.filterScope != null) this.addLogEntry('SOSL Search Query method flagged as USING SCOPE ' + this.filterScope + '. SOSL cannot use USING SCOPE, ignoring');
 
         this.addLogEntry(query);
 
