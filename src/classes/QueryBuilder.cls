@@ -33,22 +33,22 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
         this.addSObjectFields();
     }
 
-    public QueryBuilder whereField(Schema.SObjectField field, QueryOperator operator, Object value) {
+    public IQueryBuilder whereField(Schema.SObjectField field, QueryOperator operator, Object value) {
         String parsedValue = QueryUtils.toQueryString(value);
 
         this.whereClauseList.add(field + ' ' + operator.getValue() + ' ' + parsedValue);
         return this;
     }
 
-    public QueryBuilder orderBy(Schema.SObjectField orderByField) {
+    public IQueryBuilder orderBy(Schema.SObjectField orderByField) {
         return this.orderBy(orderByField, null, null);
     }
 
-    public QueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder) {
+    public IQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder) {
         return orderBy(orderByField, sortOrder, null);
     }
 
-    public QueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder, QueryNullSortOrder nullSortOrder) {
+    public IQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder, QueryNullSortOrder nullSortOrder) {
         String sortOrderSoql = '';
         if(sortOrder == QuerySortOrder.ASCENDING) sortOrderSoql = ' ASC';
         else if(sortOrder == QuerySortOrder.DESCENDING) sortOrderSoql = ' DESC';
@@ -60,12 +60,12 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
         return this;
     }
 
-    public QueryBuilder limitCount(Integer limitCount) {
+    public IQueryBuilder limitCount(Integer limitCount) {
         this.limitCount = limitCount;
         return this;
     }
 
-    public QueryBuilder setAsUpdate() {
+    public IQueryBuilder setAsUpdate() {
         this.forUpdate = true;
         return this;
     }
