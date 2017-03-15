@@ -35,6 +35,7 @@ public abstract class SObjectRecordTypes extends NebulaCore {
         String query = 'SELECT ' + String.join(fieldList, ', ') + ' FROM RecordType';
 
         List<String> whereClauseList = new List<String>();
+
         if(new NebulaSettings().recordTypesSettings.LazyLoad__c){
             whereClauseList.add('SObjectType = \'' + this.sobjectName + '\'');
             this.addLogEntry('new NebulaSettings().recordTypesSettings.LazyLoad__c=' + new NebulaSettings().recordTypesSettings.LazyLoad__c);
@@ -46,14 +47,11 @@ public abstract class SObjectRecordTypes extends NebulaCore {
         query += ' ORDER BY DeveloperName';
 
         this.addLogEntry('SObjectRecordTypes query=' + query);
+
+        if(!cachedRecordTypesBySObjectMap.containsKey(this.sobjectName)) cachedRecordTypesBySObjectMap.put(this.sobjectName, new List<RecordType>());
         List<RecordType> recordTypeList = (List<RecordType>)Database.query(query);
-        for(RecordType recordType : recordTypeList) {
-            if(!cachedRecordTypesBySObjectMap.containsKey(recordType.SObjectType)) {
-                cachedRecordTypesBySObjectMap.put(recordType.SObjectType, new List<RecordType>{recordType});
-            } else {
-                cachedRecordTypesBySObjectMap.get(recordType.SObjectType).add(recordType);
-            }
-        }
+        for(RecordType recordType : recordTypeList) cachedRecordTypesBySObjectMap.get(this.sobjectName).add(recordType);
+
         this.addLogEntry('cachedRecordTypesBySObjectMap=' + cachedRecordTypesBySObjectMap);
     }
 
