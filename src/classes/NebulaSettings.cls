@@ -8,6 +8,10 @@ public without sharing class NebulaSettings {
     public NebulaRepositorySettings__c repositorySettings;
     public NebulaTriggerHandlerSettings__c triggerHandlerSettings;
 
+    public NebulaSettings() {
+        this.loadCustomSettings();
+    }
+
     public void resetAllSettingsToDefaults() {
         this.deleteExistingCustomSettings();
         this.createCustomSettings();
