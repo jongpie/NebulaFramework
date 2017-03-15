@@ -116,7 +116,6 @@
         <type>LongTextArea</type>
         <visibleLines>5</visibleLines>
     </fields>
-    <gender>Masculine</gender>
     <label>Nebula Log</label>
     <listViews>
         <fullName>All_Logs</fullName>
