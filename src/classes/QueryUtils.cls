@@ -23,10 +23,10 @@ public without sharing class QueryUtils {
             Datetime datetimeValue = (Datetime)value;
             return datetimeValue.format('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'', 'Greenwich Mean Time');
         }
-        else if(value instanceof Decimal) return String.valueOf((Decimal) value);
-        else if(value instanceof Double) return String.valueOf((Double) value);
-        else if(value instanceof Integer) return String.valueOf((Integer) value);
-        else if(value instanceof Long) return String.valueOf((Long) value);
+        else if(value instanceof Decimal) return String.valueOf((Decimal)value);
+        else if(value instanceof Double) return String.valueOf((Double)value);
+        else if(value instanceof Integer) return String.valueOf((Integer)value);
+        else if(value instanceof Long) return String.valueOf((Long)value);
         else if(value instanceof SObject) {
             SObject record = (SObject)value;
             return wrapInSingleQuotes(record.Id);

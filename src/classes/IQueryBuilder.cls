@@ -13,6 +13,7 @@ public interface IQueryBuilder {
 
     IQueryBuilder limitCount(Integer limitCount);
     IQueryBuilder setAsUpdate();
+    IQueryBuilder usingScope(QueryFilterScope filterScope);
 
     // Query execution methods
     SObject getFirstQueryResult();
