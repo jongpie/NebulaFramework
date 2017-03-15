@@ -2,8 +2,4 @@ language: node_js
 
 script:
     - npm install -g jsforce-metadata-tools
-    - echo $TRAVIS_BUILD_DIR
-    - echo $DEPLOYMENT_LOGIN_URL
-    - echo $DEPLOYMENT_TEST_LEVEL
-    - echo $POLL_TIMEOUT
     - jsforce-deploy --dry-run -u $DEPLOYMENT_USERNAME -p $DEPLOYMENT_PASSWORD$DEPLOYMENT_TOKEN -D $TRAVIS_BUILD_DIR/src -l $DEPLOYMENT_LOGIN_URL --rollbackOnError true --testLevel $DEPLOYMENT_TEST_LEVEL --pollTimeout $POLL_TIMEOUT
