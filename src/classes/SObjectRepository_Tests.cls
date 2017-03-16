@@ -11,6 +11,10 @@ private class SObjectRepository_Tests {
             super(Schema.Lead.SObjectType, new List<Schema.SObjectField>{Schema.Lead.Status});
         }
 
+        public LeadRepository(Schema.FieldSet fieldSet) {
+            super(Schema.Lead.SObjectType, fieldSet);
+        }
+
         public Lead getById(Id leadId) {
             return (Lead)this.queryBuilder
                 .whereField(Schema.Lead.Id, new QueryOperator().EQUALS, leadId)
@@ -49,7 +53,6 @@ private class SObjectRepository_Tests {
         public List<Lead> searchInFieldsBySearchGroup(String searchTerm, QuerySearchGroup searchGroup) {
             return (List<Lead>)this.queryBuilder
                 .orderBy(Schema.Lead.CreatedDate, QuerySortOrder.DESCENDING)
-                .limitCount(10)
                 .setAsUpdate() // SOSL cannot use FOR UPDATE. This will execute, but a warning debug statement will indicate that it is ignored
                 .getSearchResults(searchTerm, searchGroup);
         }
@@ -83,43 +86,83 @@ private class SObjectRepository_Tests {
     }
 
     @isTest
+    static void it_should_instantiate_new_instance_with_fieldset() {
+        // We don't want to include unnecessary metadata in this project, like custom field sets, but we still want to test functionality
+        // We'll pass a null field set to make sure a field set can be used, even though the value is null
+        Schema.FieldSet fieldSet;
+
+        Test.startTest();
+        SObjectRepository_Tests.LeadRepository leadRepo = new SObjectRepository_Tests.LeadRepository(fieldSet);
+        System.assertNotEquals(null, leadRepo);
+        Test.stopTest();
+    }
+
+    @isTest
     static void it_should_get_by_id_when_id() {
         Lead expectedLead = [SELECT Id FROM Lead LIMIT 1];
-        // Implement test code
-        //System.assert(false, 'Finish writing your test!');
+
+        Test.startTest();
         Lead returnedLead = new SObjectRepository_Tests.LeadRepository().getById(expectedLead.Id);
+        Test.stopTest();
+
+        System.assertEquals(expectedLead.Id, returnedLead.Id);
     }
 
     @isTest
     static void it_should_get_by_id_when_list_of_id() {
         Map<Id, Lead> expectedLeadList = new Map<Id, Lead>([SELECT Id FROM Lead]);
-        // Implement test code
-        //System.assert(false, 'Finish writing your test!');
+
+        Test.startTest();
         List<Lead> returnedLeadList = new SObjectRepository_Tests.LeadRepository().getById(new List<Id>(expectedLeadList.keySet()));
+        Test.stopTest();
+
+        System.assertNotEquals(null, expectedLeadList);
+        System.assert(!expectedLeadList.isEmpty());
+        System.assertEquals(expectedLeadList.size(), returnedLeadList.size());
     }
 
     @isTest
     static void it_should_return_my_recent_leads() {
-        List<Lead> expectedLeadList = [SELECT Id FROM Lead];
-        // Implement test code
-        //System.assert(false, 'Finish writing your test!');
-        List<Lead> returnedLeadList = new SObjectRepository_Tests.LeadRepository().getMyRecentLeads(3);
+        List<Lead> expectedLeadList = [SELECT Id FROM Lead LIMIT 2];
+
+        Test.startTest();
+        List<Lead> returnedLeadList = new SObjectRepository_Tests.LeadRepository().getMyRecentLeads(expectedLeadList.size());
+        Test.stopTest();
+
+        System.assertNotEquals(null, expectedLeadList);
+        System.assert(!expectedLeadList.isEmpty());
+        System.assertEquals(expectedLeadList.size(), returnedLeadList.size());
     }
 
     @isTest
     static void it_should_return_new_this_week_by_id() {
         Map<Id, Lead> expectedLeadMap = new Map<Id, Lead>([SELECT Id FROM Lead]);
-        // Implement test code
-        //System.assert(false, 'Finish writing your test!');
+
+        Test.startTest();
         List<Lead> returnedLeadList = new SObjectRepository_Tests.LeadRepository().getNewThisWeekById(new List<Id>(expectedLeadMap.keySet()));
+        Test.stopTest();
+
+        System.assertNotEquals(null, expectedLeadMap);
+        System.assert(!expectedLeadMap.isEmpty());
+        System.assertEquals(expectedLeadMap.size(), returnedLeadList.size());
     }
 
     @isTest
     static void it_should_search_in_all_fields() {
-        Map<Id, Lead> expectedLeadList = new Map<Id, Lead>([SELECT Id FROM Lead]);
-        // Implement test code
-        //System.assert(false, 'Finish writing your test!');
-        List<Lead> returnedLeadList = new SObjectRepository_Tests.LeadRepository().searchInAllFields('Gillespie');
+        String searchTerm = 'Gillespie';
+        Map<Id, Lead> soslLeadMap = new Map<Id, Lead>([SELECT Id, Name FROM Lead]);
+        Test.setFixedSearchResults(new List<Id>(soslLeadMap.keySet()));
+
+        List<Lead> expectedLeadList = [FIND :searchTerm IN ALL FIELDS RETURNING Lead(Id, Name)][0];
+        System.assertNotEquals(0, expectedLeadList.size());
+
+        Test.startTest();
+        List<Lead> returnedLeadList = new SObjectRepository_Tests.LeadRepository().searchInAllFields(searchTerm);
+        Test.stopTest();
+
+        System.assertNotEquals(null, expectedLeadList);
+        System.assert(!expectedLeadList.isEmpty());
+        System.assertEquals(expectedLeadList.size(), returnedLeadList.size());
     }
 
     @isTest
@@ -177,7 +220,6 @@ private class SObjectRepository_Tests {
         //System.assertEquals(0, existingLeadList.size());
         // TODO figure out why the hard delete doesn't work in unit tests
     }
-
 
     @isTest
     static void it_should_undelete_a_single_record() {
