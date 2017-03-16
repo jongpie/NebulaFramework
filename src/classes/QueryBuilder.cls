@@ -85,7 +85,7 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
         List<SObject> results = Database.query(query);
 
         String logEntry = 'Query:\n' + query + '\n\nResults:\n' + results;
-        this.addLogEntry(logEntry);
+        Logger.addEntry(this, logEntry);
 
         return results;
     }
@@ -95,7 +95,7 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
         List<SObject> results = Search.query(query)[0];
 
         String logEntry = 'Query:\n' + query + '\n\nResults:\n' + results;
-        this.addLogEntry(logEntry);
+        Logger.addEntry(this, logEntry);
 
         return results;
     }
@@ -146,7 +146,7 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
             + this.getLimitCountString()
             + this.getForUpdateString();
 
-        this.addLogEntry(query);
+        Logger.addEntry(this, query);
 
         return query;
     }
@@ -161,10 +161,10 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
                 + this.getLimitCountString()
             + ')';
 
-        if(this.forUpdate) this.addLogEntry('SOSL Search Query method flagged as FOR UPDATE. SOSL cannot use FOR UPDATE, ignoring');
-        if(this.filterScope != null) this.addLogEntry('SOSL Search Query method flagged as USING SCOPE ' + this.filterScope + '. SOSL cannot use USING SCOPE, ignoring');
+        if(this.forUpdate) Logger.addEntry(this, 'SOSL Search Query method flagged as FOR UPDATE. SOSL cannot use FOR UPDATE, ignoring');
+        if(this.filterScope != null) Logger.addEntry(this, 'SOSL Search Query method flagged as USING SCOPE ' + this.filterScope + '. SOSL cannot use USING SCOPE, ignoring');
 
-        this.addLogEntry(query);
+        Logger.addEntry(this, query);
 
         return query;
     }
@@ -182,7 +182,7 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
 
             this.queryFields.add(commonFieldName.toLowerCase());
         }
-        this.addLogEntry('this.queryFields=' + this.queryFields);
+        Logger.addEntry(this, 'this.queryFields=' + this.queryFields);
     }
 
     private void addFieldSetMembers() {

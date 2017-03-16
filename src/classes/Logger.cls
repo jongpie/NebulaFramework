@@ -2,32 +2,36 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
-public without sharing class Logger implements ILogger {
+public without sharing class Logger {
 
     private static Id logId;
     private static Attachment logAttachment;
     private static List<Logger.Message> logMessages;
 
-    public Logger() {
+    static {
         Logger.logMessages   = Logger.logMessages == null ? new List<Logger.Message>() : Logger.logMessages;
-        Logger.logAttachment = Logger.logAttachment == null ? this.createLogAttachment() : Logger.logAttachment;
+        Logger.logAttachment = Logger.logAttachment == null ? createLogAttachment() : Logger.logAttachment;
     }
 
-    public void addEntry(INebulaCore moduleClass, String message) {
-        this.addEntry(moduleClass, message, null);
+    public static void addEntry(INebulaCore moduleClass, String message) {
+        addEntry(moduleClass, message, null);
     }
 
-    public void addEntry(INebulaCore moduleClass, String message, Exception ex) {
+    public static void addEntry(String message) {
+        addEntry(null, message, null);
+    }
+
+    public static void addEntry(INebulaCore moduleClass, String message, Exception ex) {
         Logger.Message logMessage = new Logger.Message(moduleClass, message, ex);
         Logger.logMessages.add(logMessage);
     }
 
-    public void saveLogs() {
-        this.saveTransactionLog();
-        this.saveSingleLogFile();
+    public static void saveLogs() {
+        saveTransactionLog();
+        saveSingleLogFile();
     }
 
-    private void saveTransactionLog() {
+    private static void saveTransactionLog() {
         if(Logger.logId != null) return;
 
         NebulaLog__c newLog = new NebulaLog__c(
@@ -39,7 +43,7 @@ public without sharing class Logger implements ILogger {
         Logger.logId = newLog.Id;
     }
 
-    private void saveSingleLogFile() {
+    private static void saveSingleLogFile() {
         String parsedMessageString =
             'NebulaCore.TRANSACTION_ID: ' + NebulaCore.TRANSACTION_ID
             + '\nInitial Class: ' + NebulaCore.INITIAL_CLASS;
@@ -65,7 +69,7 @@ public without sharing class Logger implements ILogger {
         upsert Logger.logAttachment;
     }
 
-    private Attachment createLogAttachment() {
+    private static Attachment createLogAttachment() {
         Attachment attachment = new Attachment(
             ContentType = 'text/plain',
             IsPrivate   = false,
@@ -83,8 +87,8 @@ public without sharing class Logger implements ILogger {
         private Datetime timestamp;
 
         public Message(INebulaCore moduleClass, String message, Exception ex) {
-            this.classModule = moduleClass.getClassModule();
-            this.className   = moduleClass.getClassName();
+            this.classModule = moduleClass == null ? null : moduleClass.getClassModule();
+            this.className   = moduleClass == null ? null : moduleClass.getClassName();
             this.ex          = ex;
             this.message     = message;
             this.timestamp   = System.now();
