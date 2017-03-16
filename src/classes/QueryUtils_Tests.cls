@@ -46,7 +46,6 @@ private class QueryUtils_Tests {
         Boolean providedValue = true;
         String expectedString = String.valueOf(providedValue);
 
-
         Test.startTest();
         String returnedValue = QueryUtils.toQueryString(providedValue);
         Test.stopTest();
@@ -134,7 +133,6 @@ private class QueryUtils_Tests {
         );
         insert providedValue;
         String expectedString = '\'' + providedValue.Id + '\'';
-
 
         Test.startTest();
         String returnedValue = QueryUtils.toQueryString(providedValue);
