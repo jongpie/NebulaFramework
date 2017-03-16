@@ -102,7 +102,7 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
 
     private String getQueryFieldString() {
         List<String> queryFieldList = new List<String>(this.queryFields);
-        if(new NebulaSettings().repositorySettings.SortQueryFields__c) queryFieldList.sort();
+        if(NebulaSettings.repositorySettings.SortQueryFields__c) queryFieldList.sort();
         return String.join(queryFieldList, ',');
     }
 
@@ -170,7 +170,7 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
     }
 
     private void addCommonQueryFields() {
-        if(!new NebulaSettings().repositorySettings.IncludeCommonFields__c) return;
+        if(!NebulaSettings.repositorySettings.IncludeCommonFields__c) return;
 
         // Auto-add the common fields that are available for the SObject Type
         List<String> commonFieldNameList = new List<String>{
