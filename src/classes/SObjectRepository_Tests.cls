@@ -107,7 +107,7 @@ private class SObjectRepository_Tests {
     }
 
     @isTest
-    static void it_should_return_new_this_week_by_Id() {
+    static void it_should_return_new_this_week_by_id() {
         Map<Id, Lead> expectedLeadMap = new Map<Id, Lead>([SELECT Id FROM Lead]);
         // Implement test code
         //System.assert(false, 'Finish writing your test!');
