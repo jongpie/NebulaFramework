@@ -16,6 +16,16 @@ private class NebulaSettings_Tests {
     }
 
     @isTest
+    static void it_should_return_loggerSettings() {
+        List<NebulaLoggerSettings__c> existingSettings = [SELECT Id FROM NebulaLoggerSettings__c];
+        System.assert(existingSettings.isEmpty());
+
+        Test.startTest();
+        System.assertNotEquals(null, NebulaSettings.loggerSettings);
+        Test.stopTest();
+    }
+
+    @isTest
     static void it_should_return_repositorySettings() {
         List<NebulaRepositorySettings__c> existingSettings = [SELECT Id FROM NebulaRepositorySettings__c];
         System.assert(existingSettings.isEmpty());
@@ -38,6 +48,10 @@ private class NebulaSettings_Tests {
 
     @isTest
     static void it_should_reset_all_settings_to_defaults() {
+        NebulaLoggerSettings__c nebulaLoggerSettings = NebulaLoggerSettings__c.getInstance();
+        upsert nebulaLoggerSettings;
+        Id originalLoggerSettingsId = NebulaLoggerSettings__c.getInstance().Id;
+
         NebulaRecordTypesSettings__c nebulaRecordTypesSettings = NebulaRecordTypesSettings__c.getInstance();
         upsert nebulaRecordTypesSettings;
         Id originalRecordTypesSettingsId = NebulaRecordTypesSettings__c.getInstance().Id;
@@ -54,6 +68,7 @@ private class NebulaSettings_Tests {
         NebulaSettings.resetAllSettingsToDefaults();
         Test.stopTest();
 
+        System.assertNotEquals(originalLoggerSettingsId, NebulaLoggerSettings__c.getInstance().Id);
         System.assertNotEquals(originalRecordTypesSettingsId, NebulaRecordTypesSettings__c.getInstance().Id);
         System.assertNotEquals(originalRepositorySettingsId, NebulaRepositorySettings__c.getInstance().Id);
         System.assertNotEquals(originalTriggerHandlerSettingsId, NebulaTriggerHandlerSettings__c.getInstance().Id);

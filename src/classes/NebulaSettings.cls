@@ -4,6 +4,7 @@
 *************************************************************************************************/
 public without sharing class NebulaSettings {
 
+    public static NebulaLoggerSettings__c loggerSettings;
     public static NebulaRecordTypesSettings__c recordTypesSettings;
     public static NebulaRepositorySettings__c repositorySettings;
     public static NebulaTriggerHandlerSettings__c triggerHandlerSettings;
@@ -18,21 +19,33 @@ public without sharing class NebulaSettings {
     }
 
     private static void loadCustomSettings() {
+        loadLoggerSettings();
         loadRecordTypesSettings();
         loadRepositorySettings();
         loadTriggerHandlerSettings();
     }
 
     private static void deleteExistingCustomSettings() {
+        delete [SELECT Id FROM NebulaLoggerSettings__c];
         delete [SELECT Id FROM NebulaRecordTypesSettings__c];
         delete [SELECT Id FROM NebulaRepositorySettings__c];
         delete [SELECT Id FROM NebulaTriggerHandlerSettings__c];
     }
 
     private static void createCustomSettings() {
+        upsert NebulaLoggerSettings__c.getOrgDefaults();
         upsert NebulaRecordTypesSettings__c.getOrgDefaults();
         upsert NebulaRepositorySettings__c.getOrgDefaults();
         upsert NebulaTriggerHandlerSettings__c.getOrgDefaults();
+    }
+
+    private static void loadLoggerSettings() {
+        loggerSettings = NebulaLoggerSettings__c.getInstance();
+
+        if(loggerSettings.Id == null) {
+            upsert NebulaLoggerSettings__c.getOrgDefaults();
+            loggerSettings = NebulaLoggerSettings__c.getInstance();
+        }
     }
 
     private static void loadRecordTypesSettings() {
