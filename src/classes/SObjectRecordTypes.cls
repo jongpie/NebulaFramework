@@ -36,12 +36,12 @@ public abstract class SObjectRecordTypes extends NebulaCore {
 
         List<String> whereClauseList = new List<String>();
 
-        if(new NebulaSettings().recordTypesSettings.LazyLoad__c){
+        if(NebulaSettings.recordTypesSettings.LazyLoad__c){
             whereClauseList.add('SObjectType = \'' + this.sobjectName + '\'');
-            this.addLogEntry('new NebulaSettings().recordTypesSettings.LazyLoad__c=' + new NebulaSettings().recordTypesSettings.LazyLoad__c);
+            this.addLogEntry('NebulaSettings.recordTypesSettings.LazyLoad__c=' + NebulaSettings.recordTypesSettings.LazyLoad__c);
             this.addLogEntry('this.sobjectName=' + this.sobjectName);
         }
-        if(new NebulaSettings().recordTypesSettings.ExcludeManagedRecordTypes__c) whereClauseList.add('NamespacePrefix = null');
+        if(NebulaSettings.recordTypesSettings.ExcludeManagedRecordTypes__c) whereClauseList.add('NamespacePrefix = null');
         if(!whereClauseList.isEmpty()) query += ' WHERE ' + String.join(whereClauseList, ' AND ');
 
         query += ' ORDER BY DeveloperName';

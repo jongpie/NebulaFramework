@@ -120,15 +120,15 @@ public abstract class SObjectTriggerHandler extends NebulaCore implements ISObje
     }
 
     private Boolean shouldExecuteTriggers() {
-        this.addLogEntry('nebulaSettings.triggerHandlerSettings.ExecuteTriggers__c=' + new NebulaSettings().triggerHandlerSettings.ExecuteTriggers__c);
+        this.addLogEntry('nebulaSettings.triggerHandlerSettings.ExecuteTriggers__c=' + NebulaSettings.triggerHandlerSettings.ExecuteTriggers__c);
 
-        String handlerClassesToSkipString = new NebulaSettings().triggerHandlerSettings.HandlerClassesToSkip__c;
+        String handlerClassesToSkipString = NebulaSettings.triggerHandlerSettings.HandlerClassesToSkip__c;
         if(handlerClassesToSkipString == null) handlerClassesToSkipString = '';
         Set<String> handlerClassesToSkip = new Set<String>(handlerClassesToSkipString.toLowerCase().split('\n'));
-        this.addLogEntry('nebulaSettings.triggerHandlerSettings.HandlerClassesToSkip__c=' + new NebulaSettings().triggerHandlerSettings.HandlerClassesToSkip__c);
+        this.addLogEntry('nebulaSettings.triggerHandlerSettings.HandlerClassesToSkip__c=' + NebulaSettings.triggerHandlerSettings.HandlerClassesToSkip__c);
 
         // If ExecuteTriggers == true and the current class isn't in the list of handlers to skip, then execute
-        return new NebulaSettings().triggerHandlerSettings.ExecuteTriggers__c && !handlerClassesToSkip.contains(this.getClassName().toLowerCase());
+        return NebulaSettings.triggerHandlerSettings.ExecuteTriggers__c && !handlerClassesToSkip.contains(this.getClassName().toLowerCase());
     }
 
     private void setHashCode() {
@@ -161,7 +161,7 @@ public abstract class SObjectTriggerHandler extends NebulaCore implements ISObje
     }
 
     private Boolean haveRecordsAlreadyBeenProcessed() {
-        if(!new NebulaSettings().triggerHandlerSettings.PreventRecursion__c) return false;
+        if(!NebulaSettings.triggerHandlerSettings.PreventRecursion__c) return false;
 
         // This method is a safeguard that checks to see if we have recursion problems and stops if we do
         // It allows each context to occur once for a given hash code
