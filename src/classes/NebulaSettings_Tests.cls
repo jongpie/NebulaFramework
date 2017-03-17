@@ -45,7 +45,6 @@ private class NebulaSettings_Tests {
         Test.stopTest();
     }
 
-
     @isTest
     static void it_should_reset_all_settings_to_defaults() {
         NebulaLoggerSettings__c nebulaLoggerSettings = NebulaLoggerSettings__c.getInstance();

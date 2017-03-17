@@ -34,7 +34,7 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
     }
 
     public IQueryBuilder whereField(Schema.SObjectField field, QueryOperator operator, Object value) {
-        String parsedValue = QueryUtils.toQueryString(value);
+        String parsedValue = new QueryArgumentFormatter(value).getValue();
 
         this.whereClauseList.add(field + ' ' + operator.getValue() + ' ' + parsedValue);
         return this;
@@ -152,7 +152,7 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
     }
 
     private String getSearchQueryString(String searchTerm, QuerySearchGroup searchGroup) {
-        String query = 'FIND ' + QueryUtils.toQueryString(searchTerm)
+        String query = 'FIND ' + new QueryArgumentFormatter(searchTerm).getValue()
             + '\nIN ' + searchGroup.name().replace('_', ' ')
             + '\nRETURNING ' + this.sobjectType + '('
                 + this.getQueryFieldString()
