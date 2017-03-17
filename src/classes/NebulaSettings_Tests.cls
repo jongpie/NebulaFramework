@@ -35,7 +35,6 @@ private class NebulaSettings_Tests {
         Test.stopTest();
     }
 
-
     @isTest
     static void it_should_reset_all_settings_to_defaults() {
         NebulaRecordTypesSettings__c nebulaRecordTypesSettings = NebulaRecordTypesSettings__c.getInstance();
