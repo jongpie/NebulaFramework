@@ -3,7 +3,7 @@
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
 @isTest
-private class QueryUtils_Tests {
+private class QueryArgumentFormatter_Tests {
 
     @isTest
     static void it_should_return_query_string_for_null() {
@@ -11,7 +11,7 @@ private class QueryUtils_Tests {
         String expectedString = null;
 
         Test.startTest();
-        String returnedValue = QueryUtils.toQueryString(providedValue);
+        String returnedValue = new QueryArgumentFormatter(providedValue).getValue();
         Test.stopTest();
 
         System.assertEquals(expectedString, returnedValue);
@@ -23,7 +23,7 @@ private class QueryUtils_Tests {
         String expectedString = '(' + String.join(providedValueList, ',') + ')';
 
         Test.startTest();
-        String returnedValue = QueryUtils.toQueryString(providedValueList);
+        String returnedValue = new QueryArgumentFormatter(providedValueList).getValue();
         Test.stopTest();
 
         System.assertEquals(expectedString, returnedValue);
@@ -35,7 +35,7 @@ private class QueryUtils_Tests {
         String expectedString          = providedValue.getValue();
 
         Test.startTest();
-        String returnedValue = QueryUtils.toQueryString(providedValue);
+        String returnedValue = new QueryArgumentFormatter(providedValue).getValue();
         Test.stopTest();
 
         System.assertEquals(expectedString, returnedValue);
@@ -47,7 +47,7 @@ private class QueryUtils_Tests {
         String expectedString = String.valueOf(providedValue);
 
         Test.startTest();
-        String returnedValue = QueryUtils.toQueryString(providedValue);
+        String returnedValue = new QueryArgumentFormatter(providedValue).getValue();
         Test.stopTest();
 
         System.assertEquals(expectedString, returnedValue);
@@ -59,7 +59,7 @@ private class QueryUtils_Tests {
         String expectedString = String.valueOf(providedValue);
 
         Test.startTest();
-        String returnedValue = QueryUtils.toQueryString(providedValue);
+        String returnedValue = new QueryArgumentFormatter(providedValue).getValue();
         Test.stopTest();
 
         System.assertEquals(expectedString, returnedValue);
@@ -71,7 +71,7 @@ private class QueryUtils_Tests {
         String expectedString  = providedValue.format('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'', 'Greenwich Mean Time');
 
         Test.startTest();
-        String returnedValue = QueryUtils.toQueryString(providedValue);
+        String returnedValue = new QueryArgumentFormatter(providedValue).getValue();
         Test.stopTest();
 
         System.assertEquals(expectedString, returnedValue);
@@ -83,7 +83,7 @@ private class QueryUtils_Tests {
         String expectedString = String.valueOf(providedValue);
 
         Test.startTest();
-        String returnedValue = QueryUtils.toQueryString(providedValue);
+        String returnedValue = new QueryArgumentFormatter(providedValue).getValue();
         Test.stopTest();
 
         System.assertEquals(expectedString, returnedValue);
@@ -95,7 +95,7 @@ private class QueryUtils_Tests {
         String expectedString = String.valueOf(providedValue);
 
         Test.startTest();
-        String returnedValue = QueryUtils.toQueryString(providedValue);
+        String returnedValue = new QueryArgumentFormatter(providedValue).getValue();
         Test.stopTest();
 
         System.assertEquals(expectedString, returnedValue);
@@ -107,7 +107,7 @@ private class QueryUtils_Tests {
         String expectedString = String.valueOf(providedValue);
 
         Test.startTest();
-        String returnedValue = QueryUtils.toQueryString(providedValue);
+        String returnedValue = new QueryArgumentFormatter(providedValue).getValue();
         Test.stopTest();
 
         System.assertEquals(expectedString, returnedValue);
@@ -119,7 +119,7 @@ private class QueryUtils_Tests {
         String expectedString = String.valueOf(providedValue);
 
         Test.startTest();
-        String returnedValue = QueryUtils.toQueryString(providedValue);
+        String returnedValue = new QueryArgumentFormatter(providedValue).getValue();
         Test.stopTest();
 
         System.assertEquals(expectedString, returnedValue);
@@ -135,7 +135,7 @@ private class QueryUtils_Tests {
         String expectedString = '\'' + providedValue.Id + '\'';
 
         Test.startTest();
-        String returnedValue = QueryUtils.toQueryString(providedValue);
+        String returnedValue = new QueryArgumentFormatter(providedValue).getValue();
         Test.stopTest();
 
         System.assertEquals(expectedString, returnedValue);
@@ -147,7 +147,7 @@ private class QueryUtils_Tests {
         String expectedString = '\'' + providedValue + '\'';
 
         Test.startTest();
-        String returnedValue = QueryUtils.toQueryString(providedValue);
+        String returnedValue = new QueryArgumentFormatter(providedValue).getValue();
         Test.stopTest();
 
         System.assertEquals(expectedString, returnedValue);
@@ -159,7 +159,7 @@ private class QueryUtils_Tests {
         String expectedString = String.valueOf(providedValue);
 
         Test.startTest();
-        String returnedValue = QueryUtils.toQueryString(providedValue);
+        String returnedValue = new QueryArgumentFormatter(providedValue).getValue();
         Test.stopTest();
 
         System.assertEquals(expectedString, returnedValue);
