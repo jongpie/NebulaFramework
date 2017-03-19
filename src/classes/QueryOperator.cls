@@ -63,5 +63,4 @@ public without sharing class QueryOperator {
         this.value = value;
         return this;
     }
-
 }

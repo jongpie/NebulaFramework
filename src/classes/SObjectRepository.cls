@@ -20,22 +20,34 @@ public abstract class SObjectRepository extends NebulaCore implements ISObjectRe
         this.queryBuilder = new QueryBuilder(sobjectType, fieldSet, sobjectFieldList);
     }
 
+    //CRUD - virtual so that DML options / upserting on specific foreign Id's can be allowed through overriding
     public virtual void doInsert(SObject record) {this.doInsert(new List<SObject>{record});}
-    public virtual void doInsert(List<SObject> recordList) {Database.insert(recordList);}
+    public virtual void doInsert(List<SObject> records) {Database.insert(records);}
+
     public virtual void doUpdate(SObject record) {this.doUpdate(new List<SObject>{record});}
-    public virtual void doUpdate(List<SObject> recordList) {Database.update(recordList);}
-    // Apex doesn't allow upserting on generic SObject, so we'll delegate the implementation to each concrete class
-    public abstract void doUpsert(SObject record);
-    public abstract void doUpsert(List<SObject> recordList);
+    public virtual void doUpdate(List<SObject> records) {Database.update(records);}
+
+    public virtual void doUpsert(SObject record) {
+        //Salesforce will only allow upsert calls for SObjects if a declared-type list is passed in.
+        //This is fine for the bulk method, where we can assume the caller is passing in an explicit list, but for a single record,
+        //the only way to successfully perform the upsert is to dynamically spin up a list of the SObject's type
+        String listType = 'List<' + record.getSObjectType() + '>';
+        List<SObject> castRecords = (List<SObject>)Type.forName(listType).newInstance();
+        castRecords.add(record);
+        this.doUpsert(castRecords);
+    }
+
+    public virtual void doUpsert(List<SObject> records) {Database.upsert(records);}
 
     public virtual void doDelete(SObject record) {this.doDelete(new List<SObject>{record});}
-    public virtual void doDelete(List<SObject> recordList) {Database.delete(recordList);}
+    public virtual void doDelete(List<SObject> records) {Database.delete(records);}
+
     public virtual void doHardDelete(SObject record) {this.doHardDelete(new List<SObject>{record});}
     public virtual void doHardDelete(List<SObject> recordList) {
         Database.delete(recordList);
         if(!recordList.isEmpty()) Database.emptyRecycleBin(recordList);
     }
-    public virtual void doUndelete(SObject record) {this.doUndelete(new List<SObject>{record});}
-    public virtual void doUndelete(List<SObject> recordList) {Database.undelete(recordList);}
 
+    public virtual void doUndelete(SObject record) {this.doUnDelete(new List<SObject>{record});}
+    public virtual void doUndelete(List<SObject> records) {Database.undelete(records);}
 }

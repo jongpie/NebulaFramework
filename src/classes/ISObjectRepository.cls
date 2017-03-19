@@ -25,5 +25,4 @@ public interface ISObjectRepository {
     void doHardDelete(List<SObject> recordList);
     void doUndelete(SObject record);
     void doUndelete(List<SObject> recordList);
-
 }

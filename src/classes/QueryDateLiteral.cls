@@ -184,5 +184,4 @@ public without sharing class QueryDateLiteral {
         this.value = value;
         return this;
     }
-
 }

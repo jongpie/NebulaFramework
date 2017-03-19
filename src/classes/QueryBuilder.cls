@@ -8,11 +8,12 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
     private Map<String, Schema.SObjectField> sobjectTypeFieldMap;
     private Set<String> queryFields;
     private Schema.FieldSet fieldSet;
+    @testVisible private Boolean forUpdate;
+    @testVisible private List<String> orderByList;
+    @testVisible private Boolean shouldAddCommonFields;
     private List<Schema.SObjectField> sobjectFieldList;
     private List<String> whereClauseList;
-    private List<String> orderByList;
     private Integer limitCount;
-    private Boolean forUpdate;
     private QueryFilterScope filterScope;
 
     public QueryBuilder(Schema.SObjectType sobjectType, Schema.FieldSet fieldSet, List<Schema.SObjectField> sobjectFieldList) {
@@ -27,6 +28,7 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
         this.whereClauseList     = new List<String>();
         this.orderByList         = new List<String>();
         this.forUpdate           = false;
+        this.shouldAddCommonFields = true;
 
         this.addCommonQueryFields();
         this.addFieldSetMembers();
@@ -35,8 +37,17 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
 
     public IQueryBuilder whereField(Schema.SObjectField field, QueryOperator operator, Object value) {
         String parsedValue = new QueryArgumentFormatter(value).getValue();
+        String parsedOperator = operator.getValue();
 
-        this.whereClauseList.add(field + ' ' + operator.getValue() + ' ' + parsedValue);
+        this.whereClauseList.add(field + ' ' + parsedOperator + ' ' + parsedValue);
+        return this;
+    }
+
+    public IQueryBuilder whereField(Schema.SObjectField field, QueryOperator operator, List<Object> valueList) {
+        String parsedValue = new QueryArgumentFormatter(valueList).getValue();
+        String parsedOperator = operator.getValue();
+
+        this.whereClauseList.add(field + ' ' + parsedOperator + ' ' + parsedValue);
         return this;
     }
 
@@ -45,7 +56,7 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
     }
 
     public IQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder) {
-        return orderBy(orderByField, sortOrder, null);
+        return this.orderBy(orderByField, sortOrder, null);
     }
 
     public IQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder, QueryNullSortOrder nullSortOrder) {
@@ -75,27 +86,30 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
         return this;
     }
 
+    public IQueryBuilder turnOffCommonFields() {
+        this.shouldAddCommonFields = false;
+        return this;
+    }
+
      // Query execution methods
-    public SObject getFirstQueryResult() {
+    public SObject getFirstOrDefault() {
         return this.getQueryResults()[0];
     }
 
     public List<SObject> getQueryResults() {
-        String query = this.getQueryString();
-        List<SObject> results = Database.query(query);
+        List<SObject> results = Database.query(this.getQuery());
 
-        String logEntry = 'Query:\n' + query + '\n\nResults:\n' + results;
         this.addLogEntry(logEntry);
+        String logEntry = 'Query:\n' + this.query + '\n\nResults:\n' + results;
 
         return results;
     }
 
     public List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup) {
-        String query = this.getSearchQueryString(searchTerm, searchGroup);
-        List<SObject> results = Search.query(query)[0];
+        List<SObject> results = Search.query(this.getSearchQuery(searchTerm, searchGroup))[0];
 
-        String logEntry = 'Query:\n' + query + '\n\nResults:\n' + results;
         this.addLogEntry(logEntry);
+        String logEntry = 'Query:\n' + this.query + '\n\nResults:\n' + results;
 
         return results;
     }
@@ -148,7 +162,7 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
 
         this.addLogEntry(query);
 
-        return query;
+        return this.query;
     }
 
     private String getSearchQueryString(String searchTerm, QuerySearchGroup searchGroup) {
@@ -166,11 +180,12 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
 
         this.addLogEntry(query);
 
-        return query;
+        return this.query;
     }
 
     private void addCommonQueryFields() {
         if(!NebulaSettings.repositorySettings.IncludeCommonFields__c) return;
+        if(!this.shouldAddCommonFields) return;
 
         // Auto-add the common fields that are available for the SObject Type
         List<String> commonFieldNameList = new List<String>{
@@ -196,5 +211,4 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
 
         for(Schema.SObjectField field : this.sobjectFieldList) this.queryFields.add(field.getDescribe().getName().toLowerCase());
     }
-
 }
