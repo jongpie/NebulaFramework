@@ -10,7 +10,6 @@ public without sharing class QueryOperator {
         return this.value;
     }
 
-    //Actual constant literals
     public QueryOperator EQUALS {
         get {return this.setValue('=');}
     }

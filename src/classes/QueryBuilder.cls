@@ -2,41 +2,62 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
-public without sharing class QueryBuilder extends NebulaCore implements IQueryBuilder {
+public without sharing virtual class QueryBuilder extends NebulaCore implements IQueryBuilder {
 
-    private SObjectType sobjectType;
-    private Map<String, Schema.SObjectField> sobjectTypeFieldMap;
+    @testVisible private Boolean forUpdate;
     private Set<String> queryFields;
-    private Schema.FieldSet fieldSet;
-    private List<Schema.SObjectField> sobjectFieldList;
-    private List<String> whereClauseList;
-    private List<String> orderByList;
     private Integer limitCount;
-    private Boolean forUpdate;
-    private QueryFilterScope filterScope;
+    private String query;
+    @testVisible private List<String> orderByList;
+    @testVisible private Boolean shouldAddCommonFields;
+    private Map<String, Schema.SObjectField> sobjectTypeFieldMap;
+    private List<String> whereClauseList;
+
+    protected Schema.FieldSet fieldSet;
+    protected List<Schema.SObjectField> sobjectFieldList;
+    protected SObjectType sobjectType;
 
     public QueryBuilder(Schema.SObjectType sobjectType, Schema.FieldSet fieldSet, List<Schema.SObjectField> sobjectFieldList) {
-        this.currentModule = NebulaCore.Module.REPOSITORY;
-
-        this.sobjectType      = sobjectType;
         this.fieldSet         = fieldSet;
         this.sobjectFieldList = sobjectFieldList;
+        this.sobjectType      = sobjectType;
 
-        this.sobjectTypeFieldMap = this.sobjectType.getDescribe().fields.getMap();
-        this.queryFields         = new Set<String>();
-        this.whereClauseList     = new List<String>();
-        this.orderByList         = new List<String>();
-        this.forUpdate           = false;
+        this.shouldAddCommonFields = true;
+        this.forUpdate             = false;
+        this.queryFields           = new Set<String>();
+        this.orderByList           = new List<String>();
+        this.sobjectTypeFieldMap   = this.sobjectType.getDescribe().fields.getMap();
+        this.whereClauseList       = new List<String>();
 
         this.addCommonQueryFields();
         this.addFieldSetMembers();
         this.addSObjectFields();
     }
 
+    public IQueryBuilder whereField(List<QueryPredicate> queryPredicates) {
+        for(QueryPredicate predicate : queryPredicates) {
+            if(predicate.values.size() > 1) {
+                this.whereField(predicate.Field, predicate.Operator, predicate.Values);
+            } else {
+                this.whereField(predicate.Field, predicate.Operator, predicate.Values[0]);
+            }
+        }
+        return this;
+    }
+
     public IQueryBuilder whereField(Schema.SObjectField field, QueryOperator operator, Object value) {
         String parsedValue = new QueryArgumentFormatter(value).getValue();
+        String parsedOperator = operator.getValue();
 
-        this.whereClauseList.add(field + ' ' + operator.getValue() + ' ' + parsedValue);
+        this.whereClauseList.add(field + ' ' + parsedOperator + ' ' + parsedValue);
+        return this;
+    }
+
+    public IQueryBuilder whereField(Schema.SObjectField field, QueryOperator operator, List<Object> valueList) {
+        String parsedValue = new QueryArgumentFormatter(valueList).getValue();
+        String parsedOperator = operator.getValue();
+
+        this.whereClauseList.add(field + ' ' + parsedOperator + ' ' + parsedValue);
         return this;
     }
 
@@ -45,15 +66,15 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
     }
 
     public IQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder) {
-        return orderBy(orderByField, sortOrder, null);
+        return this.orderBy(orderByField, sortOrder, null);
     }
 
-    public IQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder, QueryNullSortOrder nullSortOrder) {
+    public IQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder, QueryNullSortOrder nullsSortOrder) {
         String sortOrderSoql = '';
         if(sortOrder == QuerySortOrder.ASCENDING) sortOrderSoql = ' ASC';
         else if(sortOrder == QuerySortOrder.DESCENDING) sortOrderSoql = ' DESC';
 
-        if(nullSortOrder != null) sortOrderSoql += ' NULLS ' + nullSortOrder.name();
+        if(nullsSortOrder != null) sortOrderSoql += ' NULLS ' + nullsSortOrder;
 
         this.orderByList.add(orderByField.getDescribe().getName() + sortOrderSoql);
 
@@ -70,107 +91,85 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
         return this;
     }
 
-    public IQueryBuilder usingScope(QueryFilterScope filterScope) {
-        this.filterScope = filterScope;
+    public IQueryBuilder turnOffCommonFields() {
+        this.shouldAddCommonFields = false;
         return this;
     }
 
-     // Query execution methods
-    public SObject getFirstQueryResult() {
-        return this.getQueryResults()[0];
+    // Query execution methods
+    public SObject getFirstOrDefault() {
+        return CollectionUtils.getFirstOrDefault(this.getQueryResults());
     }
 
     public List<SObject> getQueryResults() {
-        String query = this.getQueryString();
-        List<SObject> results = Database.query(query);
+        List<SObject> results = Database.query(this.getQuery());
 
-        String logEntry = 'Query:\n' + query + '\n\nResults:\n' + results;
-        Logger.addEntry(this, logEntry);
+        String logEntry = 'Query:\n' + this.query + '\n\nResults:\n' + results;
+        System.debug(logEntry);
 
         return results;
     }
 
-    public List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup) {
-        String query = this.getSearchQueryString(searchTerm, searchGroup);
-        List<SObject> results = Search.query(query)[0];
+    public virtual List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup) {
+        List<SObject> results = Search.query(this.getSearchQuery(searchTerm, searchGroup))[0];
 
-        String logEntry = 'Query:\n' + query + '\n\nResults:\n' + results;
-        Logger.addEntry(this, logEntry);
+        String logEntry = 'Query:\n' + this.query + '\n\nResults:\n' + results;
+        System.debug(logEntry);
 
         return results;
     }
 
     private String getQueryFieldString() {
         List<String> queryFieldList = new List<String>(this.queryFields);
-        if(NebulaSettings.repositorySettings.SortQueryFields__c) queryFieldList.sort();
+        queryFieldList.sort();
         return String.join(queryFieldList, ',');
     }
 
     private String getWhereClauseString() {
-        String whereClauseString = '';
-        if(!this.whereClauseList.isEmpty()) whereClauseString = '\nWHERE ' + String.join(this.whereClauseList, '\nAND ');
-        return whereClauseString;
+        return !this.whereClauseList.isEmpty() ? '\nWHERE ' + String.join(this.whereClauseList, '\nAND ') : '';
     }
 
     private String getOrderByString() {
-        String orderByString = '';
-        if(!this.orderByList.isEmpty()) orderByString = '\nORDER BY ' + String.join(new List<String>(orderByList), ', ');
-        return orderByString;
+        return !this.orderByList.isEmpty() ? '\nORDER BY ' + String.join(new List<String>(orderByList), ', ') : '';
     }
 
     private String getLimitCountString() {
-        String limitString = '';
-        if(this.limitCount != null) limitString = '\nLIMIT '+ this.limitCount;
-        return limitString;
+        return this.limitCount != null ? '\nLIMIT '+ this.limitCount : '';
     }
 
     private String getForUpdateString() {
-        String forUpdateString = '';
-        if(this.orderByList.isEmpty() && this.forUpdate) forUpdateString = '\nFOR UPDATE';
-        return forUpdateString;
+        return this.orderByList.isEmpty() && this.forUpdate ? '\nFOR UPDATE' : '';
     }
 
-    private String getUsingScopeString() {
-        String usingScopeString = '';
-        if(this.filterScope != null) usingScopeString = '\nUSING SCOPE ' + this.filterScope.name();
-        return usingScopeString;
-// TODO figure out what to do for SOSL https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_sosl_syntax.htm
-    }
-
-    private String getQueryString() {
-        String query = 'SELECT ' + this.getQueryFieldString()
-            + '\nFROM ' + this.sobjectType
-            + this.getUsingScopeString()
+    @testVisible
+    private String getQuery() {
+        this.query = 'SELECT ' + this.getQueryFieldString()
+            + ' FROM ' + this.sobjectType
             + this.getWhereClauseString()
             + this.getOrderByString()
             + this.getLimitCountString()
             + this.getForUpdateString();
 
-        Logger.addEntry(this, query);
-
-        return query;
+        return this.query;
     }
 
-    private String getSearchQueryString(String searchTerm, QuerySearchGroup searchGroup) {
-        String query = 'FIND ' + new QueryArgumentFormatter(searchTerm).getValue()
-            + '\nIN ' + searchGroup.name().replace('_', ' ')
-            + '\nRETURNING ' + this.sobjectType + '('
+    protected virtual String getSearchQuery(String searchTerm, QuerySearchGroup searchGroup) {
+        this.query = 'FIND ' + new QueryArgumentFormatter(searchTerm.toLowerCase()).getValue()
+            + ' IN ' + searchGroup.name().replace('_', ' ')
+            + ' RETURNING ' + this.sobjectType + '('
                 + this.getQueryFieldString()
                 + this.getWhereClauseString()
                 + this.getOrderByString()
                 + this.getLimitCountString()
             + ')';
 
-        if(this.forUpdate) Logger.addEntry(this, 'SOSL Search Query method flagged as FOR UPDATE. SOSL cannot use FOR UPDATE, ignoring');
-        if(this.filterScope != null) Logger.addEntry(this, 'SOSL Search Query method flagged as USING SCOPE ' + this.filterScope + '. SOSL cannot use USING SCOPE, ignoring');
+        if(this.forUpdate) System.debug(LoggingLevel.WARN, 'SOSL Search Query method flagged as FOR UPDATE. SOSL cannot use FOR UPDATE, ignoring');
 
-        Logger.addEntry(this, query);
-
-        return query;
+        return this.query;
     }
 
     private void addCommonQueryFields() {
-        if(!NebulaSettings.repositorySettings.IncludeCommonFields__c) return;
+        if(!this.shouldAddCommonFields) return;
 
         // Auto-add the common fields that are available for the SObject Type
         List<String> commonFieldNameList = new List<String>{
@@ -182,19 +181,21 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
 
             this.queryFields.add(commonFieldName.toLowerCase());
         }
-        Logger.addEntry(this, 'this.queryFields=' + this.queryFields);
     }
 
     private void addFieldSetMembers() {
         if(this.fieldSet == null) return;
 
-        for(Schema.FieldSetMember field : this.fieldSet.getFields()) this.queryFields.add(field.getFieldPath().toLowerCase());
+        for(Schema.FieldSetMember field : this.fieldSet.getFields()) {
+            this.queryFields.add(field.getFieldPath().toLowerCase());
+        }
     }
 
     private void addSObjectFields() {
         if(this.sobjectFieldList == null) return;
 
-        for(Schema.SObjectField field : this.sobjectFieldList) this.queryFields.add(field.getDescribe().getName().toLowerCase());
+        for(Schema.SObjectField field : this.sobjectFieldList) {
+            this.queryFields.add(field.getDescribe().getName().toLowerCase());
+        }
     }
-
 }
