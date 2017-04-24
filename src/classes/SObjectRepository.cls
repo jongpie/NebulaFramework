@@ -66,23 +66,23 @@ public virtual class SObjectRepository extends NebulaCore implements ISObjectRep
 
     public virtual List<SObject> getByFieldForIds(Schema.SObjectField field, Object value, List<Id> recordIds) {
         return this.queryFactory
-            .whereField(this.idField, new QueryOperator().IS_IN, recordIds)
-            .whereField(field, new QueryOperator().EQUALS, value)
+            .whereField(this.idField, QueryOperator.IS_IN, recordIds)
+            .whereField(field, QueryOperator.EQUALS, value)
             .getQueryResults();
     }
 
     public List<SObject> getCreatedSinceTimeValue(Object timeValue) {
         Schema.SObjectField createdDate = this.getCreatedDate();
         return this.queryFactory
-            .whereField(createdDate, new QueryOperator().GREATER_THAN_OR_EQUAL_TO, timeValue)
+            .whereField(createdDate, QueryOperator.GREATER_THAN_OR_EQUAL_TO, timeValue)
             .getQueryResults();
     }
 
     public List<SObject> getByFieldAndTypeForGivenTimePeriod(Schema.SObjectField field, Object firstValue, Object secondValue) {
         Schema.SObjectField createdDate = this.getCreatedDate();
         return this.queryFactory
-            .whereField(field, new QueryOperator().EQUALS, firstValue)
-            .whereField(createdDate, new QueryOperator().GREATER_THAN_OR_EQUAL_TO, secondValue)
+            .whereField(field, QueryOperator.EQUALS, firstValue)
+            .whereField(createdDate, QueryOperator.GREATER_THAN_OR_EQUAL_TO, secondValue)
             .getQueryResults();
     }
 

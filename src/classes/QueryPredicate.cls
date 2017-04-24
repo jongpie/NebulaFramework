@@ -8,7 +8,7 @@ public class QueryPredicate {
     }
 
     public static QueryPredicate EQUALS(Schema.SObjectField field, List<Object> values) {
-        QueryOperator operator = values.size() > 1 ? new QueryOperator().IS_IN : new QueryOperator().EQUALS;
+        QueryOperator operator = values.size() > 1 ? QueryOperator.IS_IN : QueryOperator.EQUALS;
         return new QueryPredicate(field, operator, values);
     }
 
@@ -17,12 +17,12 @@ public class QueryPredicate {
     }
 
     public static QueryPredicate NOT_EQUALS(Schema.SObjectField field, List<Object> values) {
-        QueryOperator operator = values.size() > 1 ? new QueryOperator().IS_NOT_IN : new QueryOperator().NOT_EQUAL_TO;
+        QueryOperator operator = values.size() > 1 ? QueryOperator.IS_NOT_IN : QueryOperator.NOT_EQUAL_TO;
         return new QueryPredicate(field, operator, values);
     }
 
     public static QueryPredicate GREATER_THAN(Schema.SObjectField field, Object value) {
-        return new QueryPredicate(field, new QueryOperator().GREATER_THAN, new List<Object>{value});
+        return new QueryPredicate(field, QueryOperator.GREATER_THAN, new List<Object>{value});
     }
 
     public static QueryPredicate LESS_THAN_OR_EQUAL(Schema.SObjectField field, Object value) {
@@ -30,7 +30,7 @@ public class QueryPredicate {
     }
 
     public static QueryPredicate LESS_THAN_OR_EQUAL(Schema.SObjectField field, List<Object> values) {
-        QueryOperator operator = values.size() > 1 ? new QueryOperator().IS_IN : new QueryOperator().LESS_THAN_OR_EQUAL_TO;
+        QueryOperator operator = values.size() > 1 ? QueryOperator.IS_IN : QueryOperator.LESS_THAN_OR_EQUAL_TO;
         return new QueryPredicate(field, operator, values);
     }
 

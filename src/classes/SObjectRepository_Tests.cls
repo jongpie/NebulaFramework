@@ -17,14 +17,14 @@ private class SObjectRepository_Tests {
 
         public Lead getById(Id leadId) {
             return (Lead)this.queryBuilder
-                .whereField(Schema.Lead.Id, new QueryOperator().EQUALS, leadId)
+                .whereField(Schema.Lead.Id, QueryOperator.EQUALS, leadId)
                 .setAsUpdate()
                 .getFirstQueryResult();
         }
 
         public List<Lead> getById(List<Id> leadIdList) {
             return (List<Lead>)this.queryBuilder
-                .whereField(Schema.Lead.Id, new QueryOperator().IS_IN, leadIdList)
+                .whereField(Schema.Lead.Id, QueryOperator.IS_IN, leadIdList)
                 .setAsUpdate()
                 .orderBy(Schema.Lead.LastActivityDate, QuerySortOrder.DESCENDING, QueryNullSortOrder.LAST)
                 .getQueryResults();
@@ -40,8 +40,8 @@ private class SObjectRepository_Tests {
 
         public List<Lead> getNewThisWeekById(List<Id> leadIdList) {
             return (List<Lead>)this.queryBuilder
-                .whereField(Schema.Lead.Id, new QueryOperator().IS_IN, leadIdList)
-                .whereField(Schema.Lead.CreatedDate, new QueryOperator().EQUALS, new QueryDateLiteral().THIS_WEEK)
+                .whereField(Schema.Lead.Id, QueryOperator.IS_IN, leadIdList)
+                .whereField(Schema.Lead.CreatedDate, QueryOperator.EQUALS, new QueryDateLiteral().THIS_WEEK)
                 .setAsUpdate()
                 .getQueryResults();
         }
