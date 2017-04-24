@@ -1,10 +1,10 @@
 public class TestingUtils {
+    public class InvalidArgumentException extends Exception {}
     public static List<SObject> insertedRecords = new List<SObject>();
     public static List<SObject> upsertedRecords = new List<SObject>();
     public static List<SObject> updatedRecords  = new List<SObject>();
     public static List<SObject> deletedRecords  = new List<SObject>();
     public static List<SObject> undeletedRecords= new List<Sobject>();
-
     private static Integer startingNumber = 1;
 
     public static String generateId(Schema.SObjectType sObjectType) {

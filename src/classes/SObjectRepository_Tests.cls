@@ -41,7 +41,7 @@ private class SObjectRepository_Tests {
         public List<Lead> getNewThisWeekById(List<Id> leadIdList) {
             return (List<Lead>)this.queryBuilder
                 .whereField(Schema.Lead.Id, QueryOperator.IS_IN, leadIdList)
-                .whereField(Schema.Lead.CreatedDate, QueryOperator.EQUALS, new QueryDateLiteral().THIS_WEEK)
+                .whereField(Schema.Lead.CreatedDate, QueryOperator.EQUALS, QueryDateLiteral.THIS_WEEK)
                 .setAsUpdate()
                 .getQueryResults();
         }
@@ -57,12 +57,12 @@ private class SObjectRepository_Tests {
                 .getSearchResults(searchTerm, searchGroup);
         }
 
-        public override void doUpsert(SObject record) {
+        public override SObject doUpsert(SObject record) {
             Lead lead = (Lead)record;
             upsert lead;
         }
 
-        public override void doUpsert(List<SObject> recordList) {
+        public override List<SObject> doUpsert(List<SObject> recordList) {
             List<Lead> leadList = (List<Lead>)recordList;
             upsert leadList;
         }
@@ -102,7 +102,7 @@ private class SObjectRepository_Tests {
         Lead expectedLead = [SELECT Id FROM Lead LIMIT 1];
 
         Test.startTest();
-        Lead returnedLead = new SObjectRepository_Tests.LeadRepository().getById(expectedLead.Id);
+        Lead returnedLead = (Lead)new SObjectRepository_Tests.LeadRepository().getById(expectedLead.Id);
         Test.stopTest();
 
         System.assertEquals(expectedLead.Id, returnedLead.Id);
@@ -219,6 +219,7 @@ private class SObjectRepository_Tests {
         List<Lead> existingLeadList = [SELECT Id, IsDeleted FROM Lead WHERE Id = :existingLead.Id ALL ROWS];
         //System.assertEquals(0, existingLeadList.size());
         // TODO figure out why the hard delete doesn't work in unit tests
+        //This should work if you do instead: System.assert(deletedContacts[0].IsDeleted);
     }
 
     @isTest

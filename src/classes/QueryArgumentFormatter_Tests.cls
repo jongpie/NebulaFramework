@@ -31,7 +31,7 @@ private class QueryArgumentFormatter_Tests {
 
     @isTest
     static void it_should_return_query_string_for_query_date_literal() {
-        QueryDateLiteral providedValue = new QueryDateLiteral().YESTERDAY;
+        QueryDateLiteral providedValue = QueryDateLiteral.YESTERDAY;
         String expectedString          = providedValue.getValue();
 
         Test.startTest();

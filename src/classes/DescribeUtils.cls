@@ -16,4 +16,8 @@ public without sharing class DescribeUtils {
 
         return fieldHashCodeToSObjectTypeMap.get(fieldHash);
     }
+
+    public static Schema.SObjectField getFieldForSObjectType(Schema.SObjectType sObjectType, String fieldName) {
+        return sObjectType.getDescribe().fields.getMap().get(fieldName);
+    }
 }
