@@ -15,6 +15,7 @@ public interface IQueryBuilder {
 
     IQueryBuilder limitCount(Integer limitCount);
     IQueryBuilder setAsUpdate();
+    IQueryBuilder usingScope();
 
     // Query execution methods
     SObject getFirstOrDefault();

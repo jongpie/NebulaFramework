@@ -12,6 +12,7 @@ public without sharing virtual class QueryBuilder extends NebulaCore implements 
     @testVisible private Boolean shouldAddCommonFields;
     private Map<String, Schema.SObjectField> sobjectTypeFieldMap;
     private List<String> whereClauseList;
+    private QueryFilterScope filterScope;
 
     protected Schema.FieldSet fieldSet;
     protected List<Schema.SObjectField> sobjectFieldList;
@@ -93,6 +94,11 @@ public without sharing virtual class QueryBuilder extends NebulaCore implements 
 
     public IQueryBuilder turnOffCommonFields() {
         this.shouldAddCommonFields = false;
+        return this;
+    }
+
+    public IQueryBuilder usingScope(QueryFilterScope filterScope) {
+        this.filterScope = filterScope;
         return this;
     }
 

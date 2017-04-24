@@ -19,7 +19,7 @@ private class SObjectRepository_Tests {
             return this.queryBuilder
                 .whereField(Schema.Lead.Id, QueryOperator.EQUALS, leadId)
                 .setAsUpdate()
-                .getFirstQueryResult();
+                .getFirstOrDefault();
         }
 
         public override List<SObject> getById(List<Id> leadIdList) {
@@ -60,11 +60,15 @@ private class SObjectRepository_Tests {
         public override SObject doUpsert(SObject record) {
             Lead lead = (Lead)record;
             upsert lead;
+
+            return lead;
         }
 
         public override List<SObject> doUpsert(List<SObject> recordList) {
             List<Lead> leadList = (List<Lead>)recordList;
             upsert leadList;
+
+            return leadList;
         }
     }
 
