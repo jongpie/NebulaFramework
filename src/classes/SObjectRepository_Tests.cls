@@ -15,15 +15,15 @@ private class SObjectRepository_Tests {
             super(Schema.Lead.SObjectType, fieldSet);
         }
 
-        public override Lead getById(Id leadId) {
-            return (Lead)this.queryBuilder
+        public override SObject getById(Id leadId) {
+            return this.queryBuilder
                 .whereField(Schema.Lead.Id, QueryOperator.EQUALS, leadId)
                 .setAsUpdate()
                 .getFirstQueryResult();
         }
 
-        public override List<Lead> getById(List<Id> leadIdList) {
-            return (List<Lead>)this.queryBuilder
+        public override List<SObject> getById(List<Id> leadIdList) {
+            return this.queryBuilder
                 .whereField(Schema.Lead.Id, QueryOperator.IS_IN, leadIdList)
                 .setAsUpdate()
                 .orderBy(Schema.Lead.LastActivityDate, QuerySortOrder.DESCENDING, QueryNullSortOrder.LAST)
@@ -113,7 +113,7 @@ private class SObjectRepository_Tests {
         Map<Id, Lead> expectedLeadList = new Map<Id, Lead>([SELECT Id FROM Lead]);
 
         Test.startTest();
-        List<Lead> returnedLeadList = new SObjectRepository_Tests.LeadRepository().getById(new List<Id>(expectedLeadList.keySet()));
+        List<Lead> returnedLeadList = (List<Lead>)new SObjectRepository_Tests.LeadRepository().getById(new List<Id>(expectedLeadList.keySet()));
         Test.stopTest();
 
         System.assertNotEquals(null, expectedLeadList);
