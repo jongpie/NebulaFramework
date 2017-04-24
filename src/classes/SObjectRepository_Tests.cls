@@ -15,14 +15,14 @@ private class SObjectRepository_Tests {
             super(Schema.Lead.SObjectType, fieldSet);
         }
 
-        public Lead getById(Id leadId) {
+        public override Lead getById(Id leadId) {
             return (Lead)this.queryBuilder
                 .whereField(Schema.Lead.Id, QueryOperator.EQUALS, leadId)
                 .setAsUpdate()
                 .getFirstQueryResult();
         }
 
-        public List<Lead> getById(List<Id> leadIdList) {
+        public override List<Lead> getById(List<Id> leadIdList) {
             return (List<Lead>)this.queryBuilder
                 .whereField(Schema.Lead.Id, QueryOperator.IS_IN, leadIdList)
                 .setAsUpdate()
