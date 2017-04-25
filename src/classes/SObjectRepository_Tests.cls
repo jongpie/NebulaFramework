@@ -210,9 +210,7 @@ private class SObjectRepository_Tests {
         Test.stopTest();
 
         List<Lead> existingLeadList = [SELECT Id, IsDeleted FROM Lead WHERE Id = :existingLead.Id ALL ROWS];
-        //System.assertEquals(0, existingLeadList.size());
-        // TODO figure out why the hard delete doesn't work in unit tests
-        //This should work if you do instead: System.assert(deletedContacts[0].IsDeleted);
+        System.assert(existingLeadList[0].IsDeleted);
     }
 
     @isTest
