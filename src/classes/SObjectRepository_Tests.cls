@@ -16,7 +16,7 @@ private class SObjectRepository_Tests {
         }
 
         public List<Lead> getMyRecentLeads(Integer limitCount) {
-            return (List<Lead>)this.queryBuilder
+            return (List<Lead>)this.queryFactory
                 .usingScope(QueryFilterScope.MINE)
                 .limitCount(limitCount)
                 .orderBy(Schema.Lead.LastActivityDate)
@@ -24,7 +24,7 @@ private class SObjectRepository_Tests {
         }
 
         public List<Lead> getNewThisWeekById(List<Id> leadIdList) {
-            return (List<Lead>)this.queryBuilder
+            return (List<Lead>)this.queryFactory
                 .whereField(Schema.Lead.Id, QueryOperator.IS_IN, leadIdList)
                 .whereField(Schema.Lead.CreatedDate, QueryOperator.EQUALS, QueryDateLiteral.THIS_WEEK)
                 .setAsUpdate()
@@ -36,7 +36,7 @@ private class SObjectRepository_Tests {
         }
 
         public List<Lead> searchInFieldsBySearchGroup(String searchTerm, QuerySearchGroup searchGroup) {
-            return (List<Lead>)this.queryBuilder
+            return (List<Lead>)this.queryFactory
                 .orderBy(Schema.Lead.CreatedDate, QuerySortOrder.DESCENDING)
                 .setAsUpdate() // SOSL cannot use FOR UPDATE. This will execute, but a warning debug statement will indicate that it is ignored
                 .getSearchResults(searchTerm, searchGroup);
@@ -54,6 +54,11 @@ private class SObjectRepository_Tests {
             upsert leadList;
 
             return leadList;
+        }
+
+        public override SObject doUpdate(SObject record) {
+            TestingUtils.updatedRecords.add(record);
+            return record;
         }
     }
 
@@ -179,8 +184,7 @@ private class SObjectRepository_Tests {
         new SObjectRepository_Tests.LeadRepository().doUpdate(existingLead);
         Test.stopTest();
 
-        existingLead = [SELECT Id, LastModifiedDate FROM Lead WHERE Id = :existingLead.Id];
-        System.assert(existingLead.LastModifiedDate > originalLastModifiedDate);
+        System.assert((Lead)TestingUtils.updatedRecords[0] == existingLead);
     }
 
     @isTest
