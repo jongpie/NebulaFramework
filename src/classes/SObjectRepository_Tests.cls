@@ -15,21 +15,6 @@ private class SObjectRepository_Tests {
             super(Schema.Lead.SObjectType, fieldSet);
         }
 
-        public override SObject getById(Id leadId) {
-            return this.queryBuilder
-                .whereField(Schema.Lead.Id, QueryOperator.EQUALS, leadId)
-                .setAsUpdate()
-                .getFirstOrDefault();
-        }
-
-        public override List<SObject> getById(List<Id> leadIdList) {
-            return this.queryBuilder
-                .whereField(Schema.Lead.Id, QueryOperator.IS_IN, leadIdList)
-                .setAsUpdate()
-                .orderBy(Schema.Lead.LastActivityDate, QuerySortOrder.DESCENDING, QueryNullSortOrder.LAST)
-                .getQueryResults();
-        }
-
         public List<Lead> getMyRecentLeads(Integer limitCount) {
             return (List<Lead>)this.queryBuilder
                 .usingScope(QueryFilterScope.MINE)
