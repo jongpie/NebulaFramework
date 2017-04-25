@@ -9,8 +9,6 @@ public interface ISObjectRepository {
     List<SObject> getById(List<Id> recordIdList);
     List<SObject> get(List<QueryPredicate> queryPredicates);
     List<SObject> get(QueryPredicate queryPredicate);
-    List<SObject> get(QueryPredicate queryPredicateOne, QueryPredicate queryPredicateTwo);
-    List<SObject> get(QueryPredicate queryPredicateOne, QueryPredicate queryPredicateTwo, QueryPredicate queryPredicateThree);
     List<SObject> getByFieldForIds(Schema.SObjectField field, Object value, List<Id> idList);
     List<SObject> getByFieldForIds(Schema.SObjectField field, Object value, Set<Id> idSet);
     List<SObject> getCreatedSinceTimeValue(Object value);

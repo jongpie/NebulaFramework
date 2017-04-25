@@ -22,23 +22,6 @@ public class TestingUtils {
         }
     }
 
-    public static List<SObject> getInsertedByType(Schema.SObjectType sObjectType) {
-        List<SObject> matchingRecords = new List<SObject>();
-        for (SObject record : insertedRecords) {
-            if(record.getSObjectType() ==  sObjectType) {
-                matchingRecords.Add(record);
-            }
-        }
-        return matchingRecords;
-    }
-    public static SObject getSingleOrDefaultInsertedByType(Schema.SObjectType sObjectType){
-        List<SObject> matchingRecords = getInsertedByType(sObjectType);
-        if(matchingRecords.size() > 1) {
-            throw new Exceptions.InvalidOperationException();
-        }
-        return matchingRecords.size() == 0 ? null : matchingRecords[0];
-    }
-
     public static SObject setReadOnlyField(SObject sobj, String fieldName, String value) {
         return setReadOnlyField(sobj,new Map<String,String>{fieldName => value});
     }

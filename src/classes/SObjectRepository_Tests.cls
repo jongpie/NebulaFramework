@@ -31,17 +31,6 @@ private class SObjectRepository_Tests {
                 .getQueryResults();
         }
 
-        public List<Lead> searchInAllFields(String searchTerm) {
-            return this.searchInFieldsBySearchGroup(searchTerm, QuerySearchGroup.ALL_FIELDS);
-        }
-
-        public List<Lead> searchInFieldsBySearchGroup(String searchTerm, QuerySearchGroup searchGroup) {
-            return (List<Lead>)this.queryFactory
-                .orderBy(Schema.Lead.CreatedDate, QuerySortOrder.DESCENDING)
-                .setAsUpdate() // SOSL cannot use FOR UPDATE. This will execute, but a warning debug statement will indicate that it is ignored
-                .getSearchResults(searchTerm, searchGroup);
-        }
-
         public override SObject doUpsert(SObject record) {
             Lead lead = (Lead)record;
             upsert lead;
@@ -103,6 +92,30 @@ private class SObjectRepository_Tests {
     }
 
     @isTest
+    static void it_should_get_by_id_using_query_predicate() {
+        Lead expectedLead = [SELECT Id FROM Lead LIMIT 1];
+        QueryPredicate predicate = QueryPredicate.EQUALS(Lead.Id, expectedLead.Id);
+
+        Test.startTest();
+        Lead returnedLead = ((List<Lead>)new SObjectRepository_Tests.LeadRepository().get(predicate))[0];
+        Test.stopTest();
+
+        System.assertEquals(expectedLead.Id, returnedLead.Id);
+    }
+
+    @isTest
+    static void it_should_get_by_id_using_list_of_query_predicates() {
+        Lead expectedLead = [SELECT Id FROM Lead LIMIT 1];
+        QueryPredicate predicate = QueryPredicate.EQUALS(Lead.Id, expectedLead.Id);
+
+        Test.startTest();
+        Lead returnedLead = ((List<Lead>)new SObjectRepository_Tests.LeadRepository().get(new List<QueryPredicate>{predicate}))[0];
+        Test.stopTest();
+
+        System.assertEquals(expectedLead.Id, returnedLead.Id);
+    }
+
+    @isTest
     static void it_should_get_by_id_when_list_of_id() {
         Map<Id, Lead> expectedLeadList = new Map<Id, Lead>([SELECT Id FROM Lead]);
 
@@ -142,16 +155,44 @@ private class SObjectRepository_Tests {
     }
 
     @isTest
+    static void it_should_return_by_field_for_ids_in_set() {
+        Map<Id, Lead> expectedLeadMap = new Map<Id, Lead>([SELECT Id FROM Lead]);
+        List<SObjectField> leadFields = new List<SobjectField>{ Lead.Id, Lead.Company };
+        ISObjectRepository repo = new SObjectRepository(Lead.SObjectType, leadFields);
+        Test.startTest();
+        List<Lead> returnedLeadList = (List<Lead>)repo.getByFieldForIds(Lead.Company, 'My Test Company', expectedLeadMap.keyset());
+        Test.stopTest();
+
+        System.assertNotEquals(null, expectedLeadMap);
+        System.assert(!expectedLeadMap.isEmpty());
+        System.assertEquals(expectedLeadMap.size(), returnedLeadList.size());
+    }
+
+    @isTest
+    static void it_should_return_by_field_for_ids_in_list() {
+        Map<Id, Lead> expectedLeadMap = new Map<Id, Lead>([SELECT Id FROM Lead]);
+        List<SObjectField> leadFields = new List<SobjectField>{ Lead.Id, Lead.Company };
+        ISObjectRepository repo = new SObjectRepository(Lead.SObjectType, leadFields);
+        Test.startTest();
+        List<Lead> returnedLeadList = (List<Lead>)repo.getByFieldForIds(Lead.Company, 'My Test Company', new List<Id>(expectedLeadMap.keyset()));
+        Test.stopTest();
+
+        System.assertNotEquals(null, expectedLeadMap);
+        System.assert(!expectedLeadMap.isEmpty());
+        System.assertEquals(expectedLeadMap.size(), returnedLeadList.size());
+    }
+
+    @isTest
     static void it_should_search_in_all_fields() {
         String searchTerm = 'Gillespie';
-        Map<Id, Lead> soslLeadMap = new Map<Id, Lead>([SELECT Id, Name FROM Lead]);
+        Map<Id, Lead> soslLeadMap = new Map<Id, Lead>([SELECT Id, Name, OwnerId, Owner.Name FROM Lead]);
         Test.setFixedSearchResults(new List<Id>(soslLeadMap.keySet()));
 
         List<Lead> expectedLeadList = [FIND :searchTerm IN ALL FIELDS RETURNING Lead(Id, Name)][0];
         System.assertNotEquals(0, expectedLeadList.size());
 
         Test.startTest();
-        List<Lead> returnedLeadList = new SObjectRepository_Tests.LeadRepository().searchInAllFields(searchTerm);
+        List<Lead> returnedLeadList = (List<Lead>)new SObjectRepository_Tests.LeadRepository().getSearchResults(searchTerm, QuerySearchGroup.ALL_FIELDS);
         Test.stopTest();
 
         System.assertNotEquals(null, expectedLeadList);

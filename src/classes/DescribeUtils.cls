@@ -4,19 +4,6 @@
 *************************************************************************************************/
 public without sharing class DescribeUtils {
 
-    public static String getFieldType(String fieldName) {
-        Schema.SObjectType sObj = getSObjectType(fieldName.substringBefore('.'));
-        Schema.DescribeFieldResult field = sObj.getDescribe().fields.getMap().get(fieldName.substringAfter('.')).getDescribe();
-
-        return String.valueOf(field.getType());
-    }
-
-    public static SObjectType getSObjectType(String sObjectName) {
-        SObjectType sObjectType = Schema.getGlobalDescribe().get(sObjectName);
-
-        return sObjectType;
-    }
-
     public static SObjectType getSObjectType(Schema.SObjectField field) {
         //There is supposed to be a built in Salesforce getDescribe() result for Schema.SObjectField, getReferenceTo()
         //that should return a list of objects that field is associated with, but it has been broken for several years.

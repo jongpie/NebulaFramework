@@ -146,6 +146,12 @@ public class QueryDateLiteral_Tests {
     }
 
     @isTest
+    static void it_should_return_n_days_ago_string() {
+        QueryDateLiteral dateLiteral = QueryDateLiteral.N_DAYS_AGO(n_number);
+        System.assertEquals('N_DAYS_AGO: ' + n_number, dateLiteral.getValue());
+    }
+
+    @isTest
     static void it_should_return_last_n_days_string() {
         QueryDateLiteral dateLiteral = QueryDateLiteral.LAST_N_DAYS(n_number);
         System.assertEquals('LAST_N_DAYS: ' + n_number, dateLiteral.getValue());

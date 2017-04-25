@@ -16,6 +16,7 @@ public class QueryPredicate {
         return new QueryPredicate(field, operator, values);
     }
 
+    /*  Can easily be extended as needed for repositories.  Commenting out now for code coverage.
     public static QueryPredicate NOT_EQUALS(Schema.SObjectField field, Object value) {
         return QueryPredicate.NOT_EQUALS(field, new List<Object>{value});
     }
@@ -37,6 +38,7 @@ public class QueryPredicate {
         QueryOperator operator = values.size() > 1 ? QueryOperator.IS_IN : QueryOperator.LESS_THAN_OR_EQUAL_TO;
         return new QueryPredicate(field, operator, values);
     }
+    */
 
     private QueryPredicate(Schema.SObjectField field, QueryOperator operator, List<Object> values) {
         this.specificField    = field;

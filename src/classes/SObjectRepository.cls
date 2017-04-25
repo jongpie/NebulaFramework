@@ -10,11 +10,11 @@ public virtual class SObjectRepository extends NebulaCore implements ISObjectRep
     private final Schema.SObjectField idField;
     protected IQueryBuilder queryBuilder;
 
-    protected SObjectRepository(Schema.SObjectType sobjectType, Schema.FieldSet fieldSet) {
+    public SObjectRepository(Schema.SObjectType sobjectType, Schema.FieldSet fieldSet) {
         this(sobjectType, fieldSet, null);
     }
 
-    protected SObjectRepository(Schema.SObjectType sobjectType, List<Schema.SObjectField> sobjectFieldList) {
+    public SObjectRepository(Schema.SObjectType sobjectType, List<Schema.SObjectField> sobjectFieldList) {
         this(sobjectType, null, sobjectFieldList);
     }
 
@@ -46,22 +46,14 @@ public virtual class SObjectRepository extends NebulaCore implements ISObjectRep
             .getQueryResults();
     }
 
+    public virtual List<SObject> get(QueryPredicate queryPredicate) {
+        return this.get(new List<QueryPredicate> { queryPredicate });
+    }
+
     public virtual List<SObject> get(List<QueryPredicate> queryPredicates) {
         return this.queryFactory
             .whereField(queryPredicates)
             .getQueryResults();
-    }
-
-    public List<SObject> get(QueryPredicate queryPredicate) {
-        return this.get(new List<QueryPredicate> { queryPredicate });
-    }
-
-    public List<SObject> get(QueryPredicate queryPredicateOne, QueryPredicate queryPredicateTwo) {
-        return this.get(new List<QueryPredicate> { queryPredicateOne, queryPredicateTwo });
-    }
-
-    public List<SObject> get(QueryPredicate queryPredicateOne, QueryPredicate queryPredicateTwo, QueryPredicate queryPredicateThree) {
-        return this.get(new List<QueryPredicate> { queryPredicateOne, queryPredicateTwo, queryPredicateThree });
     }
 
     public virtual List<SObject> getByFieldForIds(Schema.SObjectField field, Object value, Set<Id> idSet) {

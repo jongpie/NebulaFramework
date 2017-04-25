@@ -62,8 +62,4 @@ public without sharing class QueryOperator {
         get {return new QueryOperator('NOT LIKE');}
     }
 
-    private QueryOperator setValue(String value) {
-        this.value = value;
-        return this;
-    }
 }
