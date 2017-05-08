@@ -21,16 +21,6 @@ private class SObjectRepositoryMocks_Tests {
     }
 
     @isTest
-    static void it_should_fake_returning_by_field_and_type_for_given_time_period() {
-        Id testId = getTestId();
-        SObjectField field = getField();
-        String value = getFieldValue();
-
-        SObject returnedObj = new SObjectRepositoryMocks.Base(null).getByFieldAndTypeForGivenTimePeriod(field, value, value)[0];
-        System.assert(returnedObj.get(String.valueOf(field)) == value);
-    }
-
-    @isTest
     static void it_should_return_list_of_sobjects_when_querying_for_created_since_time_value() {
         System.assert(new SObjectRepositoryMocks.Base().getCreatedSinceTimeValue(QueryDateLiteral.TODAY) instanceof List<SObject>);
     }

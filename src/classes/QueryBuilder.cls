@@ -2,28 +2,26 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
-public without sharing virtual class QueryBuilder extends NebulaCore implements IQueryBuilder {
+public without sharing class QueryBuilder extends NebulaCore implements IQueryBuilder {
 
     @testVisible private Boolean forUpdate;
     private Set<String> queryFields;
     private Integer limitCount;
     private String query;
     @testVisible private List<String> orderByList;
-    @testVisible private Boolean shouldAddCommonFields;
     private Map<String, Schema.SObjectField> sobjectTypeFieldMap;
     private List<String> whereClauseList;
     private QueryFilterScope filterScope;
 
-    protected Schema.FieldSet fieldSet;
-    protected List<Schema.SObjectField> sobjectFieldList;
-    protected SObjectType sobjectType;
+    private final Schema.FieldSet fieldSet;
+    private final List<Schema.SObjectField> sobjectFieldList;
+    private final SObjectType sobjectType;
 
     public QueryBuilder(Schema.SObjectType sobjectType, Schema.FieldSet fieldSet, List<Schema.SObjectField> sobjectFieldList) {
         this.fieldSet         = fieldSet;
         this.sobjectFieldList = sobjectFieldList;
         this.sobjectType      = sobjectType;
 
-        this.shouldAddCommonFields = true;
         this.forUpdate             = false;
         this.queryFields           = new Set<String>();
         this.orderByList           = new List<String>();
@@ -92,26 +90,20 @@ public without sharing virtual class QueryBuilder extends NebulaCore implements 
         return this;
     }
 
-    public IQueryBuilder turnOffCommonFields() {
-        this.shouldAddCommonFields = false;
-        return this;
-    }
-
     public IQueryBuilder usingScope(QueryFilterScope filterScope) {
         this.filterScope = filterScope;
         return this;
     }
 
     // Query execution methods
-    public SObject getFirstOrDefault() {
-        return CollectionUtils.getFirstOrDefault(this.getQueryResults());
+    public SObject getFirstQueryResult() {
+        return this.getQueryResults()[0];
     }
 
     public List<SObject> getQueryResults() {
         List<SObject> results = Database.query(this.getQuery());
 
-        String logEntry = 'Query:\n' + this.query + '\n\nResults:\n' + results;
-        System.debug(logEntry);
+        this.logEntry(results);
 
         return results;
     }
@@ -119,15 +111,14 @@ public without sharing virtual class QueryBuilder extends NebulaCore implements 
     public virtual List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup) {
         List<SObject> results = Search.query(this.getSearchQuery(searchTerm, searchGroup))[0];
 
-        String logEntry = 'Query:\n' + this.query + '\n\nResults:\n' + results;
-        System.debug(logEntry);
+        this.logEntry(results);
 
         return results;
     }
 
     private String getQueryFieldString() {
         List<String> queryFieldList = new List<String>(this.queryFields);
-        queryFieldList.sort();
+        if(NebulaSettings.repositorySettings.SortQueryFields__c) queryFieldList.sort();
         return String.join(queryFieldList, ',');
     }
 
@@ -159,7 +150,7 @@ public without sharing virtual class QueryBuilder extends NebulaCore implements 
         return this.query;
     }
 
-    protected virtual String getSearchQuery(String searchTerm, QuerySearchGroup searchGroup) {
+    private String getSearchQuery(String searchTerm, QuerySearchGroup searchGroup) {
         this.query = 'FIND ' + new QueryArgumentFormatter(searchTerm.toLowerCase()).getValue()
             + ' IN ' + searchGroup.name().replace('_', ' ')
             + ' RETURNING ' + this.sobjectType + '('
@@ -169,14 +160,14 @@ public without sharing virtual class QueryBuilder extends NebulaCore implements 
                 + this.getLimitCountString()
             + ')';
 
-        if(this.forUpdate) System.debug(LoggingLevel.WARN, 'SOSL Search Query method flagged as FOR UPDATE. SOSL cannot use FOR UPDATE, ignoring');
+        if(this.forUpdate) Logger.addEntry(this, 'SOSL Search Query method flagged as FOR UPDATE. SOSL cannot use FOR UPDATE, ignoring');
+        if(this.filterScope != null) Logger.addEntry(this, 'SOSL Search Query method flagged as USING SCOPE ' + this.filterScope + '. SOSL cannot use USING SCOPE, ignoring');
 
         return this.query;
     }
 
     private void addCommonQueryFields() {
-        if(!this.shouldAddCommonFields) return;
-
+        if(!NebulaSettings.repositorySettings.IncludeCommonFields__c) return;
         // Auto-add the common fields that are available for the SObject Type
         List<String> commonFieldNameList = new List<String>{
             'Id', 'CaseNumber', 'CreatedById', 'CreatedDate', 'IsClosed', 'LastModifiedById', 'LastModifiedDate',
@@ -192,16 +183,17 @@ public without sharing virtual class QueryBuilder extends NebulaCore implements 
     private void addFieldSetMembers() {
         if(this.fieldSet == null) return;
 
-        for(Schema.FieldSetMember field : this.fieldSet.getFields()) {
-            this.queryFields.add(field.getFieldPath().toLowerCase());
-        }
+        for(Schema.FieldSetMember field : this.fieldSet.getFields()) this.queryFields.add(field.getFieldPath().toLowerCase());
     }
 
     private void addSObjectFields() {
         if(this.sobjectFieldList == null) return;
 
-        for(Schema.SObjectField field : this.sobjectFieldList) {
-            this.queryFields.add(field.getDescribe().getName().toLowerCase());
-        }
+        for(Schema.SObjectField field : this.sobjectFieldList) this.queryFields.add(field.getDescribe().getName().toLowerCase());
+    }
+
+    private void logEntry(List<Object> results) {
+        String logEntry = 'Query:\n' + this.query + '\n\nResults:\n' + results;
+        Logger.addEntry(this, logEntry);
     }
 }

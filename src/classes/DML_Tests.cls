@@ -1,56 +1,56 @@
 @isTest
-private class Crud_Tests {
+private class DML_Tests {
     @isTest
-    static void it_should_do_crud_insert() {
+    static void it_should_do_dml_insert() {
         Contact contact = createContact();
 
-        ICrud crud = new Crud();
+        IDML dml = new DML();
 
         Test.startTest();
-        crud.doInsert(contact);
+        dml.doInsert(contact);
         Test.stopTest();
 
         System.assert(contact.Id != null);
     }
 
     @isTest
-    static void it_should_do_crud_update() {
+    static void it_should_do_dml_update() {
         Contact contact = createContact();
         insert contact;
 
         contact.FirstName = 'Harry';
-        ICrud crud = new Crud();
+        IDML dml = new DML();
 
         Test.startTest();
-        crud.doUpdate(contact);
+        dml.doUpdate(contact);
         Test.stopTest();
 
         System.assert(contact.FirstName == 'Harry');
     }
 
     @isTest
-    static void it_should_do_crud_upsert() {
+    static void it_should_do_dml_upsert() {
         Contact contact = createContact();
         insert contact;
 
         contact.FirstName = 'Harry';
-        ICrud crud = new Crud();
+        IDML dml = new DML();
 
         Test.startTest();
-        crud.doUpsert(contact);
+        dml.doUpsert(contact);
         Test.stopTest();
 
         System.assert(contact.FirstName == 'Harry');
     }
 
     @isTest
-    static void it_should_do_crud_delete() {
+    static void it_should_do_dml_delete() {
         Contact contact = createContact();
         insert contact;
 
         Test.startTest();
-        ICrud crud = new Crud();
-        crud.doDelete(contact);
+        IDML dml = new DML();
+        dml.doDelete(contact);
         List<Contact> deletedContacts = [SELECT Id, IsDeleted FROM Contact ALL ROWS];
         Test.stopTest();
 
@@ -58,13 +58,13 @@ private class Crud_Tests {
     }
 
     @isTest
-    static void it_should_do_crud_hard_delete() {
+    static void it_should_do_dml_hard_delete() {
         Contact contact = createContact();
         insert contact;
 
         Test.startTest();
-        ICrud crud = new Crud();
-        crud.doHardDelete(contact);
+        IDML dml = new DML();
+        dml.doHardDelete(contact);
         List<Contact> deletedContacts = [SELECT Id, IsDeleted FROM Contact ALL ROWS];
         Test.stopTest();
 
@@ -72,14 +72,14 @@ private class Crud_Tests {
     }
 
     @isTest
-    static void it_should_do_crud_undelete() {
+    static void it_should_do_dml_undelete() {
         Contact contact = createContact();
         insert contact;
 
         Test.startTest();
-        ICrud crud = new Crud();
-        crud.doDelete(contact);
-        crud.doUndelete(contact);
+        IDML dml = new DML();
+        dml.doDelete(contact);
+        dml.doUndelete(contact);
         Test.stopTest();
 
         List<Contact> notDeletedContacts = [SELECT Id FROM Contact];

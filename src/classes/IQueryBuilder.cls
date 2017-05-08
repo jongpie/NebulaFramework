@@ -18,7 +18,7 @@ public interface IQueryBuilder {
     IQueryBuilder usingScope(QueryFilterScope filterScope);
 
     // Query execution methods
-    SObject getFirstOrDefault();
+    SObject getFirstQueryResult();
     List<SObject> getQueryResults();
     List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup);
 }

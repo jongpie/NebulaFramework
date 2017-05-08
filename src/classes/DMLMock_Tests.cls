@@ -1,78 +1,78 @@
 @isTest
-private class CrudMock_Tests {
+private class DMLMock_Tests {
     @isTest
-    static void it_should_fake_crud_insert() {
+    static void it_should_fake_dml_insert() {
         Contact con = new Contact();
 
         Test.startTest();
 
-        ICrud crudRepo = new CrudMock();
-        crudRepo.doInsert(con);
+        IDML dmlRepo = new DMLMock();
+        dmlRepo.doInsert(con);
         Test.stopTest();
 
         System.assert(TestingUtils.insertedRecords.size() > 0);
     }
 
     @isTest
-    static void it_should_fake_crud_update() {
+    static void it_should_fake_dml_update() {
         Contact con = createContact();
 
         Test.startTest();
 
-        ICrud crudRepo = new CrudMock();
-        crudRepo.doUpdate(con);
+        IDML dmlRepo = new DMLMock();
+        dmlRepo.doUpdate(con);
         Test.stopTest();
 
         System.assert(!TestingUtils.updatedRecords.isEmpty());
     }
 
     @isTest
-    static void it_should_fake_crud_upsert() {
+    static void it_should_fake_dml_upsert() {
         Contact con = createContact();
 
         Test.startTest();
 
-        ICrud crudRepo = new CrudMock();
-        crudRepo.doUpsert(con);
+        IDML dmlRepo = new DMLMock();
+        dmlRepo.doUpsert(con);
         Test.stopTest();
 
         System.assert(!TestingUtils.upsertedRecords.isEmpty());
     }
 
     @isTest
-    static void it_should_fake_crud_delete() {
+    static void it_should_fake_dml_delete() {
         Contact con = createContact();
 
         Test.startTest();
 
-        ICrud crudRepo = new CrudMock();
-        crudRepo.doDelete(con);
+        IDML dmlRepo = new DMLMock();
+        dmlRepo.doDelete(con);
         Test.stopTest();
 
         System.assert(!TestingUtils.deletedRecords.isEmpty());
     }
 
     @isTest
-    static void it_should_fake_crud_hard_delete() {
+    static void it_should_fake_dml_hard_delete() {
         Contact con = createContact();
 
         Test.startTest();
 
-        ICrud crudRepo = new CrudMock();
-        crudRepo.doHardDelete(con);
+        IDML dmlRepo = new DMLMock();
+        dmlRepo.doHardDelete(con);
         Test.stopTest();
 
         System.assert(!TestingUtils.deletedRecords.isEmpty());
     }
 
     @isTest
-    static void it_should_fake_crud_undelete() {
+    static void it_should_fake_dml_undelete() {
         Contact con = createContact();
 
         Test.startTest();
 
-        ICrud crudRepo = new CrudMock();
-        crudRepo.doUndelete(con);
+        IDML dmlRepo = new DMLMock();
+        dmlRepo.doUndelete(con);
         Test.stopTest();
 
         System.assert(!TestingUtils.undeletedRecords.isEmpty());

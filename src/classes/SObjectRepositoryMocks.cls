@@ -3,7 +3,7 @@
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
 public class SObjectRepositoryMocks {
-    public virtual class Base extends CrudMock implements ISObjectRepository {
+    public virtual class Base extends DMLMock implements ISObjectRepository {
         protected List<SObject> records;
         protected List<Id> recordIdList;
         protected List<QueryPredicate> predicates;
@@ -28,9 +28,7 @@ public class SObjectRepositoryMocks {
         public virtual List<SObject> getById(List<Id> recordIdList) {
             this.recordIdList = recordIdList;
 
-            if(this.records == null) {
-                this.createMockObjects();
-            }
+            if(this.records == null) this.createMockObjects();
 
             return this.records;
         }
@@ -63,24 +61,9 @@ public class SObjectRepositoryMocks {
         public virtual List<SObject> getByFieldForIds(Schema.SObjectField field, Object value, List<Id> idList) {
             List<SObject> records = this.getById(idList);
 
-            for(SObject record : records) {
-                record.put(field,value);
-            }
+            for(SObject record : records) record.put(field,value);
 
             return records;
-        }
-
-        public virtual List<SObject> getByFieldAndTypeForGivenTimePeriod(Schema.SObjectField field, Object firstValue, Object secondValue) {
-            if(this.records != null) return this.records;
-            //Setup record and fields to be returned
-            SObjectType sobjType = DescribeUtils.getSObjectType(field);
-            SObject record = sobjType.newSObject();
-            record.Id = TestingUtils.generateId(record.getSObjectType());
-            String fieldName = field.getDescribe().getName();
-            record = TestingUtils.setReadOnlyField(record, fieldName, String.valueOf(firstValue));
-
-            this.records = new List<SObject>{record};
-            return this.records;
         }
 
         public virtual List<SObject> getCreatedSinceTimeValue(Object value) {
@@ -109,6 +92,24 @@ public class SObjectRepositoryMocks {
             if(CollectionUtils.isNullOrEmpty(this.records)) return new List<SObject>();
 
             return this.records;
+        }
+
+        private SObjectType getSObjectType(Schema.SObjectField field) {
+            //There is supposed to be a built in Salesforce getDescribe() result for Schema.SObjectField, getReferenceTo()
+            //that should return a list of objects that field is associated with, but it has been broken for several years.
+            //This is a solution that was proposed on the Salesforce stack exchange and is the only work-around to a native lookup
+            //that I have been able to find.
+            Integer fieldHash = ((Object)field).hashCode();
+
+            // Build a map of hashcodes for each fieldDescribe taken from Schema Global Describe
+            Map<String, Schema.SObjectType> globalDescribe = Schema.getGlobalDescribe();
+            Map<Integer,Schema.SObjectType> fieldHashCodeToSObjectTypeMap = new Map<Integer,Schema.SObjectType>();
+            for (String sobjname: globalDescribe.keySet()) {
+                for (Schema.SObjectField sobjField : globalDescribe.get(sObjName).getDescribe().fields.getMap().values())
+                    fieldHashCodeToSObjectTypeMap.put(((Object) sObjField).hashCode(), globalDescribe.get(sobjName));
+            }
+
+            return fieldHashCodeToSObjectTypeMap.get(fieldHash);
         }
     }
 }

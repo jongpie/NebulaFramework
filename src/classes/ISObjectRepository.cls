@@ -12,7 +12,6 @@ public interface ISObjectRepository {
     List<SObject> getByFieldForIds(Schema.SObjectField field, Object value, List<Id> idList);
     List<SObject> getByFieldForIds(Schema.SObjectField field, Object value, Set<Id> idSet);
     List<SObject> getCreatedSinceTimeValue(Object value);
-    List<SObject> getByFieldAndTypeForGivenTimePeriod(Schema.SObjectField field, Object firstValue, Object secondValue);
     // SOSL
     List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup);
 

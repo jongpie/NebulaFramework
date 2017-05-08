@@ -2,7 +2,7 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
-public virtual class SObjectRepository extends NebulaCore implements ISObjectRepository, ICrud {
+public virtual class SObjectRepository extends NebulaCore implements ISObjectRepository, IDML {
 
     private final Schema.SObjectType sObjectType;
     private final Schema.FieldSet fieldSet;
@@ -36,13 +36,13 @@ public virtual class SObjectRepository extends NebulaCore implements ISObjectRep
     //SOQL
     public virtual SObject getById(Id recordId) {
         return this.queryFactory
-            .whereField(new List<QueryPredicate>{QueryPredicate.EQUALS(this.idField, recordId)})
-            .getFirstOrDefault();
+            .whereField(this.idField, QueryOperator.EQUALS, recordId)
+            .getQueryResults()[0];
     }
 
     public virtual List<SObject> getById(List<Id> recordIds) {
         return this.queryFactory
-            .whereField(new List<QueryPredicate>{QueryPredicate.EQUALS(this.idField, recordIds)})
+            .whereField(this.idField, QueryOperator.IS_IN, recordIds)
             .getQueryResults();
     }
 
@@ -68,17 +68,8 @@ public virtual class SObjectRepository extends NebulaCore implements ISObjectRep
     }
 
     public List<SObject> getCreatedSinceTimeValue(Object timeValue) {
-        Schema.SObjectField createdDate = this.getCreatedDate();
         return this.queryFactory
-            .whereField(createdDate, QueryOperator.GREATER_THAN_OR_EQUAL_TO, timeValue)
-            .getQueryResults();
-    }
-
-    public List<SObject> getByFieldAndTypeForGivenTimePeriod(Schema.SObjectField field, Object firstValue, Object secondValue) {
-        Schema.SObjectField createdDate = this.getCreatedDate();
-        return this.queryFactory
-            .whereField(field, QueryOperator.EQUALS, firstValue)
-            .whereField(createdDate, QueryOperator.GREATER_THAN_OR_EQUAL_TO, secondValue)
+            .whereField(this.getCreatedDate(), QueryOperator.GREATER_THAN_OR_EQUAL_TO, timeValue)
             .getQueryResults();
     }
 
@@ -94,6 +85,6 @@ public virtual class SObjectRepository extends NebulaCore implements ISObjectRep
     }
 
     private Schema.SObjectField getField(Schema.SObjectType objType, String fieldName) {
-        return DescribeUtils.getFieldForSObjectType(objType, fieldName);
+        return sObjectType.getDescribe().fields.getMap().get(fieldName);
     }
 }

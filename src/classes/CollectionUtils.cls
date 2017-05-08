@@ -7,9 +7,4 @@ public class CollectionUtils {
     public static Boolean isNullOrEmpty(List<Object> listOfThings) {
         return listOfThings == null || listOfThings.isEmpty();
     }
-
-    public static SObject getFirstOrDefault(List<SObject> listOfThings) {
-        return listOfThings.isEmpty() ? null : listOfThings[0];
-    }
-
 }

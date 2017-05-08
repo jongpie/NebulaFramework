@@ -10,6 +10,10 @@ public class TestingUtils {
     public static List<SObject> undeletedRecords= new List<Sobject>();
     private static Integer startingNumber = 1;
 
+    static {
+        if(!Test.isRunningTest()) throw new Exceptions.InvalidOperationException('TestingUtils can only be called during tests!');
+    }
+
     public static String generateId(Schema.SObjectType sObjectType) {
         String result = String.valueOf(startingNumber++);
         return sObjectType.getDescribe().getKeyPrefix() + '0'.repeat(12-result.length()) + result;
@@ -22,15 +26,18 @@ public class TestingUtils {
         }
     }
 
-    public static SObject setReadOnlyField(SObject sobj, String fieldName, String value) {
-        return setReadOnlyField(sobj,new Map<String,String>{fieldName => value});
+    public static SObject setReadOnlyField(SObject sobj, SObjectField fieldName, String value) {
+        return setReadOnlyField(sobj,new Map<SObjectField,String>{fieldName => value});
     }
 
-    public static SObject setReadOnlyField(SObject sobj, Map<String,String> changesToFields) {
+    public static SObject setReadOnlyField(SObject sobj, Map<SObjectField,String> changesToFields) {
         String serializedRecord = JSON.serialize(sobj);
         serializedRecord = serializedRecord.removeEnd('}');
-        for(String stringer: changesToFields.keySet()) {
-            serializedRecord += ',"' + stringer + '":"' + changesToFields.get(stringer)+'"';
+        for(SObjectField fieldName: changesToFields.keySet()) {
+            serializedRecord += ',"'
+                + fieldName + '":"'
+                + changesToFields.get(fieldName)
+                +'"';
         }
 
         serializedRecord+= + '}';
