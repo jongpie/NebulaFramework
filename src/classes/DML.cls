@@ -38,7 +38,7 @@ public virtual class DML implements IDML {
 
     public virtual void doDelete(SObject record) { this.doDelete(new List<SObject>{record}); }
     public virtual void doDelete(List<SObject> records) {
-        if(records.isEmpty() == false) {
+        if(!records.isEmpty()) {
             Database.delete(records);
         }
     }
@@ -46,7 +46,7 @@ public virtual class DML implements IDML {
     public virtual void doHardDelete(SObject record) { this.doHardDelete(new List<SObject>{record}); }
     public virtual void doHardDelete(List<SObject> records) {
         this.doDelete(records);
-        if(records.isEmpty() == false) {
+        if(!records.isEmpty()) {
             Database.emptyRecycleBin(records);
         }
     }
