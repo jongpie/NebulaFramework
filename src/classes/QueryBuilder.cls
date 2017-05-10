@@ -35,9 +35,9 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
 
     public IQueryBuilder whereField(List<QueryPredicate> queryPredicates) {
         for(QueryPredicate predicate : queryPredicates) {
-            if(predicate.values.size() > 1) {
+            if(predicate.Values.size() > 1) {
                 this.whereField(predicate.Field, predicate.Operator, predicate.Values);
-            } else {
+            } else if (predicate.Values.size() == 1) {
                 this.whereField(predicate.Field, predicate.Operator, predicate.Values[0]);
             }
         }
