@@ -16,7 +16,7 @@ public abstract class SObjectRecordTypes extends NebulaCore {
 
         this.sobjectName = describeSObjectResult.getName();
 
-        this.addLogEntry('Getting record types for ' + this.sobjectName);
+        Logger.addEntry(this, 'Getting record types for ' + this.sobjectName);
 
         this.populateCache();
 
@@ -35,26 +35,24 @@ public abstract class SObjectRecordTypes extends NebulaCore {
         String query = 'SELECT ' + String.join(fieldList, ', ') + ' FROM RecordType';
 
         List<String> whereClauseList = new List<String>();
-        if(new NebulaSettings().recordTypesSettings.LazyLoad__c){
+
+        if(NebulaSettings.recordTypesSettings.LazyLoad__c){
             whereClauseList.add('SObjectType = \'' + this.sobjectName + '\'');
-            this.addLogEntry('new NebulaSettings().recordTypesSettings.LazyLoad__c=' + new NebulaSettings().recordTypesSettings.LazyLoad__c);
-            this.addLogEntry('this.sobjectName=' + this.sobjectName);
+            Logger.addEntry(this, 'NebulaSettings.recordTypesSettings.LazyLoad__c=' + NebulaSettings.recordTypesSettings.LazyLoad__c);
+            Logger.addEntry(this, 'this.sobjectName=' + this.sobjectName);
         }
-        if(new NebulaSettings().recordTypesSettings.ExcludeManagedRecordTypes__c) whereClauseList.add('NamespacePrefix = null');
+        if(NebulaSettings.recordTypesSettings.ExcludeManagedRecordTypes__c) whereClauseList.add('NamespacePrefix = null');
         if(!whereClauseList.isEmpty()) query += ' WHERE ' + String.join(whereClauseList, ' AND ');
 
         query += ' ORDER BY DeveloperName';
 
-        this.addLogEntry('SObjectRecordTypes query=' + query);
+        Logger.addEntry(this, 'SObjectRecordTypes query=' + query);
+
+        if(!cachedRecordTypesBySObjectMap.containsKey(this.sobjectName)) cachedRecordTypesBySObjectMap.put(this.sobjectName, new List<RecordType>());
         List<RecordType> recordTypeList = (List<RecordType>)Database.query(query);
-        for(RecordType recordType : recordTypeList) {
-            if(!cachedRecordTypesBySObjectMap.containsKey(recordType.SObjectType)) {
-                cachedRecordTypesBySObjectMap.put(recordType.SObjectType, new List<RecordType>{recordType});
-            } else {
-                cachedRecordTypesBySObjectMap.get(recordType.SObjectType).add(recordType);
-            }
-        }
-        this.addLogEntry('cachedRecordTypesBySObjectMap=' + cachedRecordTypesBySObjectMap);
+        for(RecordType recordType : recordTypeList) cachedRecordTypesBySObjectMap.get(this.sobjectName).add(recordType);
+
+        Logger.addEntry(this, 'cachedRecordTypesBySObjectMap=' + cachedRecordTypesBySObjectMap);
     }
 
     private Map<Id, RecordType> getAllRecordTypesById() {

@@ -16,11 +16,8 @@ public abstract class NebulaCore implements INebulaCore {
     public enum Module { RECORD_TYPES, REPOSITORY, SETTINGS, TRIGGER_HANDLER }
 
     protected final Module currentModule;
-    private final ILogger logger;
 
     protected NebulaCore() {
-        this.logger = new Logger();
-
         if(NebulaCore.INITIAL_CLASS == null) NebulaCore.INITIAL_CLASS = this.getClassName();
         if(NebulaCore.INITIAL_MODULE == null) NebulaCore.INITIAL_MODULE = this.getClassModule();
     }
@@ -35,14 +32,6 @@ public abstract class NebulaCore implements INebulaCore {
 
     public NebulaCore.Module getModule() {
         return this.currentModule;
-    }
-
-    protected void addLogEntry(String message) {
-        this.logger.addEntry(this, message);
-    }
-
-    protected void saveLogs() {
-        this.logger.saveLogs();
     }
 
 }

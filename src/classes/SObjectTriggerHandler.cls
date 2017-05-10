@@ -40,22 +40,22 @@ public abstract class SObjectTriggerHandler extends NebulaCore implements ISObje
 
         this.getClassName();
 
-        this.addLogEntry('Initializing ' + this.getClassName());
+        Logger.addEntry(this, 'Initializing ' + this.getClassName());
         this.setTriggerContext();
         this.validateTriggerContext();
         this.setTriggerRecords();
     }
 
     public void execute() {
-        this.addLogEntry('Execute method called for ' + this.getClassName());
+        Logger.addEntry(this, 'Execute method called for ' + this.getClassName());
         // Check the custom setting. If it's disabled, stop everything, show's over
         // You don't have to go home but you can't stay here
         if(!shouldExecuteTriggers()) {
-            this.addLogEntry('Skipping execution of class ' + this.getClassName());
+            Logger.addEntry(this, 'Skipping execution of class ' + this.getClassName());
             return;
         }
 
-        this.addLogEntry(this.getClassName() + ' is enabled, proceeding with execution');
+        Logger.addEntry(this, this.getClassName() + ' is enabled, proceeding with execution');
 
         this.setHashCode();
 
@@ -63,16 +63,16 @@ public abstract class SObjectTriggerHandler extends NebulaCore implements ISObje
         if(this.isTestMode) sobjectType = String.valueOf(Schema.Lead.SObjectType);
         else sobjectType = Trigger.new == null ? String.valueOf(Trigger.old.getSObjectType()) : String.valueOf(Trigger.new.getSObjectType());
 
-        this.addLogEntry('Starting execute method for: ' + sobjectType);
-        this.addLogEntry('Hash codes already processed: ' + SObjectTriggerHandler.hashCodesForProcessedRecords);
-        this.addLogEntry('Hash code for current records: ' + this.hashCode);
-        this.addLogEntry('Trigger context for current records: ' + this.context);
-        this.addLogEntry('Number of current records: ' + Trigger.size);
+        Logger.addEntry(this, 'Starting execute method for: ' + sobjectType);
+        Logger.addEntry(this, 'Hash codes already processed: ' + SObjectTriggerHandler.hashCodesForProcessedRecords);
+        Logger.addEntry(this, 'Hash code for current records: ' + this.hashCode);
+        Logger.addEntry(this, 'Trigger context for current records: ' + this.context);
+        Logger.addEntry(this, 'Number of current records: ' + Trigger.size);
 
         if(this.haveRecordsAlreadyBeenProcessed()) {
-            this.addLogEntry('Records already processed for this context, skipping');
+            Logger.addEntry(this, 'Records already processed for this context, skipping');
             return;
-        } else this.addLogEntry('Records have not been processed for this context, continuing');
+        } else Logger.addEntry(this, 'Records have not been processed for this context, continuing');
 
         if(this.context == TriggerContext.BEFORE_INSERT) this.executeBeforeInsert(this.recordList);
         else if(this.context == TriggerContext.BEFORE_UPDATE) this.executeBeforeUpdate(this.recordList, this.recordMap, this.oldRecordList, this.oldRecordMap);
@@ -82,7 +82,7 @@ public abstract class SObjectTriggerHandler extends NebulaCore implements ISObje
         else if(this.context == TriggerContext.AFTER_DELETE) this.executeAfterDelete(this.oldRecordList, this.oldRecordMap);
         else if(this.context == TriggerContext.AFTER_UNDELETE) this.executeAfterUndelete(this.recordList, this.recordMap);
 
-        if(Trigger.isAfter) this.saveLogs();
+        if(Trigger.isAfter) Logger.saveLogs();
     }
 
     protected virtual void executeBeforeInsert(List<SObject> newRecordList) {}
@@ -120,15 +120,15 @@ public abstract class SObjectTriggerHandler extends NebulaCore implements ISObje
     }
 
     private Boolean shouldExecuteTriggers() {
-        this.addLogEntry('nebulaSettings.triggerHandlerSettings.ExecuteTriggers__c=' + new NebulaSettings().triggerHandlerSettings.ExecuteTriggers__c);
+        Logger.addEntry(this, 'nebulaSettings.triggerHandlerSettings.ExecuteTriggers__c=' + NebulaSettings.triggerHandlerSettings.ExecuteTriggers__c);
 
-        String handlerClassesToSkipString = new NebulaSettings().triggerHandlerSettings.HandlerClassesToSkip__c;
+        String handlerClassesToSkipString = NebulaSettings.triggerHandlerSettings.HandlerClassesToSkip__c;
         if(handlerClassesToSkipString == null) handlerClassesToSkipString = '';
         Set<String> handlerClassesToSkip = new Set<String>(handlerClassesToSkipString.toLowerCase().split('\n'));
-        this.addLogEntry('nebulaSettings.triggerHandlerSettings.HandlerClassesToSkip__c=' + new NebulaSettings().triggerHandlerSettings.HandlerClassesToSkip__c);
+        Logger.addEntry(this, 'nebulaSettings.triggerHandlerSettings.HandlerClassesToSkip__c=' + NebulaSettings.triggerHandlerSettings.HandlerClassesToSkip__c);
 
         // If ExecuteTriggers == true and the current class isn't in the list of handlers to skip, then execute
-        return new NebulaSettings().triggerHandlerSettings.ExecuteTriggers__c && !handlerClassesToSkip.contains(this.getClassName().toLowerCase());
+        return NebulaSettings.triggerHandlerSettings.ExecuteTriggers__c && !handlerClassesToSkip.contains(this.getClassName().toLowerCase());
     }
 
     private void setHashCode() {
@@ -161,7 +161,7 @@ public abstract class SObjectTriggerHandler extends NebulaCore implements ISObje
     }
 
     private Boolean haveRecordsAlreadyBeenProcessed() {
-        if(!new NebulaSettings().triggerHandlerSettings.PreventRecursion__c) return false;
+        if(!NebulaSettings.triggerHandlerSettings.PreventRecursion__c) return false;
 
         // This method is a safeguard that checks to see if we have recursion problems and stops if we do
         // It allows each context to occur once for a given hash code
