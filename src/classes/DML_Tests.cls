@@ -1,10 +1,10 @@
 @isTest
 private class DML_Tests {
+    static IDML dml = new DML();
+    static Contact contact = createContact();
+
     @isTest
     static void it_should_do_dml_insert() {
-        Contact contact = createContact();
-
-        IDML dml = new DML();
 
         Test.startTest();
         dml.doInsert(contact);
@@ -15,11 +15,9 @@ private class DML_Tests {
 
     @isTest
     static void it_should_do_dml_update() {
-        Contact contact = createContact();
         insert contact;
 
         contact.FirstName = 'Harry';
-        IDML dml = new DML();
 
         Test.startTest();
         dml.doUpdate(contact);
@@ -30,11 +28,9 @@ private class DML_Tests {
 
     @isTest
     static void it_should_do_dml_upsert() {
-        Contact contact = createContact();
         insert contact;
 
         contact.FirstName = 'Harry';
-        IDML dml = new DML();
 
         Test.startTest();
         dml.doUpsert(contact);
@@ -45,11 +41,9 @@ private class DML_Tests {
 
     @isTest
     static void it_should_do_dml_delete() {
-        Contact contact = createContact();
         insert contact;
 
         Test.startTest();
-        IDML dml = new DML();
         dml.doDelete(contact);
         List<Contact> deletedContacts = [SELECT Id, IsDeleted FROM Contact ALL ROWS];
         Test.stopTest();
@@ -59,11 +53,9 @@ private class DML_Tests {
 
     @isTest
     static void it_should_do_dml_hard_delete() {
-        Contact contact = createContact();
         insert contact;
 
         Test.startTest();
-        IDML dml = new DML();
         dml.doHardDelete(contact);
         List<Contact> deletedContacts = [SELECT Id, IsDeleted FROM Contact ALL ROWS];
         Test.stopTest();
@@ -73,11 +65,9 @@ private class DML_Tests {
 
     @isTest
     static void it_should_do_dml_undelete() {
-        Contact contact = createContact();
         insert contact;
 
         Test.startTest();
-        IDML dml = new DML();
         dml.doDelete(contact);
         dml.doUndelete(contact);
         Test.stopTest();
@@ -87,7 +77,7 @@ private class DML_Tests {
     }
 
     private static Contact createContact() {
-        Contact contact = new Contact();
+        contact = new Contact();
         contact.Email = 'rightHandMan@hamilton.com';
         contact.FirstName = 'George';
         contact.LastName = 'Washington';

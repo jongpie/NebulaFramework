@@ -27,7 +27,7 @@ public abstract class SObjectTriggerHandler extends NebulaCore implements ISObje
         this(false);
     }
 
-    private SObjectTriggerHandler(Boolean isTestMode) {
+    protected SObjectTriggerHandler(Boolean isTestMode) {
         this.currentModule = NebulaCore.Module.TRIGGER_HANDLER;
 
         this.isTestMode         = isTestMode;

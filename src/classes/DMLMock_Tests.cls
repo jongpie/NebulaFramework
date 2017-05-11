@@ -1,12 +1,11 @@
 @isTest
 private class DMLMock_Tests {
+    static IDML dmlRepo = new DMLMock();
+    static Schema.Contact con = createContact();
+
     @isTest
     static void it_should_fake_dml_insert() {
-        Contact con = new Contact();
-
         Test.startTest();
-
-        IDML dmlRepo = new DMLMock();
         dmlRepo.doInsert(con);
         Test.stopTest();
 
@@ -15,11 +14,7 @@ private class DMLMock_Tests {
 
     @isTest
     static void it_should_fake_dml_update() {
-        Contact con = createContact();
-
         Test.startTest();
-
-        IDML dmlRepo = new DMLMock();
         dmlRepo.doUpdate(con);
         Test.stopTest();
 
@@ -28,11 +23,7 @@ private class DMLMock_Tests {
 
     @isTest
     static void it_should_fake_dml_upsert() {
-        Contact con = createContact();
-
         Test.startTest();
-
-        IDML dmlRepo = new DMLMock();
         dmlRepo.doUpsert(con);
         Test.stopTest();
 
@@ -41,11 +32,7 @@ private class DMLMock_Tests {
 
     @isTest
     static void it_should_fake_dml_delete() {
-        Contact con = createContact();
-
         Test.startTest();
-
-        IDML dmlRepo = new DMLMock();
         dmlRepo.doDelete(con);
         Test.stopTest();
 
@@ -54,11 +41,7 @@ private class DMLMock_Tests {
 
     @isTest
     static void it_should_fake_dml_hard_delete() {
-        Contact con = createContact();
-
         Test.startTest();
-
-        IDML dmlRepo = new DMLMock();
         dmlRepo.doHardDelete(con);
         Test.stopTest();
 
@@ -67,24 +50,34 @@ private class DMLMock_Tests {
 
     @isTest
     static void it_should_fake_dml_undelete() {
-        Contact con = createContact();
-
         Test.startTest();
-
-        IDML dmlRepo = new DMLMock();
         dmlRepo.doUndelete(con);
         Test.stopTest();
 
         System.assert(!TestingUtils.undeletedRecords.isEmpty());
     }
 
-    private static Contact createContact() {
-        Contact contact = new Contact();
-        contact.Email = 'rightHandMan@hamilton.com';
-        contact.FirstName = 'George';
-        contact.LastName = 'Washington';
-        contact.LeadSource = 'Web';
+    @isTest
+    static void it_should_mock_updating_read_only_fields_when_updating_data() {
+        Schema.Lead l = new Schema.Lead();
+        l = (Lead)TestingUtils.setReadOnlyField(l, Schema.Lead.IsConverted, 'true');
 
-        return contact;
+        Test.startTest();
+        dmlRepo.doUpdate(l);
+        Test.stoptest();
+
+        SObject record = TestingUtils.updatedRecords[0];
+        System.assert(record instanceof Schema.Lead);
+        System.assert(record.get('IsConverted') != null);
+    }
+
+    private static Contact createContact() {
+        con = new Contact();
+        con.Email = 'rightHandMan@hamilton.com';
+        con.FirstName = 'George';
+        con.LastName = 'Washington';
+        con.LeadSource = 'Web';
+
+        return con;
     }
 }
