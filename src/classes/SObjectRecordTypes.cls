@@ -69,7 +69,4 @@ public abstract class SObjectRecordTypes extends NebulaCore {
 
         return allRecordTypesByDeveloperName;
     }
-
-    private class RecordTypeException extends Exception {}
-
 }

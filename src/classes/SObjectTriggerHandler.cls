@@ -27,7 +27,7 @@ public abstract class SObjectTriggerHandler extends NebulaCore implements ISObje
         this(false);
     }
 
-    private SObjectTriggerHandler(Boolean isTestMode) {
+    protected SObjectTriggerHandler(Boolean isTestMode) {
         this.currentModule = NebulaCore.Module.TRIGGER_HANDLER;
 
         this.isTestMode         = isTestMode;
@@ -109,7 +109,7 @@ public abstract class SObjectTriggerHandler extends NebulaCore implements ISObje
         if(this.isTestMode) return;
 
         String errorMessage = 'Trigger handler called outside of trigger execution ' + this.isTriggerExecuting;
-        if(!this.isTriggerExecuting || this.context == null) throw new SObjectTriggerHandlerException(errorMessage);
+        if(!this.isTriggerExecuting || this.context == null) throw new Exceptions.SObjectTriggerHandlerException(errorMessage);
     }
 
     private void setTriggerRecords() {
@@ -180,7 +180,4 @@ public abstract class SObjectTriggerHandler extends NebulaCore implements ISObje
             return true;
         }
     }
-
-    private class SObjectTriggerHandlerException extends Exception {}
-
 }

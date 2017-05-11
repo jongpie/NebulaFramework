@@ -6,62 +6,60 @@ public without sharing class QueryOperator {
 
     private String value;
 
+    private QueryOperator(String value) {
+        this.value = value;
+    }
+
     public String getValue() {
         return this.value;
     }
 
-    //Actual constant literals
-    public QueryOperator EQUALS {
-        get {return this.setValue('=');}
+    public static QueryOperator EQUALS {
+        get {return new QueryOperator('=');}
     }
 
-    public QueryOperator NOT_EQUAL_TO {
-        get {return this.setValue('!=');}
+    public static QueryOperator NOT_EQUAL_TO {
+        get {return new QueryOperator('!=');}
     }
 
-    public QueryOperator GREATER_THAN {
-        get {return this.setValue('>');}
+    public static QueryOperator GREATER_THAN {
+        get {return new QueryOperator('>');}
     }
 
-    public QueryOperator GREATER_THAN_OR_EQUAL_TO {
-        get {return this.setValue('>=');}
+    public static QueryOperator GREATER_THAN_OR_EQUAL_TO {
+        get {return new QueryOperator('>=');}
     }
 
-    public QueryOperator LESS_THAN {
-        get {return this.setValue('<');}
+    public static QueryOperator LESS_THAN {
+        get {return new QueryOperator('<');}
     }
 
-    public QueryOperator LESS_THAN_OR_EQUAL_TO {
-        get {return this.setValue('<=');}
+    public static QueryOperator LESS_THAN_OR_EQUAL_TO {
+        get {return new QueryOperator('<=');}
     }
 
-    public QueryOperator IS_IN {
-        get {return this.setValue('IN');}
+    public static QueryOperator IS_IN {
+        get {return new QueryOperator('IN');}
     }
 
-    public QueryOperator IS_NOT_IN {
-        get {return this.setValue('NOT IN');}
+    public static QueryOperator IS_NOT_IN {
+        get {return new QueryOperator('NOT IN');}
     }
 
-    public QueryOperator INCLUDES {
-        get {return this.setValue('INCLUDES');}
+    public static QueryOperator INCLUDES {
+        get {return new QueryOperator('INCLUDES');}
     }
 
-    public QueryOperator EXCLUDES {
-        get {return this.setValue('EXCLUDES');}
+    public static QueryOperator EXCLUDES {
+        get {return new QueryOperator('EXCLUDES');}
     }
 
-    public QueryOperator IS_LIKE {
-        get {return this.setValue('LIKE');}
+    public static QueryOperator IS_LIKE {
+        get {return new QueryOperator('LIKE');}
     }
 
-    public QueryOperator IS_NOT_LIKE {
-        get {return this.setValue('NOT LIKE');}
-    }
-
-    private QueryOperator setValue(String value) {
-        this.value = value;
-        return this;
+    public static QueryOperator IS_NOT_LIKE {
+        get {return new QueryOperator('NOT LIKE');}
     }
 
 }

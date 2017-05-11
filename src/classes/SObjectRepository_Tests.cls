@@ -15,23 +15,8 @@ private class SObjectRepository_Tests {
             super(Schema.Lead.SObjectType, fieldSet);
         }
 
-        public Lead getById(Id leadId) {
-            return (Lead)this.queryBuilder
-                .whereField(Schema.Lead.Id, new QueryOperator().EQUALS, leadId)
-                .setAsUpdate()
-                .getFirstQueryResult();
-        }
-
-        public List<Lead> getById(List<Id> leadIdList) {
-            return (List<Lead>)this.queryBuilder
-                .whereField(Schema.Lead.Id, new QueryOperator().IS_IN, leadIdList)
-                .setAsUpdate()
-                .orderBy(Schema.Lead.LastActivityDate, QuerySortOrder.DESCENDING, QueryNullSortOrder.LAST)
-                .getQueryResults();
-        }
-
         public List<Lead> getMyRecentLeads(Integer limitCount) {
-            return (List<Lead>)this.queryBuilder
+            return (List<Lead>)this.queryFactory
                 .usingScope(QueryFilterScope.MINE)
                 .limitCount(limitCount)
                 .orderBy(Schema.Lead.LastActivityDate)
@@ -39,32 +24,30 @@ private class SObjectRepository_Tests {
         }
 
         public List<Lead> getNewThisWeekById(List<Id> leadIdList) {
-            return (List<Lead>)this.queryBuilder
-                .whereField(Schema.Lead.Id, new QueryOperator().IS_IN, leadIdList)
-                .whereField(Schema.Lead.CreatedDate, new QueryOperator().EQUALS, new QueryDateLiteral().THIS_WEEK)
+            return (List<Lead>)this.queryFactory
+                .whereField(Schema.Lead.Id, QueryOperator.IS_IN, leadIdList)
+                .whereField(Schema.Lead.CreatedDate, QueryOperator.EQUALS, QueryDateLiteral.THIS_WEEK)
                 .setAsUpdate()
                 .getQueryResults();
         }
 
-        public List<Lead> searchInAllFields(String searchTerm) {
-            return this.searchInFieldsBySearchGroup(searchTerm, QuerySearchGroup.ALL_FIELDS);
-        }
-
-        public List<Lead> searchInFieldsBySearchGroup(String searchTerm, QuerySearchGroup searchGroup) {
-            return (List<Lead>)this.queryBuilder
-                .orderBy(Schema.Lead.CreatedDate, QuerySortOrder.DESCENDING)
-                .setAsUpdate() // SOSL cannot use FOR UPDATE. This will execute, but a warning debug statement will indicate that it is ignored
-                .getSearchResults(searchTerm, searchGroup);
-        }
-
-        public override void doUpsert(SObject record) {
+        public override SObject doUpsert(SObject record) {
             Lead lead = (Lead)record;
             upsert lead;
+
+            return lead;
         }
 
-        public override void doUpsert(List<SObject> recordList) {
+        public override List<SObject> doUpsert(List<SObject> recordList) {
             List<Lead> leadList = (List<Lead>)recordList;
             upsert leadList;
+
+            return leadList;
+        }
+
+        public override SObject doUpdate(SObject record) {
+            TestingUtils.updatedRecords.add(record);
+            return record;
         }
     }
 
@@ -102,7 +85,31 @@ private class SObjectRepository_Tests {
         Lead expectedLead = [SELECT Id FROM Lead LIMIT 1];
 
         Test.startTest();
-        Lead returnedLead = new SObjectRepository_Tests.LeadRepository().getById(expectedLead.Id);
+        Lead returnedLead = (Lead)new SObjectRepository_Tests.LeadRepository().getById(expectedLead.Id);
+        Test.stopTest();
+
+        System.assertEquals(expectedLead.Id, returnedLead.Id);
+    }
+
+    @isTest
+    static void it_should_get_by_id_using_query_predicate() {
+        Lead expectedLead = [SELECT Id FROM Lead LIMIT 1];
+        QueryPredicate predicate = QueryPredicate.EQUALS(Lead.Id, expectedLead.Id);
+
+        Test.startTest();
+        Lead returnedLead = ((List<Lead>)new SObjectRepository_Tests.LeadRepository().get(predicate))[0];
+        Test.stopTest();
+
+        System.assertEquals(expectedLead.Id, returnedLead.Id);
+    }
+
+    @isTest
+    static void it_should_get_by_id_using_list_of_query_predicates() {
+        Lead expectedLead = [SELECT Id FROM Lead LIMIT 1];
+        QueryPredicate predicate = QueryPredicate.EQUALS(Lead.Id, expectedLead.Id);
+
+        Test.startTest();
+        Lead returnedLead = ((List<Lead>)new SObjectRepository_Tests.LeadRepository().get(new List<QueryPredicate>{predicate}))[0];
         Test.stopTest();
 
         System.assertEquals(expectedLead.Id, returnedLead.Id);
@@ -113,7 +120,7 @@ private class SObjectRepository_Tests {
         Map<Id, Lead> expectedLeadList = new Map<Id, Lead>([SELECT Id FROM Lead]);
 
         Test.startTest();
-        List<Lead> returnedLeadList = new SObjectRepository_Tests.LeadRepository().getById(new List<Id>(expectedLeadList.keySet()));
+        List<Lead> returnedLeadList = (List<Lead>)new SObjectRepository_Tests.LeadRepository().getById(new List<Id>(expectedLeadList.keySet()));
         Test.stopTest();
 
         System.assertNotEquals(null, expectedLeadList);
@@ -148,16 +155,44 @@ private class SObjectRepository_Tests {
     }
 
     @isTest
+    static void it_should_return_by_field_for_ids_in_set() {
+        Map<Id, Lead> expectedLeadMap = new Map<Id, Lead>([SELECT Id FROM Lead]);
+        List<SObjectField> leadFields = new List<SobjectField>{ Lead.Id, Lead.Company };
+        ISObjectRepository repo = new SObjectRepository(Lead.SObjectType, leadFields);
+        Test.startTest();
+        List<Lead> returnedLeadList = (List<Lead>)repo.getByFieldForIds(Lead.Company, 'My Test Company', expectedLeadMap.keyset());
+        Test.stopTest();
+
+        System.assertNotEquals(null, expectedLeadMap);
+        System.assert(!expectedLeadMap.isEmpty());
+        System.assertEquals(expectedLeadMap.size(), returnedLeadList.size());
+    }
+
+    @isTest
+    static void it_should_return_by_field_for_ids_in_list() {
+        Map<Id, Lead> expectedLeadMap = new Map<Id, Lead>([SELECT Id FROM Lead]);
+        List<SObjectField> leadFields = new List<SobjectField>{ Lead.Id, Lead.Company };
+        ISObjectRepository repo = new SObjectRepository(Lead.SObjectType, leadFields);
+        Test.startTest();
+        List<Lead> returnedLeadList = (List<Lead>)repo.getByFieldForIds(Lead.Company, 'My Test Company', new List<Id>(expectedLeadMap.keyset()));
+        Test.stopTest();
+
+        System.assertNotEquals(null, expectedLeadMap);
+        System.assert(!expectedLeadMap.isEmpty());
+        System.assertEquals(expectedLeadMap.size(), returnedLeadList.size());
+    }
+
+    @isTest
     static void it_should_search_in_all_fields() {
         String searchTerm = 'Gillespie';
-        Map<Id, Lead> soslLeadMap = new Map<Id, Lead>([SELECT Id, Name FROM Lead]);
+        Map<Id, Lead> soslLeadMap = new Map<Id, Lead>([SELECT Id, Name, OwnerId, Owner.Name FROM Lead]);
         Test.setFixedSearchResults(new List<Id>(soslLeadMap.keySet()));
 
         List<Lead> expectedLeadList = [FIND :searchTerm IN ALL FIELDS RETURNING Lead(Id, Name)][0];
         System.assertNotEquals(0, expectedLeadList.size());
 
         Test.startTest();
-        List<Lead> returnedLeadList = new SObjectRepository_Tests.LeadRepository().searchInAllFields(searchTerm);
+        List<Lead> returnedLeadList = (List<Lead>)new SObjectRepository_Tests.LeadRepository().getSearchResults(searchTerm, QuerySearchGroup.ALL_FIELDS);
         Test.stopTest();
 
         System.assertNotEquals(null, expectedLeadList);
@@ -190,8 +225,7 @@ private class SObjectRepository_Tests {
         new SObjectRepository_Tests.LeadRepository().doUpdate(existingLead);
         Test.stopTest();
 
-        existingLead = [SELECT Id, LastModifiedDate FROM Lead WHERE Id = :existingLead.Id];
-        System.assert(existingLead.LastModifiedDate > originalLastModifiedDate);
+        System.assert((Lead)TestingUtils.updatedRecords[0] == existingLead);
     }
 
     @isTest
@@ -217,8 +251,7 @@ private class SObjectRepository_Tests {
         Test.stopTest();
 
         List<Lead> existingLeadList = [SELECT Id, IsDeleted FROM Lead WHERE Id = :existingLead.Id ALL ROWS];
-        //System.assertEquals(0, existingLeadList.size());
-        // TODO figure out why the hard delete doesn't work in unit tests
+        System.assert(existingLeadList[0].IsDeleted);
     }
 
     @isTest

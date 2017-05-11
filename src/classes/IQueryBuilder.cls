@@ -5,11 +5,13 @@
 public interface IQueryBuilder {
 
     // SOQL buildermethods
-    IQueryBuilder whereField(Schema.SObjectField field, QueryOperator operator, Object value);
+    IQueryBuilder whereField(List<QueryPredicate> queryPredicates);
+    IQueryBuilder whereField(Schema.SobjectField field, QueryOperator operator, Object value);
+    IQueryBuilder whereField(Schema.SObjectField field, QueryOperator operator, List<Object> valueList);
 
     IQueryBuilder orderBy(Schema.SObjectField orderByField);
     IQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder);
-    IQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder, QueryNullSortOrder nullSortOrder);
+    IQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder, QueryNullSortOrder nullsSortOrder);
 
     IQueryBuilder limitCount(Integer limitCount);
     IQueryBuilder setAsUpdate();
@@ -19,5 +21,4 @@ public interface IQueryBuilder {
     SObject getFirstQueryResult();
     List<SObject> getQueryResults();
     List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup);
-
 }
