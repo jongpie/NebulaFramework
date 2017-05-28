@@ -2,9 +2,11 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
+@isTest
 public class SObjectRepositoryMocks {
 
     public virtual class Base extends DMLMock implements ISObjectRepository {
+
         protected List<SObject> records;
         protected List<Id> recordIdList;
         protected List<QueryFilter> filters;
@@ -16,7 +18,8 @@ public class SObjectRepositoryMocks {
         public Base(List<SObject> records) {
             this.records = records;
         }
-        public Base with (List<SObject> records) {
+
+        public Base with(List<SObject> records) {
             this.records = records;
             return this;
         }
@@ -113,4 +116,5 @@ public class SObjectRepositoryMocks {
             return fieldHashCodeToSObjectTypeMap.get(fieldHash);
         }
     }
+
 }
