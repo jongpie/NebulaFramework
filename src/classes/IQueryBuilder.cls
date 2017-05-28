@@ -24,7 +24,7 @@ public interface IQueryBuilder {
     List<SObject> getQueryResults();
     List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup);
 
-    // Get those fancy dyanmic query strings
+    // Get the dyanmic query strings
     String getQuery();
     String getQuery(Schema.SObjectField sobjectField);
 
