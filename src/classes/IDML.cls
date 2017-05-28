@@ -3,7 +3,7 @@
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
 public interface IDML {
-    // DML
+
     SObject doInsert(SObject record);
     List<SObject> doInsert(List<SObject> recordList);
     SObject doUpdate(SObject record);
@@ -17,4 +17,5 @@ public interface IDML {
     void doDelete(List<SObject> recordList);
     void doHardDelete(SObject record);
     void doHardDelete(List<SObject> recordList);
+
 }

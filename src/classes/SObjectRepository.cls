@@ -11,7 +11,9 @@ public virtual class SObjectRepository extends NebulaCore implements ISObjectRep
     private final Schema.SObjectType sobjectType;
     private final Schema.FieldSet fieldSet;
     private final List<Schema.SObjectField> sobjectFieldList;
+    private final Map<String, Schema.SObjectField> sobjectFieldMap;
     private final Schema.SObjectField idField;
+    private final Schema.SObjectField createdDateField;
 
     public SObjectRepository(Schema.SObjectType sobjectType, Schema.FieldSet fieldSet) {
         this(sobjectType, fieldSet, null);
@@ -27,10 +29,12 @@ public virtual class SObjectRepository extends NebulaCore implements ISObjectRep
         this.sobjectType      = sobjectType;
         this.fieldSet         = fieldSet;
         this.sObjectFieldList = sObjectFieldList;
-        this.idField          = this.getField(this.sobjectType, 'Id');
+        this.sobjectFieldMap  = sobjectType.getDescribe().fields.getMap();
+        this.idField          = this.getField('Id');
+        this.createdDateField = this.getField('CreatedDate');
     }
 
-    //SOQL
+    // SOQL
     public virtual SObject getById(Id recordId) {
         return this.Query
             .filterBy(new QueryFilter(this.idField, QueryOperator.EQUALS, recordId))
@@ -64,24 +68,21 @@ public virtual class SObjectRepository extends NebulaCore implements ISObjectRep
             .getQueryResults();
     }
 
-    public List<SObject> getCreatedSinceTimeValue(Object timeValue) {
+    public List<SObject> getCreatedSince(Object dateOrDatetime) {
         return this.Query
-            .filterBy(new QueryFilter(this.getCreatedDate(), QueryOperator.GREATER_THAN_OR_EQUAL_TO, timeValue))
+            .filterBy(new QueryFilter(this.createdDateField, QueryOperator.GREATER_THAN_OR_EQUAL_TO, dateOrDatetime))
             .getQueryResults();
     }
 
-    //SOSL
+    // SOSL
     public virtual List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup) {
         return (List<SObject>)this.Query
             .limitCount(10)
             .getSearchResults(searchTerm, searchGroup);
     }
 
-    private Schema.SObjectField getCreatedDate() {
-        return this.getField(this.sobjectType, 'CreatedDate');
+    private Schema.SObjectField getField(String fieldName) {
+        return this.sobjectFieldMap.get(fieldName);
     }
 
-    private Schema.SObjectField getField(Schema.SObjectType objType, String fieldName) {
-        return sobjectType.getDescribe().fields.getMap().get(fieldName);
-    }
 }

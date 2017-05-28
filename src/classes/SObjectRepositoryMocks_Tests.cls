@@ -21,8 +21,8 @@ private class SObjectRepositoryMocks_Tests {
     }
 
     @isTest
-    static void it_should_return_list_of_sobjects_when_querying_for_created_since_time_value() {
-        System.assert(new SObjectRepositoryMocks.Base().getCreatedSinceTimeValue(QueryDateLiteral.TODAY) instanceof List<SObject>);
+    static void it_should_return_list_of_sobjects_when_querying_for_created_since() {
+        System.assert(new SObjectRepositoryMocks.Base().getCreatedSince(QueryDateLiteral.TODAY) instanceof List<SObject>);
     }
 
     @isTest

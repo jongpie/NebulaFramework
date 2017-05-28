@@ -16,7 +16,7 @@ private class SObjectRepository_Tests {
         }
 
         public List<Lead> getMyRecentLeads(Integer limitCount) {
-            return (List<Lead>)this.queryFactory
+            return (List<Lead>)this.Query
                 .usingScope(QueryFilterScope.MINE)
                 .limitCount(limitCount)
                 .orderBy(Schema.Lead.LastActivityDate)
@@ -24,9 +24,9 @@ private class SObjectRepository_Tests {
         }
 
         public List<Lead> getNewThisWeekById(List<Id> leadIdList) {
-            return (List<Lead>)this.queryFactory
-                .whereField(Schema.Lead.Id, QueryOperator.IS_IN, leadIdList)
-                .whereField(Schema.Lead.CreatedDate, QueryOperator.EQUALS, QueryDateLiteral.THIS_WEEK)
+            return (List<Lead>)this.Query
+                .filterBy(new QueryFilter(Schema.Lead.Id, QueryOperator.IS_IN, leadIdList))
+                .filterBy(new QueryFilter(Schema.Lead.CreatedDate, QueryOperator.EQUALS, QueryDateLiteral.THIS_WEEK))
                 .setAsUpdate()
                 .getQueryResults();
         }
@@ -92,24 +92,24 @@ private class SObjectRepository_Tests {
     }
 
     @isTest
-    static void it_should_get_by_id_using_query_predicate() {
+    static void it_should_get_by_id_using_query_filter() {
         Lead expectedLead = [SELECT Id FROM Lead LIMIT 1];
-        QueryPredicate predicate = QueryPredicate.EQUALS(Lead.Id, expectedLead.Id);
+        QueryFilter queryFilter = new QueryFilter(Schema.Lead.Id, QueryOperator.EQUALS, expectedLead.Id);
 
         Test.startTest();
-        Lead returnedLead = ((List<Lead>)new SObjectRepository_Tests.LeadRepository().get(predicate))[0];
+        Lead returnedLead = ((List<Lead>)new SObjectRepository_Tests.LeadRepository().get(queryFilter))[0];
         Test.stopTest();
 
         System.assertEquals(expectedLead.Id, returnedLead.Id);
     }
 
     @isTest
-    static void it_should_get_by_id_using_list_of_query_predicates() {
+    static void it_should_get_by_id_using_list_of_query_filters() {
         Lead expectedLead = [SELECT Id FROM Lead LIMIT 1];
-        QueryPredicate predicate = QueryPredicate.EQUALS(Lead.Id, expectedLead.Id);
+        QueryFilter queryFilter = new QueryFilter(Schema.Lead.Id, QueryOperator.EQUALS, expectedLead.Id);
 
         Test.startTest();
-        Lead returnedLead = ((List<Lead>)new SObjectRepository_Tests.LeadRepository().get(new List<QueryPredicate>{predicate}))[0];
+        Lead returnedLead = ((List<Lead>)new SObjectRepository_Tests.LeadRepository().get(new List<QueryFilter>{queryFilter}))[0];
         Test.stopTest();
 
         System.assertEquals(expectedLead.Id, returnedLead.Id);

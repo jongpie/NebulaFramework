@@ -19,9 +19,9 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
     private final SObjectType sobjectType;
 
     public QueryBuilder(Schema.SObjectType sobjectType, Schema.FieldSet fieldSet, List<Schema.SObjectField> sobjectFieldList) {
-        this.sobjectType                     = sobjectType;
-        this.sobjectFieldList                = sobjectFieldList;
-        this.fieldSet                        = fieldSet;
+        this.sobjectType      = sobjectType;
+        this.sobjectFieldList = sobjectFieldList;
+        this.fieldSet         = fieldSet;
 
         this.forUpdate                = false;
         this.queryFields              = new Set<String>();
@@ -57,16 +57,6 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
             this.childRelationshipQueries.add(childQueryBuilder.getQuery(sobjectField));
         }
         return this;
-    }
-
-    public IQueryBuilder whereParentField(Schema.SObjectField parentLookupField, Schema.SObjectField parentFieldToFilter, QueryOperator operator, Object value) {
-        return this.filterBy(new QueryFilter(parentLookupField, parentFieldToFilter, operator, value));
-    }
-
-    public IQueryBuilder whereField(List<QueryPredicate> queryPredicates) {return this;}
-
-    public IQueryBuilder whereField(Schema.SObjectField field, QueryOperator operator, Object value) {
-        return this.filterBy(new QueryFilter(field, operator, value));
     }
 
     public IQueryBuilder orderBy(Schema.SObjectField orderByField) {

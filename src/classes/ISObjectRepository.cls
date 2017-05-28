@@ -11,23 +11,9 @@ public interface ISObjectRepository {
     List<SObject> get(List<QueryFilter> queryFilters);
     List<SObject> getByFieldForIds(Schema.SObjectField field, Object value, List<Id> idList);
     List<SObject> getByFieldForIds(Schema.SObjectField field, Object value, Set<Id> idSet);
-    List<SObject> getCreatedSince(Object value);
+    List<SObject> getCreatedSince(Object dateOrDatetime);
 
     // SOSL
     List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup);
-
-    // DML
-    void doInsert(SObject record);
-    void doInsert(List<SObject> recordList);
-    void doUpdate(SObject record);
-    void doUpdate(List<SObject> recordList);
-    void doUpsert(SObject record);
-    void doUpsert(List<SObject> recordList);
-    void doDelete(SObject record);
-    void doDelete(List<SObject> recordList);
-    void doUndelete(SObject record);
-    void doUndelete(List<SObject> recordList);
-    void doHardDelete(SObject record);
-    void doHardDelete(List<SObject> recordList);
 
 }

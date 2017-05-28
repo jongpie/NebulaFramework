@@ -3,10 +3,11 @@
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
 public class SObjectRepositoryMocks {
+
     public virtual class Base extends DMLMock implements ISObjectRepository {
         protected List<SObject> records;
         protected List<Id> recordIdList;
-        protected List<QueryPredicate> predicates;
+        protected List<QueryFilter> filters;
 
         public Base() {
             this.records = new List<SObject>();
@@ -20,7 +21,7 @@ public class SObjectRepositoryMocks {
             return this;
         }
 
-        //SOQL
+        // SOQL
         public virtual SObject getById(Id recordId) {
             return this.getById(new List<Id>{recordId})[0];
         }
@@ -33,25 +34,25 @@ public class SObjectRepositoryMocks {
             return this.records;
         }
 
-        public virtual List<SObject> get(List<QueryPredicate> predicates) {
-            this.predicates = predicates;
+        public virtual List<SObject> get(List<QueryFilter> filters) {
+            this.filters = filters;
             return this.records;
         }
 
-        public List<SObject> get(QueryPredicate queryPredicate) {
-            return this.get(new List<QueryPredicate> { queryPredicate });
+        public List<SObject> get(QueryFilter queryFilter) {
+            return this.get(new List<QueryFilter>{queryFilter});
         }
 
-        public List<SObject> get(QueryPredicate queryPredicateOne, QueryPredicate queryPredicateTwo) {
-            return this.get(new List<QueryPredicate> { queryPredicateOne, queryPredicateTwo });
+        public List<SObject> get(QueryFilter queryFilterOne, QueryFilter queryFilterTwo) {
+            return this.get(new List<QueryFilter>{queryFilterOne, queryFilterTwo});
         }
 
-        public List<SObject> get(QueryPredicate queryPredicateOne, QueryPredicate queryPredicateTwo, QueryPredicate queryPredicateThree) {
-            return this.get(new List<QueryPredicate> { queryPredicateOne, queryPredicateTwo, queryPredicateThree });
+        public List<SObject> get(QueryFilter queryFilterOne, QueryFilter queryFilterTwo, QueryFilter queryFilterThree) {
+            return this.get(new List<QueryFilter>{queryFilterOne, queryFilterTwo, queryFilterThree});
         }
 
-        public virtual List<QueryPredicate> getPredicates() {
-            return predicates;
+        public virtual List<QueryFilter> getFilters() {
+            return filters;
         }
 
         public virtual List<SObject> getByFieldForIds(Schema.SObjectField field, Object value, Set<Id> idList) {
@@ -66,7 +67,7 @@ public class SObjectRepositoryMocks {
             return records;
         }
 
-        public virtual List<SObject> getCreatedSinceTimeValue(Object value) {
+        public virtual List<SObject> getCreatedSince(Object value) {
             return this.returnListOfSObjects();
         }
 
