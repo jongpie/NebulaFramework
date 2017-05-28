@@ -2,7 +2,7 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
-public without sharing class QueryBuilder extends NebulaCore implements IQueryBuilder {
+public without sharing class QueryBuilder2 {/*extends NebulaCore implements IQueryBuilder {
 
     @testVisible private Boolean forUpdate;
     private Set<String> queryFields;
@@ -17,17 +17,19 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
     private final Schema.FieldSet fieldSet;
     private final List<Schema.SObjectField> sobjectFieldList;
     private final SObjectType sobjectType;
+    //private final List<Schema.ChildRelationship> sobjectTypeChildRelationshipMap;
 
-    public QueryBuilder(Schema.SObjectType sobjectType, Schema.FieldSet fieldSet, List<Schema.SObjectField> sobjectFieldList) {
-        this.sobjectType                     = sobjectType;
-        this.sobjectFieldList                = sobjectFieldList;
+    public QueryBuilder2(Schema.SObjectType sobjectType, Schema.FieldSet fieldSet, List<Schema.SObjectField> sobjectFieldList) {
         this.fieldSet                        = fieldSet;
+        this.sobjectFieldList                = sobjectFieldList;
+        this.sobjectType                     = sobjectType;
+//this.sobjectTypeChildRelationshipMap = this.sobjectType.getDescribe().getChildRelationShips();
 
-        this.forUpdate                = false;
-        this.queryFields              = new Set<String>();
-        this.orderByList              = new List<String>();
-        this.sobjectTypeFieldMap      = this.sobjectType.getDescribe().fields.getMap();
-        this.whereClauseList          = new List<String>();
+        this.forUpdate               = false;
+        this.queryFields             = new Set<String>();
+        this.orderByList             = new List<String>();
+        this.sobjectTypeFieldMap     = this.sobjectType.getDescribe().fields.getMap();
+        this.whereClauseList         = new List<String>();
         this.childRelationshipQueries = new List<String>();
 
         this.addCommonQueryFields();
@@ -35,38 +37,46 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
         this.addSObjectFields();
     }
 
-    public IQueryBuilder filterBy(QueryPredicate2 queryPredicate) {
-        return this.filterBy(new List<QueryPredicate2>{queryPredicate});
+    public IQueryBuilder includeChildRecords(Schema.SObjectField childToParentRelationshipField, QueryBuilder2 childSObjectQueryBuilder) {
+        return this.includeChildRecords(new Map<Schema.SObjectField, QueryBuilder2>{childToParentRelationshipField => childSObjectQueryBuilder});
     }
 
-    public IQueryBuilder filterBy(List<QueryPredicate2> queryPredicates) {
-        for(QueryPredicate2 predicate : queryPredicates) {
-            this.whereClauseList.add(predicate.getQueryFilter());
-        }
-        return this;
-    }
-
-    public IQueryBuilder includeChildRecords(Schema.SObjectField childToParentRelationshipField, IQueryBuilder childSObjectQueryBuilder) {
-        return this.includeChildRecords(new Map<Schema.SObjectField, IQueryBuilder>{childToParentRelationshipField => childSObjectQueryBuilder});
-    }
-
-    public IQueryBuilder includeChildRecords(Map<Schema.SObjectField, IQueryBuilder> childFieldToChildSObjectQueryBuilderMap) {
+    public IQueryBuilder includeChildRecords(Map<Schema.SObjectField, QueryBuilder2> childFieldToChildSObjectQueryBuilderMap) {
         for(Schema.SObjectField sobjectField : childFieldToChildSObjectQueryBuilderMap.keySet()) {
-            IQueryBuilder childQueryBuilder = childFieldToChildSObjectQueryBuilderMap.get(sobjectField);
+            QueryBuilder2 childQueryBuilder = childFieldToChildSObjectQueryBuilderMap.get(sobjectField);
 
+            //String childQuery =
             this.childRelationshipQueries.add(childQueryBuilder.getQuery(sobjectField));
         }
+        //this.childRelationshipQueryBuilderMap.putAll(relationshipFieldToChildSObjectQueryBuilderMap);
         return this;
-    }
-
-    public IQueryBuilder whereParentField(Schema.SObjectField parentLookupField, Schema.SObjectField parentFieldToFilter, QueryOperator operator, Object value) {
-        return this.filterBy(new QueryPredicate2(parentLookupField, parentFieldToFilter, operator, value));
     }
 
     public IQueryBuilder whereField(List<QueryPredicate> queryPredicates) {return this;}
 
+    public IQueryBuilder whereField(List<QueryPredicate2> queryPredicates) {
+        for(QueryPredicate2 predicate : queryPredicates) {
+            new SObjectTypeDescriber(this.sobjectType).validateSObjectFieldExists(predicate.sobjectField);
+
+            this.whereField(predicate.sobjectField, predicate.operator, predicate.value);
+        }
+        return this;
+    }
+
     public IQueryBuilder whereField(Schema.SObjectField field, QueryOperator operator, Object value) {
-        return this.filterBy(new QueryPredicate2(field, operator, value));
+        String parsedValue = new QueryArgumentFormatter(value).getValue();
+        String parsedOperator = operator.getValue();
+
+        this.whereClauseList.add(field + ' ' + parsedOperator + ' ' + parsedValue);
+        return this;
+    }
+
+    public IQueryBuilder whereField(Schema.SObjectField field, QueryOperator operator, List<Object> valueList) {
+        String parsedValue = new QueryArgumentFormatter(valueList).getValue();
+        String parsedOperator = operator.getValue();
+
+        this.whereClauseList.add(field + ' ' + parsedOperator + ' ' + parsedValue);
+        return this;
     }
 
     public IQueryBuilder orderBy(Schema.SObjectField orderByField) {
@@ -112,7 +122,7 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
             + this.getLimitCountString();
 
         return childQuery;
-    }*/
+    }*
 
     // Query execution methods
     public SObject getFirstQueryResult() {
@@ -216,7 +226,7 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
         // Auto-add the common fields that are available for the SObject Type
         List<String> commonFieldNameList = new List<String>{
             'Id', 'CaseNumber', 'CreatedById', 'CreatedDate', 'IsClosed', 'LastModifiedById', 'LastModifiedDate',
-            'Name', 'OwnerId', 'ParentId', 'Subject', 'RecordTypeId', 'SystemModStamp'
+            'Name', 'OwnerId', 'Subject', 'RecordTypeId', 'SystemModStamp'
         };
         for(String commonFieldName : commonFieldNameList) {
             if(!this.sobjectTypeFieldMap.containsKey(commonFieldName)) continue;
@@ -241,5 +251,5 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
         String logEntry = 'Query:\n' + this.query + '\n\nResults:\n' + results;
         Logger.addEntry(this, logEntry);
     }
-
+*/
 }
