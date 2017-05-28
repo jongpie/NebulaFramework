@@ -7,26 +7,27 @@ public interface ISObjectRepository {
     // SOQL
     SObject getById(Id recordId);
     List<SObject> getById(List<Id> recordIdList);
-    List<SObject> get(List<QueryPredicate> queryPredicates);
-    List<SObject> get(QueryPredicate queryPredicate);
+    List<SObject> get(QueryFilter queryFilter);
+    List<SObject> get(List<QueryFilter> queryFilters);
     List<SObject> getByFieldForIds(Schema.SObjectField field, Object value, List<Id> idList);
     List<SObject> getByFieldForIds(Schema.SObjectField field, Object value, Set<Id> idSet);
-    List<SObject> getCreatedSinceTimeValue(Object value);
+    List<SObject> getCreatedSince(Object value);
+
     // SOSL
     List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup);
 
     // DML
-    SObject doInsert(SObject record);
-    List<SObject> doInsert(List<SObject> recordList);
-    SObject doUpdate(SObject record);
-    List<SObject> doUpdate(List<SObject> recordList);
-    SObject doUpsert(SObject record);
-    List<SObject> doUpsert(List<SObject> recordList);
-    SObject doUndelete(SObject record);
-    List<SObject> doUndelete(List<SObject> recordList);
-
+    void doInsert(SObject record);
+    void doInsert(List<SObject> recordList);
+    void doUpdate(SObject record);
+    void doUpdate(List<SObject> recordList);
+    void doUpsert(SObject record);
+    void doUpsert(List<SObject> recordList);
     void doDelete(SObject record);
     void doDelete(List<SObject> recordList);
+    void doUndelete(SObject record);
+    void doUndelete(List<SObject> recordList);
     void doHardDelete(SObject record);
     void doHardDelete(List<SObject> recordList);
+
 }

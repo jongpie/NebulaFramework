@@ -35,13 +35,13 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
         this.addSObjectFields();
     }
 
-    public IQueryBuilder filterBy(QueryPredicate2 queryPredicate) {
-        return this.filterBy(new List<QueryPredicate2>{queryPredicate});
+    public IQueryBuilder filterBy(QueryFilter queryFilter) {
+        return this.filterBy(new List<QueryFilter>{queryFilter});
     }
 
-    public IQueryBuilder filterBy(List<QueryPredicate2> queryPredicates) {
-        for(QueryPredicate2 predicate : queryPredicates) {
-            this.whereClauseList.add(predicate.getQueryFilter());
+    public IQueryBuilder filterBy(List<QueryFilter> queryFilters) {
+        for(QueryFilter queryFilter : queryFilters) {
+            this.whereClauseList.add(queryFilter.getValue());
         }
         return this;
     }
@@ -60,13 +60,13 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
     }
 
     public IQueryBuilder whereParentField(Schema.SObjectField parentLookupField, Schema.SObjectField parentFieldToFilter, QueryOperator operator, Object value) {
-        return this.filterBy(new QueryPredicate2(parentLookupField, parentFieldToFilter, operator, value));
+        return this.filterBy(new QueryFilter(parentLookupField, parentFieldToFilter, operator, value));
     }
 
     public IQueryBuilder whereField(List<QueryPredicate> queryPredicates) {return this;}
 
     public IQueryBuilder whereField(Schema.SObjectField field, QueryOperator operator, Object value) {
-        return this.filterBy(new QueryPredicate2(field, operator, value));
+        return this.filterBy(new QueryFilter(field, operator, value));
     }
 
     public IQueryBuilder orderBy(Schema.SObjectField orderByField) {

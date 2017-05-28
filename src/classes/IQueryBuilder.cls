@@ -4,11 +4,9 @@
 *************************************************************************************************/
 public interface IQueryBuilder {
 
-    // SOQL builder methods
-    IQueryBuilder filterBy(QueryPredicate2 queryPredicate);
-    IQueryBuilder filterBy(List<QueryPredicate2> queryPredicates);
-    IQueryBuilder whereField(List<QueryPredicate> queryPredicates);
-    IQueryBuilder whereField(Schema.SobjectField field, QueryOperator operator, Object value);
+    // Query builder methods
+    IQueryBuilder filterBy(QueryFilter queryFilter);
+    IQueryBuilder filterBy(List<QueryFilter> queryFilters);
 
     IQueryBuilder includeChildRecords(Schema.SObjectField childToParentRelationshipField, IQueryBuilder childSObjectQueryBuilder);
     IQueryBuilder includeChildRecords(Map<Schema.SObjectField, IQueryBuilder> childFieldToChildSObjectQueryBuilderMap);
