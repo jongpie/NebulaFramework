@@ -38,7 +38,7 @@ public virtual class SObjectRepository extends NebulaCore implements ISObjectRep
     public virtual SObject getById(Id recordId) {
         return this.Query
             .filterBy(new QueryFilter(this.idField, QueryOperator.EQUALS, recordId))
-            .getQueryResults()[0];
+            .getFirstQueryResult();
     }
 
     public virtual List<SObject> getById(List<Id> recordIds) {

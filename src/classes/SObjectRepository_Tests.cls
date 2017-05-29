@@ -23,14 +23,6 @@ private class SObjectRepository_Tests {
                 .getQueryResults();
         }
 
-        public List<Lead> getNewThisWeekById(List<Id> leadIdList) {
-            return (List<Lead>)this.Query
-                .filterBy(new QueryFilter(Schema.Lead.Id, QueryOperator.IS_IN, leadIdList))
-                .filterBy(new QueryFilter(Schema.Lead.CreatedDate, QueryOperator.EQUALS, QueryDateLiteral.THIS_WEEK))
-                .setAsUpdate()
-                .getQueryResults();
-        }
-
         public override SObject doUpsert(SObject record) {
             Lead lead = (Lead)record;
             upsert lead;
@@ -142,11 +134,11 @@ private class SObjectRepository_Tests {
     }
 
     @isTest
-    static void it_should_return_new_this_week_by_id() {
-        Map<Id, Lead> expectedLeadMap = new Map<Id, Lead>([SELECT Id FROM Lead]);
+    static void it_should_return_created_since_date() {
+        Map<Id, Lead> expectedLeadMap = new Map<Id, Lead>([SELECT Id, CreatedDate FROM Lead]);
 
         Test.startTest();
-        List<Lead> returnedLeadList = new SObjectRepository_Tests.LeadRepository().getNewThisWeekById(new List<Id>(expectedLeadMap.keySet()));
+        List<Lead> returnedLeadList = new SObjectRepository_Tests.LeadRepository().getCreatedSince(expectedLeadMap.values()[0].CreatedDate);
         Test.stopTest();
 
         System.assertNotEquals(null, expectedLeadMap);
