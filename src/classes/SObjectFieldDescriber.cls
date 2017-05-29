@@ -42,25 +42,23 @@ public without sharing class SObjectFieldDescriber {
     }
 
     private void setSObjectType() {
-        // Then compare your sobjectField in hand by hashing it and then looking up into the map
         Integer sobjectFieldHashCode = this.getHashCode(this.sobjectField);
-
         this.SObjectType = sobjectFieldHashCodeToSObjectTypeMap.get(sobjectFieldHashCode);
     }
 
     private void cacheSObjectTypeFieldHashCodes() {
-        // Describe calls are "freee" but still add CPU time, so let's cache them
+        // Describe calls are "free" but still add CPU time, so let's cache them
         if(sobjectFieldHashCodeToSObjectTypeMap != null) return;
 
         sobjectFieldHashCodeToSObjectTypeMap = new Map<Integer,Schema.SObjectType>();
 
-        // Build a map of hashcodes for each fieldDescribe taken from Schema Global Describe
+        // Build a map of hash codes for each fieldDescribe taken from Schema Global Describe
         Map<String, Schema.SObjectType> globalDescribe = Schema.getGlobalDescribe();
-        for(String sobjTypeName: globalDescribe.keySet()) {
-            SObjectType sobjType = globalDescribe.get(sObjTypeName);
+        for(String sobjTypeName : globalDescribe.keySet()) {
+            SObjectType sobjType = globalDescribe.get(sobjTypeName);
 
             for(Schema.SObjectField sobjField : sobjType.getDescribe().fields.getMap().values()) {
-                Integer sobjFieldHashCode = getHashCode(sObjField);
+                Integer sobjFieldHashCode = getHashCode(sobjField);
 
                 sobjectFieldHashCodeToSObjectTypeMap.put(sobjFieldHashCode, sobjType);
             }
@@ -68,7 +66,7 @@ public without sharing class SObjectFieldDescriber {
     }
 
     private Integer getHashCode(Schema.SObjectField sobjField) {
-        return ((Object)sObjField).hashCode();
+        return ((Object)sobjField).hashCode();
     }
 
 }

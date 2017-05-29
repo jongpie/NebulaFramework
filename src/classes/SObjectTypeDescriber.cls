@@ -11,7 +11,7 @@ public without sharing class SObjectTypeDescriber {
     }
 
     public SObjectTypeDescriber(Schema.SObjectType sobjectType) {
-        this.sobjectType = sobjectType;
+        this.SObjectType = sobjectType;
     }
 
     public String getChildRelationshipName(Schema.SObjectField childSObjectField) {
@@ -23,9 +23,9 @@ public without sharing class SObjectTypeDescriber {
 
     public Boolean validateSObjectFieldExists(Schema.SObjectField expectedSObjectField) {
         SObjectFieldDescriber sobjectFieldDescriber = new SObjectFieldDescriber(expectedSObjectField);
-        Map<String, Schema.SObjectField> fieldMap = this.sobjectType.getDescribe().fields.getMap();
+        Map<String, Schema.SObjectField> fieldMap = this.SObjectType.getDescribe().fields.getMap();
 
-        Boolean sobjectTypesMatch            = sobjectFieldDescriber.validateSObjectType(this.sobjectType);
+        Boolean sobjectTypesMatch            = sobjectFieldDescriber.validateSObjectType(this.SObjectType);
         Boolean sobjectTypesHasMatchingField = fieldMap.containsKey(sobjectFieldDescriber.getFieldName());
 
         return sobjectTypesMatch && sobjectTypesHasMatchingField;

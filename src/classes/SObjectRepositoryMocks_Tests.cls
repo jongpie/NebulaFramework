@@ -1,5 +1,6 @@
 @isTest
 private class SObjectRepositoryMocks_Tests {
+
     @isTest
     static void it_should_fake_returning_by_id() {
         Id testId = getTestId();
@@ -49,4 +50,5 @@ private class SObjectRepositoryMocks_Tests {
     static Id getTestId() {
         return TestingUtils.generateId(Schema.Lead.SObjectType);
     }
+
 }
