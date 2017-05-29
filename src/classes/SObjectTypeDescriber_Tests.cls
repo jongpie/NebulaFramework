@@ -55,7 +55,7 @@ private class SObjectTypeDescriber_Tests {
 
         Test.startTest();
 
-        System.assert(sobjectTypeDescriber.validateSObjectFieldExists(Schema.Lead.Id));
+        System.assertEquals(true, sobjectTypeDescriber.validateSObjectFieldExists(Schema.Lead.Id));
 
         Test.stopTest();
     }
@@ -66,7 +66,7 @@ private class SObjectTypeDescriber_Tests {
 
         Test.startTest();
 
-        System.assert(sobjectTypeDescriber.validateSObjectFieldExists(Schema.Task.Id));
+        System.assertEquals(false, sobjectTypeDescriber.validateSObjectFieldExists(Schema.Task.Id));
 
         Test.stopTest();
     }
