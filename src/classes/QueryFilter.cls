@@ -11,8 +11,6 @@ public class QueryFilter {
     public Object Value {get; private set;}
     public String QueryFieldName {get; private set;}
 
-    //private String queryFilter;
-
     public QueryFilter(Schema.SObjectField fieldToFilter, QueryOperator operator, Object value) {
         this(new List<Schema.SObjectField>(), fieldToFilter, operator, value);
     }
@@ -29,7 +27,6 @@ public class QueryFilter {
         this.value                    = value;
 
         this.setQueryFieldName();
-        //this.setQueryFilter();
     }
 
     public String getValue() {
@@ -37,24 +34,13 @@ public class QueryFilter {
     }
 
     private void setQueryFieldName() {
-        SObjectTypeDescriber sobjectTypeDescriber = new SObjectTypeDescriber(this.sobjectType);
-
         this.queryFieldName = '';
         SObjectType currentSObjectType = this.SObjectType;
         for(Schema.SObjectField parentRelationshipField : this.parentRelationshipFields) {
-// TODO figure out how to leverage SObjectFieldDescriber
-// Validate that the SObjectField provided actually exists
-SObjectTypeDescriber parentSObjectTypeDescriber = new SObjectTypeDescriber(this.sobjectType);
-//System.assert(sobjectTypeDescriber.validateSObjectFieldExists(parentRelationshipField));
- new SObjectTypeDescriber(this.sobjectType).validateSObjectFieldExists(this.sobjectField);
             this.queryFieldName += parentRelationshipField.getDescribe().getRelationshipName() + '.';
-            currentSObjectType = new SObjectFieldDescriber(parentRelationshipField).sobjectType;
+            currentSObjectType = new SObjectFieldDescriber(parentRelationshipField).SObjectType;
         }
         this.queryFieldName += this.sobjectField;
     }
-
-    /*private void setQueryFilter() {
-        this.queryFilter = this.queryFieldName + ' ' + this.operator.getValue() + ' ' + this.objectToQueryString(this.value);
-    }*/
 
 }

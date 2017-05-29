@@ -14,7 +14,7 @@ private class SObjectFieldDescriber_Tests {
         Test.startTest();
 
         SObjectFieldDescriber sobjectFieldDescriber = new SObjectFieldDescriber(sobjectField);
-        System.assertEquals(expectedSObjectType, sobjectFieldDescriber.sobjectType);
+        System.assertEquals(expectedSObjectType, sobjectFieldDescriber.SObjectType);
 
         Test.stopTest();
     }
@@ -63,7 +63,7 @@ private class SObjectFieldDescriber_Tests {
     }
 
     @isTest
-    static void it_should_return_the_parent_field_sobjecttype() {
+    static void it_should_return_the_parent_field_sobject_type() {
         Schema.SObjectField sobjectField = Schema.Lead.ConvertedAccountId;
         Schema.SObjectType expectedParentSObjectType = Schema.Account.SObjectType;
 
