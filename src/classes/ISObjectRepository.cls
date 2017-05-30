@@ -4,6 +4,10 @@
 *************************************************************************************************/
 public interface ISObjectRepository {
 
+    // Manipulate queries without executing them
+    ISObjectRepository filterBy(QueryFilter queryFilter);
+    ISObjectRepository filterBy(List<QueryFilter> queryFilters);
+
     // SOQL
     SObject getById(Id recordId);
     List<SObject> getById(List<Id> recordIdList);
@@ -15,5 +19,8 @@ public interface ISObjectRepository {
 
     // SOSL
     List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup);
+
+    // Additional methods
+    IQueryBuilder getQueryBuilder();
 
 }

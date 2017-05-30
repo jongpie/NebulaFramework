@@ -47,13 +47,13 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
         return this;
     }
 
-    public IQueryBuilder includeChildRecords(Schema.SObjectField childToParentRelationshipField, IQueryBuilder childSObjectQueryBuilder) {
-        return this.includeChildRecords(new Map<Schema.SObjectField, IQueryBuilder>{childToParentRelationshipField => childSObjectQueryBuilder});
+    public IQueryBuilder includeChildrenRecords(Schema.SObjectField childToParentRelationshipField, ISObjectRepository childSObjectRepository) {
+        return this.includeChildrenRecords(new Map<Schema.SObjectField, ISObjectRepository>{childToParentRelationshipField => childSObjectRepository});
     }
 
-    public IQueryBuilder includeChildRecords(Map<Schema.SObjectField, IQueryBuilder> childFieldToChildSObjectQueryBuilderMap) {
-        for(Schema.SObjectField sobjectField : childFieldToChildSObjectQueryBuilderMap.keySet()) {
-            IQueryBuilder childQueryBuilder = childFieldToChildSObjectQueryBuilderMap.get(sobjectField);
+    public IQueryBuilder includeChildrenRecords(Map<Schema.SObjectField, ISObjectRepository> childFieldToChildSObjectRepositoryMap) {
+        for(Schema.SObjectField sobjectField : childFieldToChildSObjectRepositoryMap.keySet()) {
+            IQueryBuilder childQueryBuilder = childFieldToChildSObjectRepositoryMap.get(sobjectField).getQueryBuilder();
 
             this.childRelationshipQueries.add(childQueryBuilder.getQuery(sobjectField));
         }
@@ -95,16 +95,6 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
         return this;
     }
 
-/*    public String getChildRelationshipQueryString(Schema.SObjectField childToParentRelationshipField) {
-        String childQuery = 'SELECT ' + this.getQueryFieldString() + this.getChildRelationshipsQueryString()
-            + ' FROM ' + childToParentRelationshipField.getDescribe().getRelationshipName()
-            + this.getWhereClauseString()
-            + this.getOrderByString()
-            + this.getLimitCountString();
-
-        return childQuery;
-    }*/
-
     // Query execution methods
     public SObject getFirstQueryResult() {
         return this.getQueryResults()[0];
@@ -137,13 +127,7 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
         return this.getQuery(childRelationshipName);
     }
 
-    public String getQuery(String sobjectQueryName) {
-        //String sobjectQueryName = childRelationshipSObjectField.getDescribe().getRelationshipName();
-        //String childRelationshipName = new SObjectTypeDescriber(this.sobjectType).getChildRelationshipName(childRelationshipSObjectField);
-                                       //new SObjectTypeDescriber(Schema.Account.SObjectType).getChildRelationshipName(childRelationshipSObjectField))
-        // childRelationshipSObjectField.getDescribe().getRelationshipName();
-        //String sobjectQueryName = childRelationshipSObjectField == null ? String.valueOf(this.sobjectType) : childRelationshipName;
-
+    private String getQuery(String sobjectQueryName) {
         this.query = 'SELECT ' + this.getQueryFieldString();
 
         // Only 1 level of child relationships is allowed, so don't include them if the SObject name isn't the current SObject Type

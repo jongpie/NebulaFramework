@@ -38,6 +38,20 @@ public virtual class SObjectRepository extends NebulaCore implements ISObjectRep
         this.createdDateField = this.getField('CreatedDate');
     }
 
+    public virtual ISObjectRepository filterBy(QueryFilter queryFilter) {
+        return this.filterBy(new List<QueryFilter>{queryFilter});
+    }
+
+    public virtual ISObjectRepository filterBy(List<QueryFilter> queryFilters) {
+        for(QueryFilter queryFilter : queryFilters) this.Query.filterBy(queryFilter);
+
+        return this;
+    }
+
+    public virtual IQueryBuilder getQueryBuilder() {
+        return this.Query;
+    }
+
     // SOQL
     public virtual SObject getById(Id recordId) {
         return this.Query

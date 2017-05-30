@@ -5,36 +5,46 @@
 @isTest
 private class SObjectRepository_Tests {
 
-    private without sharing class LeadRepository extends SObjectRepository {
+    private without sharing class AccountRepository extends SObjectRepository {
         // Test subclass that extends SObjectRepository
-        public LeadRepository() {
-            super(Schema.Lead.SObjectType, new List<Schema.SObjectField>{Schema.Lead.Status});
+        public AccountRepository() {
+            super(Schema.Account.SObjectType, new List<Schema.SObjectField>{Schema.Account.Id, Schema.Account.Name});
         }
 
-        public LeadRepository(Schema.FieldSet fieldSet) {
-            super(Schema.Lead.SObjectType, fieldSet);
+        public AccountRepository(Schema.FieldSet fieldSet) {
+            super(Schema.Account.SObjectType, fieldSet);
         }
 
-        public List<Lead> getMyRecentLeads(Integer limitCount) {
-            return (List<Lead>)this.Query
+        public List<Account> getMyRecentAccounts(Integer limitCount) {
+            return (List<Account>)this.Query
                 .usingScope(QueryFilterScope.MINE)
                 .limitCount(limitCount)
-                .orderBy(Schema.Lead.LastActivityDate)
+                .orderBy(Schema.Account.LastActivityDate)
                 .getQueryResults();
         }
 
-        public override SObject doUpsert(SObject record) {
-            Lead lead = (Lead)record;
-            upsert lead;
+        public Account getAccountAndContactsWithEmails(Id accountId) {
+            return (Account)this.Query
+                .filterBy(new QueryFilter(Schema.Account.Id, QueryOperator.EQUALS, accountId))
+                .includeChildrenRecords(
+                    Schema.Contact.AccountId,
+                    new ContactRepository().filterBy(new QueryFilter(Schema.Contact.Email, QueryOperator.NOT_EQUAL_TO, null))
+                )
+                .getFirstQueryResult();
+        }
 
-            return lead;
+        public override SObject doUpsert(SObject record) {
+            Account account = (Account)record;
+            upsert account;
+
+            return account;
         }
 
         public override List<SObject> doUpsert(List<SObject> recordList) {
-            List<Lead> leadList = (List<Lead>)recordList;
-            upsert leadList;
+            List<Account> accountList = (List<Account>)recordList;
+            upsert accountList;
 
-            return leadList;
+            return accountList;
         }
 
         public override SObject doUpdate(SObject record) {
@@ -43,21 +53,34 @@ private class SObjectRepository_Tests {
         }
     }
 
-    static Lead createLead() {
-        Lead lead = new Lead(
-            Company  = 'My Test Company',
-            LastName = 'Gillespie'
+    public with sharing class ContactRepository extends SObjectRepository {
+        public ContactRepository() {
+            super(Schema.Contact.SObjectType);
+        }
+    }
+
+    static Account createAccount() {
+        Account account = new Account(
+            Name  = 'My Test Company'
         );
-        return lead;
+        return account;
+    }
+
+    static Contact createContact(Id accountId) {
+        Contact contact = new Contact(
+            AccountId = accountId,
+            LastName  = 'Gillespie'
+        );
+        return contact;
     }
 
     @testSetup
     static void setupData() {
-        List<Lead> leadList = new List<Lead>();
+        List<Account> accountList = new List<Account>();
         for(Integer i = 0; i < 5; i++) {
-            leadList.add(createLead());
+            accountList.add(createAccount());
         }
-        insert leadList;
+        insert accountList;
     }
 
     @isTest
@@ -67,201 +90,237 @@ private class SObjectRepository_Tests {
         Schema.FieldSet fieldSet;
 
         Test.startTest();
-        SObjectRepository_Tests.LeadRepository leadRepo = new SObjectRepository_Tests.LeadRepository(fieldSet);
-        System.assertNotEquals(null, leadRepo);
+        SObjectRepository_Tests.AccountRepository accountRepo = new SObjectRepository_Tests.AccountRepository(fieldSet);
+        System.assertNotEquals(null, accountRepo);
         Test.stopTest();
     }
 
     @isTest
     static void it_should_get_by_id_when_id() {
-        Lead expectedLead = [SELECT Id FROM Lead LIMIT 1];
+        Account expectedAccount = [SELECT Id FROM Account LIMIT 1];
 
         Test.startTest();
-        Lead returnedLead = (Lead)new SObjectRepository_Tests.LeadRepository().getById(expectedLead.Id);
+        Account returnedAccount = (Account)new SObjectRepository_Tests.AccountRepository().getById(expectedAccount.Id);
         Test.stopTest();
 
-        System.assertEquals(expectedLead.Id, returnedLead.Id);
+        System.assertEquals(expectedAccount.Id, returnedAccount.Id);
     }
 
     @isTest
     static void it_should_get_by_id_using_query_filter() {
-        Lead expectedLead = [SELECT Id FROM Lead LIMIT 1];
-        QueryFilter queryFilter = new QueryFilter(Schema.Lead.Id, QueryOperator.EQUALS, expectedLead.Id);
+        Account expectedAccount = [SELECT Id FROM Account LIMIT 1];
+        QueryFilter queryFilter = new QueryFilter(Schema.Account.Id, QueryOperator.EQUALS, expectedAccount.Id);
 
         Test.startTest();
-        Lead returnedLead = ((List<Lead>)new SObjectRepository_Tests.LeadRepository().get(queryFilter))[0];
+        Account returnedAccount = ((List<Account>)new SObjectRepository_Tests.AccountRepository().get(queryFilter))[0];
         Test.stopTest();
 
-        System.assertEquals(expectedLead.Id, returnedLead.Id);
+        System.assertEquals(expectedAccount.Id, returnedAccount.Id);
     }
 
     @isTest
     static void it_should_get_by_id_using_list_of_query_filters() {
-        Lead expectedLead = [SELECT Id FROM Lead LIMIT 1];
-        QueryFilter queryFilter = new QueryFilter(Schema.Lead.Id, QueryOperator.EQUALS, expectedLead.Id);
+        Account expectedAccount = [SELECT Id FROM Account LIMIT 1];
+        QueryFilter queryFilter = new QueryFilter(Schema.Account.Id, QueryOperator.EQUALS, expectedAccount.Id);
 
         Test.startTest();
-        Lead returnedLead = ((List<Lead>)new SObjectRepository_Tests.LeadRepository().get(new List<QueryFilter>{queryFilter}))[0];
+        Account returnedAccount = ((List<Account>)new SObjectRepository_Tests.AccountRepository().get(new List<QueryFilter>{queryFilter}))[0];
         Test.stopTest();
 
-        System.assertEquals(expectedLead.Id, returnedLead.Id);
+        System.assertEquals(expectedAccount.Id, returnedAccount.Id);
     }
 
     @isTest
     static void it_should_get_by_id_when_list_of_id() {
-        Map<Id, Lead> expectedLeadList = new Map<Id, Lead>([SELECT Id FROM Lead]);
+        Map<Id, Account> expectedAccountList = new Map<Id, Account>([SELECT Id FROM Account]);
 
         Test.startTest();
-        List<Lead> returnedLeadList = (List<Lead>)new SObjectRepository_Tests.LeadRepository().getById(new List<Id>(expectedLeadList.keySet()));
+        List<Account> returnedAccountList = (List<Account>)new SObjectRepository_Tests.AccountRepository().getById(new List<Id>(expectedAccountList.keySet()));
         Test.stopTest();
 
-        System.assertNotEquals(null, expectedLeadList);
-        System.assert(!expectedLeadList.isEmpty());
-        System.assertEquals(expectedLeadList.size(), returnedLeadList.size());
+        System.assertNotEquals(null, expectedAccountList);
+        System.assert(!expectedAccountList.isEmpty());
+        System.assertEquals(expectedAccountList.size(), returnedAccountList.size());
     }
 
     @isTest
-    static void it_should_return_my_recent_leads() {
-        List<Lead> expectedLeadList = [SELECT Id FROM Lead LIMIT 2];
+    static void it_should_return_my_recent_accounts() {
+        List<Account> expectedAccountList = [SELECT Id FROM Account LIMIT 2];
 
         Test.startTest();
-        List<Lead> returnedLeadList = new SObjectRepository_Tests.LeadRepository().getMyRecentLeads(expectedLeadList.size());
+        List<Account> returnedAccountList = new SObjectRepository_Tests.AccountRepository().getMyRecentAccounts(expectedAccountList.size());
         Test.stopTest();
 
-        System.assertNotEquals(null, expectedLeadList);
-        System.assert(!expectedLeadList.isEmpty());
-        System.assertEquals(expectedLeadList.size(), returnedLeadList.size());
+        System.assertNotEquals(null, expectedAccountList);
+        System.assert(!expectedAccountList.isEmpty());
+        System.assertEquals(expectedAccountList.size(), returnedAccountList.size());
     }
 
     @isTest
     static void it_should_return_created_since_date() {
-        Map<Id, Lead> expectedLeadMap = new Map<Id, Lead>([SELECT Id, CreatedDate FROM Lead]);
+        Map<Id, Account> expectedAccountMap = new Map<Id, Account>([SELECT Id, CreatedDate FROM Account]);
 
         Test.startTest();
-        List<Lead> returnedLeadList = new SObjectRepository_Tests.LeadRepository().getCreatedSince(expectedLeadMap.values()[0].CreatedDate);
+        List<Account> returnedAccountList = new SObjectRepository_Tests.AccountRepository().getCreatedSince(expectedAccountMap.values()[0].CreatedDate);
         Test.stopTest();
 
-        System.assertNotEquals(null, expectedLeadMap);
-        System.assert(!expectedLeadMap.isEmpty());
-        System.assertEquals(expectedLeadMap.size(), returnedLeadList.size());
+        System.assertNotEquals(null, expectedAccountMap);
+        System.assert(!expectedAccountMap.isEmpty());
+        System.assertEquals(expectedAccountMap.size(), returnedAccountList.size());
     }
 
     @isTest
     static void it_should_return_by_field_for_ids_in_set() {
-        Map<Id, Lead> expectedLeadMap = new Map<Id, Lead>([SELECT Id FROM Lead]);
-        List<SObjectField> leadFields = new List<SobjectField>{ Lead.Id, Lead.Company };
-        ISObjectRepository repo = new SObjectRepository(Lead.SObjectType, leadFields);
+        Map<Id, Account> expectedAccountMap = new Map<Id, Account>([SELECT Id FROM Account]);
+        List<SObjectField> accountFields = new List<SObjectField>{Schema.Account.Id, Schema.Account.Name};
+        ISObjectRepository repo = new SObjectRepository(Account.SObjectType, accountFields);
+
         Test.startTest();
-        List<Lead> returnedLeadList = (List<Lead>)repo.getByFieldForIds(Lead.Company, 'My Test Company', expectedLeadMap.keyset());
+        List<Account> returnedAccountList = (List<Account>)repo.getByFieldForIds(Account.Name, 'My Test Company', expectedAccountMap.keyset());
         Test.stopTest();
 
-        System.assertNotEquals(null, expectedLeadMap);
-        System.assert(!expectedLeadMap.isEmpty());
-        System.assertEquals(expectedLeadMap.size(), returnedLeadList.size());
+        System.assertNotEquals(null, expectedAccountMap);
+        System.assert(!expectedAccountMap.isEmpty());
+        System.assertEquals(expectedAccountMap.size(), returnedAccountList.size());
     }
 
     @isTest
     static void it_should_return_by_field_for_ids_in_list() {
-        Map<Id, Lead> expectedLeadMap = new Map<Id, Lead>([SELECT Id FROM Lead]);
-        List<SObjectField> leadFields = new List<SobjectField>{ Lead.Id, Lead.Company };
-        ISObjectRepository repo = new SObjectRepository(Lead.SObjectType, leadFields);
+        Map<Id, Account> expectedAccountMap = new Map<Id, Account>([SELECT Id FROM Account]);
+        List<SObjectField> accountFields = new List<SObjectField>{Schema.Account.Id, Schema.Account.Name};
+        ISObjectRepository repo = new SObjectRepository(Account.SObjectType, accountFields);
+
         Test.startTest();
-        List<Lead> returnedLeadList = (List<Lead>)repo.getByFieldForIds(Lead.Company, 'My Test Company', new List<Id>(expectedLeadMap.keyset()));
+        List<Account> returnedAccountList = (List<Account>)repo.getByFieldForIds(Schema.Account.Name, 'My Test Company', new List<Id>(expectedAccountMap.keyset()));
         Test.stopTest();
 
-        System.assertNotEquals(null, expectedLeadMap);
-        System.assert(!expectedLeadMap.isEmpty());
-        System.assertEquals(expectedLeadMap.size(), returnedLeadList.size());
+        System.assertNotEquals(null, expectedAccountMap);
+        System.assert(!expectedAccountMap.isEmpty());
+        System.assertEquals(expectedAccountMap.size(), returnedAccountList.size());
+    }
+
+    @isTest
+    static void it_should_return_account_and_contacts_with_emails_as_children_records() {
+        Account account = [SELECT Id FROM Account LIMIT 1];
+
+        Contact contact = createContact(Account.Id);
+        contact.Email = 'email@test.com';
+        insert contact;
+        contact = [SELECT Id, AccountId, Email FROM Contact WHERE Id = :contact.Id];
+        System.assertEquals(account.Id, contact.AccountId);
+        System.assertNotEquals(null, contact.Email);
+
+        Account expectedAccount = [
+            SELECT Id, (SELECT Id, AccountId, Email FROM Contacts)
+            FROM Account
+            WHERE Id = :account.Id
+        ];
+        System.assertEquals(1, expectedAccount.Contacts.size());
+
+        Test.startTest();
+        // Make sure that we have 0 queries used so far
+        System.assertEquals(0, Limits.getQueries());
+
+        account = new SObjectRepository_Tests.AccountRepository().getAccountAndContactsWithEmails(account.Id);
+
+        // Make sure that the account & contact query only counts as a singlequery
+        System.assertEquals(1, Limits.getQueries());
+        Test.stopTest();
+
+        System.assertEquals(expectedAccount.Contacts.size(), account.Contacts.size());
+        Contact firstContact = account.Contacts[0];
+        System.assertEquals(contact.Id, firstContact.Id);
+        System.assertEquals(contact.Email, firstContact.Email);
     }
 
     @isTest
     static void it_should_search_in_all_fields() {
         String searchTerm = 'Gillespie';
-        Map<Id, Lead> soslLeadMap = new Map<Id, Lead>([SELECT Id, Name, OwnerId, Owner.Name FROM Lead]);
-        Test.setFixedSearchResults(new List<Id>(soslLeadMap.keySet()));
+        Map<Id, Account> soslAccountMap = new Map<Id, Account>([SELECT Id, Name, OwnerId, Owner.Name FROM Account]);
+        Test.setFixedSearchResults(new List<Id>(soslAccountMap.keySet()));
 
-        List<Lead> expectedLeadList = [FIND :searchTerm IN ALL FIELDS RETURNING Lead(Id, Name)][0];
-        System.assertNotEquals(0, expectedLeadList.size());
+        List<Account> expectedAccountList = [FIND :searchTerm IN ALL FIELDS RETURNING Account(Id, Name)][0];
+        System.assertNotEquals(0, expectedAccountList.size());
 
         Test.startTest();
-        List<Lead> returnedLeadList = (List<Lead>)new SObjectRepository_Tests.LeadRepository().getSearchResults(searchTerm, QuerySearchGroup.ALL_FIELDS);
+        List<Account> returnedAccountList = (List<Account>)new SObjectRepository_Tests.AccountRepository().getSearchResults(searchTerm, QuerySearchGroup.ALL_FIELDS);
         Test.stopTest();
 
-        System.assertNotEquals(null, expectedLeadList);
-        System.assert(!expectedLeadList.isEmpty());
-        System.assertEquals(expectedLeadList.size(), returnedLeadList.size());
+        System.assertNotEquals(null, expectedAccountList);
+        System.assert(!expectedAccountList.isEmpty());
+        System.assertEquals(expectedAccountList.size(), returnedAccountList.size());
     }
 
     @isTest
     static void it_should_insert_a_single_record() {
-        Lead lead = createLead();
-        System.assertEquals(null, lead.Id);
+        Account account = createAccount();
+        System.assertEquals(null, account.Id);
 
         Test.startTest();
-        new SObjectRepository_Tests.LeadRepository().doInsert(lead);
+        new SObjectRepository_Tests.AccountRepository().doInsert(account);
         Test.stopTest();
 
-        System.assertNotEquals(null, lead.Id);
+        System.assertNotEquals(null, account.Id);
 
-        List<Lead> queriedLeadList = [SELECT Id FROM Lead WHERE Id = :lead.Id];
-        System.assertEquals(1, queriedLeadList.size());
-        System.assertEquals(queriedLeadList[0].Id, lead.Id);
+        List<Account> queriedAccountList = [SELECT Id FROM Account WHERE Id = :account.Id];
+        System.assertEquals(1, queriedAccountList.size());
+        System.assertEquals(queriedAccountList[0].Id, account.Id);
     }
 
     @isTest
     static void it_should_update_a_single_record() {
-        Lead existingLead = [SELECT Id, LastModifiedDate FROM Lead LIMIT 1];
-        Datetime originalLastModifiedDate = existingLead.LastModifiedDate;
+        Account existingAccount = [SELECT Id, LastModifiedDate FROM Account LIMIT 1];
+        Datetime originalLastModifiedDate = existingAccount.LastModifiedDate;
 
         Test.startTest();
-        new SObjectRepository_Tests.LeadRepository().doUpdate(existingLead);
+        new SObjectRepository_Tests.AccountRepository().doUpdate(existingAccount);
         Test.stopTest();
 
-        System.assert((Lead)TestingUtils.updatedRecords[0] == existingLead);
+        System.assert((Account)TestingUtils.updatedRecords[0] == existingAccount);
     }
 
     @isTest
     static void it_should_delete_a_single_record() {
-        Lead existingLead = [SELECT Id, IsDeleted FROM Lead LIMIT 1];
-        System.assertEquals(false, existingLead.IsDeleted);
+        Account existingAccount = [SELECT Id, IsDeleted FROM Account LIMIT 1];
+        System.assertEquals(false, existingAccount.IsDeleted);
 
         Test.startTest();
-        new SObjectRepository_Tests.LeadRepository().doDelete(existingLead);
+        new SObjectRepository_Tests.AccountRepository().doDelete(existingAccount);
         Test.stopTest();
 
-        existingLead = [SELECT Id, IsDeleted FROM Lead WHERE Id = :existingLead.Id ALL ROWS];
-        System.assertEquals(true, existingLead.IsDeleted);
+        existingAccount = [SELECT Id, IsDeleted FROM Account WHERE Id = :existingAccount.Id ALL ROWS];
+        System.assertEquals(true, existingAccount.IsDeleted);
     }
 
     @isTest
     static void it_should_hard_delete_a_single_record() {
-        Lead existingLead = [SELECT Id, IsDeleted FROM Lead LIMIT 1];
-        System.assertEquals(false, existingLead.IsDeleted);
+        Account existingAccount = [SELECT Id, IsDeleted FROM Account LIMIT 1];
+        System.assertEquals(false, existingAccount.IsDeleted);
 
         Test.startTest();
-        new SObjectRepository_Tests.LeadRepository().doHardDelete(existingLead);
+        new SObjectRepository_Tests.AccountRepository().doHardDelete(existingAccount);
         Test.stopTest();
 
-        List<Lead> existingLeadList = [SELECT Id, IsDeleted FROM Lead WHERE Id = :existingLead.Id ALL ROWS];
-        System.assert(existingLeadList[0].IsDeleted);
+        List<Account> existingAccountList = [SELECT Id, IsDeleted FROM Account WHERE Id = :existingAccount.Id ALL ROWS];
+        System.assert(existingAccountList[0].IsDeleted);
     }
 
     @isTest
     static void it_should_undelete_a_single_record() {
-        Lead existingLead = [SELECT Id, IsDeleted FROM Lead LIMIT 1];
-        System.assertEquals(false, existingLead.IsDeleted);
+        Account existingAccount = [SELECT Id, IsDeleted FROM Account LIMIT 1];
+        System.assertEquals(false, existingAccount.IsDeleted);
 
-        delete existingLead;
+        delete existingAccount;
 
-        existingLead = [SELECT Id, IsDeleted FROM Lead WHERE Id = :existingLead.Id ALL ROWS];
-        System.assertEquals(true, existingLead.IsDeleted);
+        existingAccount = [SELECT Id, IsDeleted FROM Account WHERE Id = :existingAccount.Id ALL ROWS];
+        System.assertEquals(true, existingAccount.IsDeleted);
 
         Test.startTest();
-        new SObjectRepository_Tests.LeadRepository().doUndelete(existingLead);
+        new SObjectRepository_Tests.AccountRepository().doUndelete(existingAccount);
         Test.stopTest();
 
-        existingLead = [SELECT Id, IsDeleted FROM Lead WHERE Id = :existingLead.Id ALL ROWS];
-        System.assertEquals(false, existingLead.IsDeleted);
+        existingAccount = [SELECT Id, IsDeleted FROM Account WHERE Id = :existingAccount.Id ALL ROWS];
+        System.assertEquals(false, existingAccount.IsDeleted);
     }
 
 }

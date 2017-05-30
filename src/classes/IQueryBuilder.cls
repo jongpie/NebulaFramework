@@ -8,8 +8,8 @@ public interface IQueryBuilder {
     IQueryBuilder filterBy(QueryFilter queryFilter);
     IQueryBuilder filterBy(List<QueryFilter> queryFilters);
 
-    IQueryBuilder includeChildRecords(Schema.SObjectField childToParentRelationshipField, IQueryBuilder childSObjectQueryBuilder);
-    IQueryBuilder includeChildRecords(Map<Schema.SObjectField, IQueryBuilder> childFieldToChildSObjectQueryBuilderMap);
+    IQueryBuilder includeChildrenRecords(Schema.SObjectField childToParentRelationshipField, ISObjectRepository childSObjectRepository);
+    IQueryBuilder includeChildrenRecords(Map<Schema.SObjectField, ISObjectRepository> childFieldToChildSObjectRepositoryrMap);
 
     IQueryBuilder orderBy(Schema.SObjectField orderByField);
     IQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder);
