@@ -24,6 +24,15 @@ public class SObjectRepositoryMocks {
             return this;
         }
 
+        public virtual ISObjectRepository filterBy(QueryFilter queryFilter) {
+            return this.filterBy(new List<QueryFilter>{queryFilter});
+        }
+
+        public virtual ISObjectRepository filterBy(List<QueryFilter> queryFilters) {
+            this.filters = filters;
+            return this;
+        }
+
         // SOQL
         public virtual SObject getById(Id recordId) {
             return this.getById(new List<Id>{recordId})[0];
@@ -77,6 +86,10 @@ public class SObjectRepositoryMocks {
         // SOSL
         public virtual List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup) {
             return this.returnListOfSObjects();
+        }
+
+        public virtual IQueryBuilder getQueryBuilder() {
+            return new QueryBuilder(this.records.getSObjectType(), null, null);
         }
 
         private void createMockObjects() {

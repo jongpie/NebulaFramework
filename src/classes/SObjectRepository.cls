@@ -38,6 +38,7 @@ public virtual class SObjectRepository extends NebulaCore implements ISObjectRep
         this.createdDateField = this.getField('CreatedDate');
     }
 
+    // Add filters to the query without actually executing the query
     public virtual ISObjectRepository filterBy(QueryFilter queryFilter) {
         return this.filterBy(new List<QueryFilter>{queryFilter});
     }
@@ -46,10 +47,6 @@ public virtual class SObjectRepository extends NebulaCore implements ISObjectRep
         for(QueryFilter queryFilter : queryFilters) this.Query.filterBy(queryFilter);
 
         return this;
-    }
-
-    public virtual IQueryBuilder getQueryBuilder() {
-        return this.Query;
     }
 
     // SOQL
@@ -97,6 +94,10 @@ public virtual class SObjectRepository extends NebulaCore implements ISObjectRep
         return (List<SObject>)this.Query
             .limitCount(10)
             .getSearchResults(searchTerm, searchGroup);
+    }
+
+    public virtual IQueryBuilder getQueryBuilder() {
+        return this.Query;
     }
 
     private Schema.SObjectField getField(String fieldName) {
