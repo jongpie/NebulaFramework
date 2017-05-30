@@ -33,6 +33,7 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
         this.addCommonQueryFields();
         this.addFieldSetMembers();
         this.addSObjectFields();
+        this.addSObjectTypeFields();
     }
 
     public IQueryBuilder filterBy(QueryFilter queryFilter) {
@@ -225,6 +226,14 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
         if(this.sobjectFieldList == null) return;
 
         for(Schema.SObjectField field : this.sobjectFieldList) this.queryFields.add(field.getDescribe().getName().toLowerCase());
+    }
+
+    private void addSObjectTypeFields() {
+        if(this.fieldSet != null || this.sobjectFieldList != null) return;
+
+        // If no field set or list of fields is provided, we enter 'lazy mode' and all fields for the SObject Type are added
+        // This is effectively 'select * from <sobject>'. Performance issues can occur with large objects, so use carefully.
+        for(Schema.SObjectField field : this.sobjectTypeFieldMap.values()) this.queryFields.add(field.getDescribe().getName().toLowerCase());
     }
 
     private void logEntry(List<Object> results) {

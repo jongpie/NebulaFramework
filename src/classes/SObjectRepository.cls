@@ -15,6 +15,10 @@ public virtual class SObjectRepository extends NebulaCore implements ISObjectRep
     private final Schema.SObjectField idField;
     private final Schema.SObjectField createdDateField;
 
+    public SObjectRepository(Schema.SObjectType sobjectType) {
+        this(sobjectType, null, null);
+    }
+
     public SObjectRepository(Schema.SObjectType sobjectType, Schema.FieldSet fieldSet) {
         this(sobjectType, fieldSet, null);
     }
@@ -61,14 +65,14 @@ public virtual class SObjectRepository extends NebulaCore implements ISObjectRep
         return this.getByFieldForIds(field, value, new List<Id>(idSet));
     }
 
-    public virtual List<SObject> getByFieldForIds(Schema.SObjectField field, Object value, List<Id> recordIds) {
+    public virtual List<SObject> getByFieldForIds(Schema.SObjectField field, Object value, List<Id> idList) {
         return this.Query
-            .filterBy(new QueryFilter(this.idField, QueryOperator.IS_IN, recordIds))
+            .filterBy(new QueryFilter(this.idField, QueryOperator.IS_IN, idList))
             .filterBy(new QueryFilter(field, QueryOperator.EQUALS, value))
             .getQueryResults();
     }
 
-    public List<SObject> getCreatedSince(Object dateOrDatetime) {
+    public virtual List<SObject> getCreatedSince(Object dateOrDatetime) {
         return this.Query
             .filterBy(new QueryFilter(this.createdDateField, QueryOperator.GREATER_THAN_OR_EQUAL_TO, dateOrDatetime))
             .getQueryResults();
