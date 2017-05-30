@@ -4,10 +4,10 @@
 *************************************************************************************************/
 public without sharing class NebulaSettings {
 
-    public static NebulaLoggerSettings__c loggerSettings;
-    public static NebulaRecordTypesSettings__c recordTypesSettings;
-    public static NebulaRepositorySettings__c repositorySettings;
-    public static NebulaTriggerHandlerSettings__c triggerHandlerSettings;
+    public static NebulaLoggerSettings__c LoggerSettings {get; private set;}
+    public static NebulaRecordTypesSettings__c RecordTypesSettings {get; private set;}
+    public static NebulaRepositorySettings__c RepositorySettings {get; private set;}
+    public static NebulaTriggerHandlerSettings__c TriggerHandlerSettings {get; private set;}
 
     static {
         loadCustomSettings();

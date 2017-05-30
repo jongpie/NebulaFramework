@@ -11,7 +11,7 @@ private class NebulaSettings_Tests {
         System.assert(existingSettings.isEmpty());
 
         Test.startTest();
-        System.assertNotEquals(null, NebulaSettings.recordTypesSettings);
+        System.assertNotEquals(null, NebulaSettings.RecordTypesSettings);
         Test.stopTest();
     }
 
@@ -21,7 +21,7 @@ private class NebulaSettings_Tests {
         System.assert(existingSettings.isEmpty());
 
         Test.startTest();
-        System.assertNotEquals(null, NebulaSettings.loggerSettings);
+        System.assertNotEquals(null, NebulaSettings.LoggerSettings);
         Test.stopTest();
     }
 
@@ -31,7 +31,7 @@ private class NebulaSettings_Tests {
         System.assert(existingSettings.isEmpty());
 
         Test.startTest();
-        System.assertNotEquals(null, NebulaSettings.repositorySettings);
+        System.assertNotEquals(null, NebulaSettings.RepositorySettings);
         Test.stopTest();
     }
 
@@ -41,7 +41,7 @@ private class NebulaSettings_Tests {
         System.assert(existingSettings.isEmpty());
 
         Test.startTest();
-        System.assertNotEquals(null, NebulaSettings.triggerHandlerSettings);
+        System.assertNotEquals(null, NebulaSettings.TriggerHandlerSettings);
         Test.stopTest();
     }
 
