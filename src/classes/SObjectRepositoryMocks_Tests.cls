@@ -22,11 +22,6 @@ private class SObjectRepositoryMocks_Tests {
     }
 
     @isTest
-    static void it_should_return_list_of_sobjects_when_querying_for_created_since() {
-        System.assert(new SObjectRepositoryMocks.Base().getCreatedSince(QueryDateLiteral.TODAY) instanceof List<SObject>);
-    }
-
-    @isTest
     static void it_should_return_list_of_sobjects_when_mocking_sosl_search() {
         System.assert(new SObjectRepositoryMocks.Base().getSearchResults(getFieldValue(),QuerySearchGroup.ALL_FIELDS) instanceof List<SObject>);
     }

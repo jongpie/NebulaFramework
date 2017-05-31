@@ -79,10 +79,6 @@ public class SObjectRepositoryMocks {
             return records;
         }
 
-        public virtual List<SObject> getCreatedSince(Object value) {
-            return this.returnListOfSObjects();
-        }
-
         // SOSL
         public virtual List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup) {
             return this.returnListOfSObjects();

@@ -13,7 +13,6 @@ public virtual class SObjectRepository extends NebulaCore implements ISObjectRep
     private final List<Schema.SObjectField> sobjectFieldList;
     private final Map<String, Schema.SObjectField> sobjectFieldMap;
     private final Schema.SObjectField idField;
-    private final Schema.SObjectField createdDateField;
 
     public SObjectRepository(Schema.SObjectType sobjectType) {
         this(sobjectType, null, null);
@@ -35,7 +34,6 @@ public virtual class SObjectRepository extends NebulaCore implements ISObjectRep
         this.sObjectFieldList = sObjectFieldList;
         this.sobjectFieldMap  = sobjectType.getDescribe().fields.getMap();
         this.idField          = this.getField('Id');
-        this.createdDateField = this.getField('CreatedDate');
     }
 
     // Add filters to the query without actually executing the query
@@ -80,12 +78,6 @@ public virtual class SObjectRepository extends NebulaCore implements ISObjectRep
         return this.Query
             .filterBy(new QueryFilter(this.idField, QueryOperator.IS_IN, idList))
             .filterBy(new QueryFilter(field, QueryOperator.EQUALS, value))
-            .getQueryResults();
-    }
-
-    public virtual List<SObject> getCreatedSince(Object dateOrDatetime) {
-        return this.Query
-            .filterBy(new QueryFilter(this.createdDateField, QueryOperator.GREATER_THAN_OR_EQUAL_TO, dateOrDatetime))
             .getQueryResults();
     }
 

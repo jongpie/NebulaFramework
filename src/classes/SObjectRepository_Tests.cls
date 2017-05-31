@@ -157,19 +157,6 @@ private class SObjectRepository_Tests {
     }
 
     @isTest
-    static void it_should_return_created_since_date() {
-        Map<Id, Account> expectedAccountMap = new Map<Id, Account>([SELECT Id, CreatedDate FROM Account]);
-
-        Test.startTest();
-        List<Account> returnedAccountList = new SObjectRepository_Tests.AccountRepository().getCreatedSince(expectedAccountMap.values()[0].CreatedDate);
-        Test.stopTest();
-
-        System.assertNotEquals(null, expectedAccountMap);
-        System.assert(!expectedAccountMap.isEmpty());
-        System.assertEquals(expectedAccountMap.size(), returnedAccountList.size());
-    }
-
-    @isTest
     static void it_should_return_by_field_for_ids_in_set() {
         Map<Id, Account> expectedAccountMap = new Map<Id, Account>([SELECT Id FROM Account]);
         List<SObjectField> accountFields = new List<SObjectField>{Schema.Account.Id, Schema.Account.Name};
