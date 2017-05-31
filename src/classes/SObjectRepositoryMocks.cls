@@ -9,7 +9,7 @@ public class SObjectRepositoryMocks {
 
         protected List<SObject> records;
         protected List<Id> recordIdList;
-        protected List<QueryFilter> filters;
+        protected List<IQueryFilter> queryFilters;
 
         public Base() {
             this.records = new List<SObject>();
@@ -24,12 +24,12 @@ public class SObjectRepositoryMocks {
             return this;
         }
 
-        public virtual ISObjectRepository filterBy(QueryFilter queryFilter) {
-            return this.filterBy(new List<QueryFilter>{queryFilter});
+        public virtual ISObjectRepository filterBy(IQueryFilter queryFilter) {
+            return this.filterBy(new List<IQueryFilter>{queryFilter});
         }
 
-        public virtual ISObjectRepository filterBy(List<QueryFilter> queryFilters) {
-            this.filters = filters;
+        public virtual ISObjectRepository filterBy(List<IQueryFilter> queryFilters) {
+            this.queryFilters = queryFilters;
             return this;
         }
 
@@ -46,25 +46,25 @@ public class SObjectRepositoryMocks {
             return this.records;
         }
 
-        public virtual List<SObject> get(List<QueryFilter> filters) {
-            this.filters = filters;
+        public virtual List<SObject> get(List<IQueryFilter> queryFilters) {
+            this.queryFilters = queryFilters;
             return this.records;
         }
 
-        public List<SObject> get(QueryFilter queryFilter) {
-            return this.get(new List<QueryFilter>{queryFilter});
+        public List<SObject> get(IQueryFilter queryFilter) {
+            return this.get(new List<IQueryFilter>{queryFilter});
         }
 
-        public List<SObject> get(QueryFilter queryFilterOne, QueryFilter queryFilterTwo) {
-            return this.get(new List<QueryFilter>{queryFilterOne, queryFilterTwo});
+        public List<SObject> get(IQueryFilter queryFilterOne, IQueryFilter queryFilterTwo) {
+            return this.get(new List<IQueryFilter>{queryFilterOne, queryFilterTwo});
         }
 
-        public List<SObject> get(QueryFilter queryFilterOne, QueryFilter queryFilterTwo, QueryFilter queryFilterThree) {
-            return this.get(new List<QueryFilter>{queryFilterOne, queryFilterTwo, queryFilterThree});
+        public List<SObject> get(IQueryFilter queryFilterOne, IQueryFilter queryFilterTwo, IQueryFilter queryFilterThree) {
+            return this.get(new List<IQueryFilter>{queryFilterOne, queryFilterTwo, queryFilterThree});
         }
 
-        public virtual List<QueryFilter> getFilters() {
-            return filters;
+        public virtual List<IQueryFilter> getQueryFilters() {
+            return queryFilters;
         }
 
         public virtual List<SObject> getByFieldForIds(Schema.SObjectField field, Object value, Set<Id> idList) {

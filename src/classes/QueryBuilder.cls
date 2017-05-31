@@ -36,12 +36,12 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
         this.addSObjectTypeFields();
     }
 
-    public IQueryBuilder filterBy(QueryFilter queryFilter) {
-        return this.filterBy(new List<QueryFilter>{queryFilter});
+    public IQueryBuilder filterBy(IQueryFilter queryFilter) {
+        return this.filterBy(new List<IQueryFilter>{queryFilter});
     }
 
-    public IQueryBuilder filterBy(List<QueryFilter> queryFilters) {
-        for(QueryFilter queryFilter : queryFilters) {
+    public IQueryBuilder filterBy(List<IQueryFilter> queryFilters) {
+        for(IQueryFilter queryFilter : queryFilters) {
             this.whereClauseList.add(queryFilter.getValue());
         }
         return this;

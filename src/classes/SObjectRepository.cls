@@ -39,12 +39,12 @@ public virtual class SObjectRepository extends NebulaCore implements ISObjectRep
     }
 
     // Add filters to the query without actually executing the query
-    public virtual ISObjectRepository filterBy(QueryFilter queryFilter) {
-        return this.filterBy(new List<QueryFilter>{queryFilter});
+    public virtual ISObjectRepository filterBy(IQueryFilter queryFilter) {
+        return this.filterBy(new List<IQueryFilter>{queryFilter});
     }
 
-    public virtual ISObjectRepository filterBy(List<QueryFilter> queryFilters) {
-        for(QueryFilter queryFilter : queryFilters) this.Query.filterBy(queryFilter);
+    public virtual ISObjectRepository filterBy(List<IQueryFilter> queryFilters) {
+        for(IQueryFilter queryFilter : queryFilters) this.Query.filterBy(queryFilter);
 
         return this;
     }
@@ -62,11 +62,11 @@ public virtual class SObjectRepository extends NebulaCore implements ISObjectRep
             .getQueryResults();
     }
 
-    public virtual List<SObject> get(QueryFilter queryFilter) {
-        return this.get(new List<QueryFilter>{queryFilter});
+    public virtual List<SObject> get(IQueryFilter queryFilter) {
+        return this.get(new List<IQueryFilter>{queryFilter});
     }
 
-    public virtual List<SObject> get(List<QueryFilter> queryFilters) {
+    public virtual List<SObject> get(List<IQueryFilter> queryFilters) {
         return this.Query
             .filterBy(queryFilters)
             .getQueryResults();

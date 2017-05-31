@@ -5,14 +5,14 @@
 public interface ISObjectRepository {
 
     // Manipulate queries without executing them
-    ISObjectRepository filterBy(QueryFilter queryFilter);
-    ISObjectRepository filterBy(List<QueryFilter> queryFilters);
+    ISObjectRepository filterBy(IQueryFilter queryFilter);
+    ISObjectRepository filterBy(List<IQueryFilter> queryFilters);
 
     // SOQL
     SObject getById(Id recordId);
     List<SObject> getById(List<Id> recordIdList);
-    List<SObject> get(QueryFilter queryFilter);
-    List<SObject> get(List<QueryFilter> queryFilters);
+    List<SObject> get(IQueryFilter queryFilter);
+    List<SObject> get(List<IQueryFilter> queryFilters);
     List<SObject> getByFieldForIds(Schema.SObjectField field, Object value, List<Id> idList);
     List<SObject> getByFieldForIds(Schema.SObjectField field, Object value, Set<Id> idSet);
     List<SObject> getCreatedSince(Object dateOrDatetime);
