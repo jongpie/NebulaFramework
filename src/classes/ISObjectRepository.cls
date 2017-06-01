@@ -4,29 +4,22 @@
 *************************************************************************************************/
 public interface ISObjectRepository {
 
+    // Manipulate queries without executing them
+    ISObjectRepository filterBy(IQueryFilter queryFilter);
+    ISObjectRepository filterBy(List<IQueryFilter> queryFilters);
+
     // SOQL
     SObject getById(Id recordId);
     List<SObject> getById(List<Id> recordIdList);
-    List<SObject> get(List<QueryPredicate> queryPredicates);
-    List<SObject> get(QueryPredicate queryPredicate);
+    List<SObject> get(IQueryFilter queryFilter);
+    List<SObject> get(List<IQueryFilter> queryFilters);
     List<SObject> getByFieldForIds(Schema.SObjectField field, Object value, List<Id> idList);
     List<SObject> getByFieldForIds(Schema.SObjectField field, Object value, Set<Id> idSet);
-    List<SObject> getCreatedSinceTimeValue(Object value);
+
     // SOSL
     List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup);
 
-    // DML
-    SObject doInsert(SObject record);
-    List<SObject> doInsert(List<SObject> recordList);
-    SObject doUpdate(SObject record);
-    List<SObject> doUpdate(List<SObject> recordList);
-    SObject doUpsert(SObject record);
-    List<SObject> doUpsert(List<SObject> recordList);
-    SObject doUndelete(SObject record);
-    List<SObject> doUndelete(List<SObject> recordList);
+    // Additional methods
+    IQueryBuilder getQueryBuilder();
 
-    void doDelete(SObject record);
-    void doDelete(List<SObject> recordList);
-    void doHardDelete(SObject record);
-    void doHardDelete(List<SObject> recordList);
 }

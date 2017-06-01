@@ -4,10 +4,12 @@
 *************************************************************************************************/
 public interface IQueryBuilder {
 
-    // SOQL buildermethods
-    IQueryBuilder whereField(List<QueryPredicate> queryPredicates);
-    IQueryBuilder whereField(Schema.SobjectField field, QueryOperator operator, Object value);
-    IQueryBuilder whereField(Schema.SObjectField field, QueryOperator operator, List<Object> valueList);
+    // Query builder methods
+    IQueryBuilder filterBy(IQueryFilter queryFilter);
+    IQueryBuilder filterBy(List<IQueryFilter> queryFilters);
+
+    IQueryBuilder includeChildrenRecords(Schema.SObjectField childToParentRelationshipField, ISObjectRepository childSObjectRepository);
+    IQueryBuilder includeChildrenRecords(Map<Schema.SObjectField, ISObjectRepository> childFieldToChildSObjectRepositoryrMap);
 
     IQueryBuilder orderBy(Schema.SObjectField orderByField);
     IQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder);
@@ -21,4 +23,9 @@ public interface IQueryBuilder {
     SObject getFirstQueryResult();
     List<SObject> getQueryResults();
     List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup);
+
+    // Get the dyanmic query strings
+    String getQuery();
+    String getQuery(Schema.SObjectField sobjectField);
+
 }
