@@ -3,6 +3,7 @@
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
 public virtual class DML implements IDML {
+
     public virtual SObject doInsert(SObject record) { return this.doInsert(new List<SObject>{record})[0];}
     public virtual List<SObject> doInsert(List<SObject> records) {
         Database.insert(records);
@@ -50,4 +51,5 @@ public virtual class DML implements IDML {
             Database.emptyRecycleBin(records);
         }
     }
+
 }

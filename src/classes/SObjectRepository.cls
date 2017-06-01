@@ -4,11 +4,19 @@
 *************************************************************************************************/
 public virtual class SObjectRepository extends NebulaCore implements ISObjectRepository, IDML {
 
-    private final Schema.SObjectType sObjectType;
+    protected IQueryBuilder Query {
+        get { return new QueryBuilder(sobjectType, fieldSet, sObjectFieldList); }
+    }
+
+    private final Schema.SObjectType sobjectType;
     private final Schema.FieldSet fieldSet;
     private final List<Schema.SObjectField> sobjectFieldList;
+    private final Map<String, Schema.SObjectField> sobjectFieldMap;
     private final Schema.SObjectField idField;
-    protected IQueryBuilder queryBuilder;
+
+    public SObjectRepository(Schema.SObjectType sobjectType) {
+        this(sobjectType, null, null);
+    }
 
     public SObjectRepository(Schema.SObjectType sobjectType, Schema.FieldSet fieldSet) {
         this(sobjectType, fieldSet, null);
@@ -21,38 +29,44 @@ public virtual class SObjectRepository extends NebulaCore implements ISObjectRep
     private SObjectRepository(Schema.SObjectType sobjectType, Schema.FieldSet fieldSet, List<Schema.SObjectField> sobjectFieldList) {
         this.currentModule = NebulaCore.Module.REPOSITORY;
 
-        this.sObjectType = sObjectType;
-        this.fieldSet = fieldSet;
+        this.sobjectType      = sobjectType;
+        this.fieldSet         = fieldSet;
         this.sObjectFieldList = sObjectFieldList;
-        this.idField = this.getField(this.sObjectType, 'Id');
+        this.sobjectFieldMap  = sobjectType.getDescribe().fields.getMap();
+        this.idField          = this.getField('Id');
     }
 
-    protected IQueryBuilder queryFactory {
-        get {
-            return new QueryBuilder(sObjectType, fieldSet, sObjectFieldList);
-        }
+    // Add filters to the query without actually executing the query
+    public virtual ISObjectRepository filterBy(IQueryFilter queryFilter) {
+        return this.filterBy(new List<IQueryFilter>{queryFilter});
     }
 
-    //SOQL
+    public virtual ISObjectRepository filterBy(List<IQueryFilter> queryFilters) {
+        for(IQueryFilter queryFilter : queryFilters) this.Query.filterBy(queryFilter);
+
+        return this;
+    }
+
+    // SOQL
     public virtual SObject getById(Id recordId) {
-        return this.queryFactory
-            .whereField(this.idField, QueryOperator.EQUALS, recordId)
-            .getQueryResults()[0];
+        return this.Query
+            .filterBy(new QueryFilter(this.idField, QueryOperator.EQUALS, recordId))
+            .getFirstQueryResult();
     }
 
     public virtual List<SObject> getById(List<Id> recordIds) {
-        return this.queryFactory
-            .whereField(this.idField, QueryOperator.IS_IN, recordIds)
+        return this.Query
+            .filterBy(new QueryFilter(this.idField, QueryOperator.IS_IN, recordIds))
             .getQueryResults();
     }
 
-    public virtual List<SObject> get(QueryPredicate queryPredicate) {
-        return this.get(new List<QueryPredicate> { queryPredicate });
+    public virtual List<SObject> get(IQueryFilter queryFilter) {
+        return this.get(new List<IQueryFilter>{queryFilter});
     }
 
-    public virtual List<SObject> get(List<QueryPredicate> queryPredicates) {
-        return this.queryFactory
-            .whereField(queryPredicates)
+    public virtual List<SObject> get(List<IQueryFilter> queryFilters) {
+        return this.Query
+            .filterBy(queryFilters)
             .getQueryResults();
     }
 
@@ -60,31 +74,26 @@ public virtual class SObjectRepository extends NebulaCore implements ISObjectRep
         return this.getByFieldForIds(field, value, new List<Id>(idSet));
     }
 
-    public virtual List<SObject> getByFieldForIds(Schema.SObjectField field, Object value, List<Id> recordIds) {
-        return this.queryFactory
-            .whereField(this.idField, QueryOperator.IS_IN, recordIds)
-            .whereField(field, QueryOperator.EQUALS, value)
+    public virtual List<SObject> getByFieldForIds(Schema.SObjectField field, Object value, List<Id> idList) {
+        return this.Query
+            .filterBy(new QueryFilter(this.idField, QueryOperator.IS_IN, idList))
+            .filterBy(new QueryFilter(field, QueryOperator.EQUALS, value))
             .getQueryResults();
     }
 
-    public List<SObject> getCreatedSinceTimeValue(Object timeValue) {
-        return this.queryFactory
-            .whereField(this.getCreatedDate(), QueryOperator.GREATER_THAN_OR_EQUAL_TO, timeValue)
-            .getQueryResults();
-    }
-
-    //SOSL
+    // SOSL
     public virtual List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup) {
-        return (List<SObject>)this.queryFactory
+        return (List<SObject>)this.Query
             .limitCount(10)
             .getSearchResults(searchTerm, searchGroup);
     }
 
-    private Schema.SObjectField getCreatedDate() {
-        return this.getField(this.sObjectType, 'CreatedDate');
+    public virtual IQueryBuilder getQueryBuilder() {
+        return this.Query;
     }
 
-    private Schema.SObjectField getField(Schema.SObjectType objType, String fieldName) {
-        return sObjectType.getDescribe().fields.getMap().get(fieldName);
+    private Schema.SObjectField getField(String fieldName) {
+        return this.sobjectFieldMap.get(fieldName);
     }
+
 }

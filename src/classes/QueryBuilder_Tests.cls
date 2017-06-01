@@ -4,17 +4,18 @@
 *************************************************************************************************/
 @isTest
 public class QueryBuilder_Tests {
+
     @isTest
     static void it_should_call_sort_order_properly_ascending() {
         Schema.SObjectType objType = Contact.SObjectType;
         List<SObjectField> fields = new List<SObjectField>{Contact.CreatedDate};
 
         Test.startTest();
-        QueryBuilder queryFactory = new QueryBuilder(objType,null,fields);
-        queryFactory.orderBy(Contact.CreatedDate,QuerySortOrder.ASCENDING);
+        QueryBuilder query = new QueryBuilder(objType, null, fields);
+        query.orderBy(Contact.CreatedDate,QuerySortOrder.ASCENDING);
         Test.stopTest();
 
-        System.assert(queryFactory.orderByList[0].contains(Contact.CreatedDate.getDescribe().getName()));
+        System.assert(query.orderByList[0].contains(Contact.CreatedDate.getDescribe().getName()));
     }
 
     @isTest
@@ -23,11 +24,11 @@ public class QueryBuilder_Tests {
         List<SObjectField> fields = new List<SObjectField>{Contact.CreatedDate};
 
         Test.startTest();
-        QueryBuilder queryFactory = new QueryBuilder(objType,null,fields);
-        queryFactory.orderBy(Contact.CreatedDate,QuerySortOrder.DESCENDING);
+        QueryBuilder query = new QueryBuilder(objType, null, fields);
+        query.orderBy(Contact.CreatedDate,QuerySortOrder.DESCENDING);
         Test.stopTest();
 
-        System.assert(queryFactory.orderByList[0].contains(Contact.CreatedDate.getDescribe().getName()));
+        System.assert(query.orderByList[0].contains(Contact.CreatedDate.getDescribe().getName()));
     }
 
     @isTest
@@ -36,10 +37,11 @@ public class QueryBuilder_Tests {
         List<SObjectField> fields = new List<SObjectField>{Contact.CreatedDate};
 
         Test.startTest();
-        QueryBuilder queryFactory = new QueryBuilder(objType,null,fields);
-        queryFactory.setAsUpdate();
+        QueryBuilder query = new QueryBuilder(objType, null, fields);
+        query.setAsUpdate();
         Test.stopTest();
 
-        System.assert(queryFactory.forUpdate);
+        System.assert(query.forUpdate);
     }
+
 }

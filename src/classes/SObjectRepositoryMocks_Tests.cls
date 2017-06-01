@@ -1,5 +1,6 @@
 @isTest
 private class SObjectRepositoryMocks_Tests {
+
     @isTest
     static void it_should_fake_returning_by_id() {
         Id testId = getTestId();
@@ -18,11 +19,6 @@ private class SObjectRepositoryMocks_Tests {
         SObject returnedObj = new SObjectRepositoryMocks.Base(null).getByFieldForIds(field,value, new Set<Id>{testId})[0];
 
         System.assert(returnedObj.get(String.valueOf(field)) == value);
-    }
-
-    @isTest
-    static void it_should_return_list_of_sobjects_when_querying_for_created_since_time_value() {
-        System.assert(new SObjectRepositoryMocks.Base().getCreatedSinceTimeValue(QueryDateLiteral.TODAY) instanceof List<SObject>);
     }
 
     @isTest
@@ -49,4 +45,5 @@ private class SObjectRepositoryMocks_Tests {
     static Id getTestId() {
         return TestingUtils.generateId(Schema.Lead.SObjectType);
     }
+
 }
