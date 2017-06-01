@@ -4,19 +4,19 @@
 *************************************************************************************************/
 public without sharing class QueryBuilder extends NebulaCore implements IQueryBuilder {
 
-    @testVisible private Boolean forUpdate;
-    private Set<String> queryFields;
-    private Integer limitCount;
     private String query;
-    @testVisible private List<String> orderByList;
-    private Map<String, Schema.SObjectField> sobjectTypeFieldMap;
-    private List<String> whereClauseList;
-    private QueryFilterScope filterScope;
+    private Set<String> queryFields;
     private List<String> childRelationshipQueries;
+    private List<String> whereClauseList;
+    @testVisible private List<String> orderByList;
+    private QueryFilterScope filterScope;
+    @testVisible private Boolean forUpdate;
+    private Integer limitCount;
 
     private final Schema.FieldSet fieldSet;
     private final List<Schema.SObjectField> sobjectFieldList;
     private final SObjectType sobjectType;
+    private final Map<String, Schema.SObjectField> sobjectTypeFieldMap;
 
     public QueryBuilder(Schema.SObjectType sobjectType, Schema.FieldSet fieldSet, List<Schema.SObjectField> sobjectFieldList) {
         this.sobjectType      = sobjectType;
