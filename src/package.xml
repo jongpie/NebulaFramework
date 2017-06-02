@@ -13,6 +13,10 @@
         <name>CustomObject</name>
     </types>
     <types>
+        <members>NebulaLog__c</members>
+        <name>CustomTab</name>
+    </types>
+    <types>
         <members>NebulaLog__c-Log Layout</members>
         <name>Layout</name>
     </types>
