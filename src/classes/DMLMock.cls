@@ -32,9 +32,7 @@ public virtual class DMLMock implements IDML {
 
     public void doDelete(SObject record) { this.doDelete(new List<SObject>{record}); }
     public void doDelete(List<SObject> recordList) {
-        if(!CollectionUtils.IsNullOrEmpty(recordList)) {
-            TestingUtils.deletedRecords.addAll(recordList);
-        }
+        if(recordList != null) TestingUtils.deletedRecords.addAll(recordList);
     }
 
     public void doHardDelete(SObject record) { this.doHardDelete(new List<SObject>{record}); }

@@ -102,7 +102,7 @@ public class SObjectRepositoryMocks {
         }
 
         private List<SObject> returnListOfSObjects() {
-            if(CollectionUtils.isNullOrEmpty(this.records)) return new List<SObject>();
+            if(this.records == null) return new List<SObject>();
 
             return this.records;
         }
