@@ -4,6 +4,10 @@
 *************************************************************************************************/
 public virtual class DMLMock implements IDML {
 
+    public DMLMock() {
+        if(!Test.isRunningTest()) throw new Exceptions.InvalidOperationException('TestingUtils can only be called during tests!');
+    }
+
     public SObject doInsert(SObject record) { return this.doInsert(new List<SObject>{record})[0]; }
     public List<SObject> doInsert(List<SObject> recordList) {
         TestingUtils.generateIds(recordList);
