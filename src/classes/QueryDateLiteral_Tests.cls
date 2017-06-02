@@ -5,7 +5,7 @@
 @isTest
 public class QueryDateLiteral_Tests {
 
-    private static Integer n_number = 5;
+    private static integer n_number = 5;
 
     @isTest
     static void it_should_return_yesterday_string() {

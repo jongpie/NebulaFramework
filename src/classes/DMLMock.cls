@@ -3,7 +3,7 @@
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
 public virtual class DMLMock implements IDML {
-
+    // DML
     public SObject doInsert(SObject record) { return this.doInsert(new List<SObject>{record})[0]; }
     public List<SObject> doInsert(List<SObject> recordList) {
         TestingUtils.generateIds(recordList);
@@ -32,10 +32,11 @@ public virtual class DMLMock implements IDML {
 
     public void doDelete(SObject record) { this.doDelete(new List<SObject>{record}); }
     public void doDelete(List<SObject> recordList) {
-        if(recordList != null) TestingUtils.deletedRecords.addAll(recordList);
+        if(!CollectionUtils.IsNullOrEmpty(recordList)) {
+            TestingUtils.deletedRecords.addAll(recordList);
+        }
     }
 
     public void doHardDelete(SObject record) { this.doHardDelete(new List<SObject>{record}); }
     public void doHardDelete(List<SObject> recordList) { this.doDelete(recordList); }
-
 }

@@ -27,7 +27,7 @@ public class TestingUtils {
     }
 
     public static SObject setReadOnlyField(SObject sobj, SObjectField fieldName, String value) {
-        return setReadOnlyField(sobj, new Map<SObjectField,String>{fieldName => value});
+        return setReadOnlyField(sobj,new Map<SObjectField,String>{fieldName => value});
     }
 
     public static SObject setReadOnlyField(SObject sobj, Map<SObjectField,String> changesToFields) {
@@ -44,5 +44,4 @@ public class TestingUtils {
 
         return (SObject)JSON.deserialize(serializedRecord, SObject.class);
     }
-
 }

@@ -6,18 +6,22 @@ public abstract class SObjectTriggerHandler extends NebulaCore implements ISObje
 
     private static Map<Integer, Set<TriggerContext>> hashCodesForProcessedRecords = new Map<Integer, Set<TriggerContext>>();
 
-    @testVisible private enum TriggerContext {
+    @testVisible
+    private enum TriggerContext {
         BEFORE_INSERT, BEFORE_UPDATE, BEFORE_DELETE,
         AFTER_INSERT, AFTER_UPDATE, AFTER_DELETE, AFTER_UNDELETE
     }
-    @testVisible private TriggerContext context; // The current context of the trigger
+    @testVisible
+    private TriggerContext context; // The current context of the trigger
 
     private Integer hashCode; // The hash code for the current records
     private Boolean isTestMode;
     private Boolean isTriggerExecuting; // Checks if the code was called by a trigger
 
-    @testVisible private List<SObject> recordList, oldRecordList;
-    @testVisible private Map<Id, SObject> recordMap, oldRecordMap;
+    @testVisible
+    private List<SObject> recordList, oldRecordList;
+    @testVisible
+    private Map<Id, SObject> recordMap, oldRecordMap;
 
     public SObjectTriggerHandler() {
         this(false);
