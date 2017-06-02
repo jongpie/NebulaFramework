@@ -6,7 +6,7 @@
 private class NebulaSettings_Tests {
 
     @isTest
-    static void it_should_return_recordTypesSettings() {
+    static void it_should_return_record_types_settings() {
         List<NebulaRecordTypesSettings__c> existingSettings = [SELECT Id FROM NebulaRecordTypesSettings__c];
         System.assert(existingSettings.isEmpty());
 
@@ -16,7 +16,7 @@ private class NebulaSettings_Tests {
     }
 
     @isTest
-    static void it_should_return_loggerSettings() {
+    static void it_should_return_logger_settings() {
         List<NebulaLoggerSettings__c> existingSettings = [SELECT Id FROM NebulaLoggerSettings__c];
         System.assert(existingSettings.isEmpty());
 
@@ -26,7 +26,7 @@ private class NebulaSettings_Tests {
     }
 
     @isTest
-    static void it_should_return_repositorySettings() {
+    static void it_should_return_repository_settings() {
         List<NebulaRepositorySettings__c> existingSettings = [SELECT Id FROM NebulaRepositorySettings__c];
         System.assert(existingSettings.isEmpty());
 
@@ -36,7 +36,7 @@ private class NebulaSettings_Tests {
     }
 
     @isTest
-    static void it_should_return_triggerHandlerSettings() {
+    static void it_should_return_trigger_handler_settings() {
         List<NebulaTriggerHandlerSettings__c> existingSettings = [SELECT Id FROM NebulaTriggerHandlerSettings__c];
         System.assert(existingSettings.isEmpty());
 
