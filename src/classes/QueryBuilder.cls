@@ -19,16 +19,16 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
     private final Map<String, Schema.SObjectField> sobjectTypeFieldMap;
 
     public QueryBuilder(Schema.SObjectType sobjectType, Schema.FieldSet fieldSet, List<Schema.SObjectField> sobjectFieldList) {
-        this.sobjectType      = sobjectType;
-        this.sobjectFieldList = sobjectFieldList;
-        this.fieldSet         = fieldSet;
+        this.sobjectType         = sobjectType;
+        this.sobjectFieldList    = sobjectFieldList;
+        this.fieldSet            = fieldSet;
+        this.sobjectTypeFieldMap = this.sobjectType.getDescribe().fields.getMap();
 
-        this.forUpdate                = false;
         this.queryFields              = new Set<String>();
-        this.orderByList              = new List<String>();
-        this.sobjectTypeFieldMap      = this.sobjectType.getDescribe().fields.getMap();
-        this.whereClauseList          = new List<String>();
         this.childRelationshipQueries = new List<String>();
+        this.whereClauseList          = new List<String>();
+        this.orderByList              = new List<String>();
+        this.forUpdate                = false;
 
         this.addCommonQueryFields();
         this.addFieldSetMembers();

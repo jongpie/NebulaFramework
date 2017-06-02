@@ -1,3 +1,7 @@
+/*************************************************************************************************
+* This file is part of the Nebula Framework project, released under the MIT License.             *
+* See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
+*************************************************************************************************/
 @isTest
 private class SObjectTypeDescriber_Tests {
 
@@ -42,10 +46,8 @@ private class SObjectTypeDescriber_Tests {
         Schema.SObjectType expectedSObjectType = Schema.Lead.SObjectType;
 
         Test.startTest();
-
         SObjectTypeDescriber sobjectTypeDescriber = new SObjectTypeDescriber(expectedSObjectType);
         System.assertEquals(expectedSObjectType, sobjectTypeDescriber.SObjectType);
-
         Test.stopTest();
     }
 
@@ -54,9 +56,7 @@ private class SObjectTypeDescriber_Tests {
         SObjectTypeDescriber sobjectTypeDescriber = new SObjectTypeDescriber(Schema.Lead.SObjectType);
 
         Test.startTest();
-
         System.assertEquals(true, sobjectTypeDescriber.validateSObjectFieldExists(Schema.Lead.Id));
-
         Test.stopTest();
     }
 
@@ -65,9 +65,7 @@ private class SObjectTypeDescriber_Tests {
         SObjectTypeDescriber sobjectTypeDescriber = new SObjectTypeDescriber(Schema.Lead.SObjectType);
 
         Test.startTest();
-
         System.assertEquals(false, sobjectTypeDescriber.validateSObjectFieldExists(Schema.Task.Id));
-
         Test.stopTest();
     }
 

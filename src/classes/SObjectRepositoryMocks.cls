@@ -89,40 +89,22 @@ public class SObjectRepositoryMocks {
         }
 
         private void createMockObjects() {
-            //We would expect that for the Ids passed in, there will be a corresponding number of records returned of the exact same
-            //SObjectType as their Ids.
+            // We would expect that for the Ids passed in, there will be a corresponding number of records returned of the exact same
+            // SObjectType as their Ids.
             this.records = new List<SObject>();
-            for(Id thing : this.recordIdList) {
-                SObjectType objType = thing.getSObjectType();
+            for(Id recordId : this.recordIdList) {
+                SObjectType objType = recordId.getSObjectType();
                 SObject record = (SObject)Type.forName(String.valueOf(objType)).newInstance();
-                record.put('Id', thing);
+                record.put('Id', recordId);
 
                 this.records.add(record);
             }
         }
 
         private List<SObject> returnListOfSObjects() {
-            if(CollectionUtils.isNullOrEmpty(this.records)) return new List<SObject>();
+            if(this.records == null) return new List<SObject>();
 
             return this.records;
-        }
-
-        private SObjectType getSObjectType(Schema.SObjectField field) {
-            //There is supposed to be a built in Salesforce getDescribe() result for Schema.SObjectField, getReferenceTo()
-            //that should return a list of objects that field is associated with, but it has been broken for several years.
-            //This is a solution that was proposed on the Salesforce stack exchange and is the only work-around to a native lookup
-            //that I have been able to find.
-            Integer fieldHash = ((Object)field).hashCode();
-
-            // Build a map of hashcodes for each fieldDescribe taken from Schema Global Describe
-            Map<String, Schema.SObjectType> globalDescribe = Schema.getGlobalDescribe();
-            Map<Integer,Schema.SObjectType> fieldHashCodeToSObjectTypeMap = new Map<Integer,Schema.SObjectType>();
-            for (String sobjname: globalDescribe.keySet()) {
-                for (Schema.SObjectField sobjField : globalDescribe.get(sObjName).getDescribe().fields.getMap().values())
-                    fieldHashCodeToSObjectTypeMap.put(((Object) sObjField).hashCode(), globalDescribe.get(sobjName));
-            }
-
-            return fieldHashCodeToSObjectTypeMap.get(fieldHash);
         }
     }
 
