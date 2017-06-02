@@ -65,7 +65,7 @@ private class DMLMock_Tests {
     @isTest
     static void it_should_mock_updating_read_only_fields_when_updating_data() {
         Schema.Lead l = new Schema.Lead();
-        l = (Lead)TestingUtils.setReadOnlyField(l, Schema.Lead.IsConverted, 'true');
+        l = (Lead)TestingUtils.setReadOnlyField(l, Schema.Lead.IsConverted, true);
 
         Test.startTest();
         dmlRepo.doUpdate(l);
