@@ -8,7 +8,7 @@ private class SObjectRecordTypes_Tests {
     private class LeadRecordTypes extends SObjectRecordTypes {
         // Test subclass that extends SObjectRecordTypes
         public LeadRecordTypes() {
-            super(Schema.SObjectType.Lead);
+            super(Schema.Lead.SObjectType);
         }
     }
 
