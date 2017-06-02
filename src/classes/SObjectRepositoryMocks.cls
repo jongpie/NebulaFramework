@@ -89,8 +89,8 @@ public class SObjectRepositoryMocks {
         }
 
         private void createMockObjects() {
-            //We would expect that for the Ids passed in, there will be a corresponding number of records returned of the exact same
-            //SObjectType as their Ids.
+            // We would expect that for the Ids passed in, there will be a corresponding number of records returned of the exact same
+            // SObjectType as their Ids.
             this.records = new List<SObject>();
             for(Id thing : this.recordIdList) {
                 SObjectType objType = thing.getSObjectType();
