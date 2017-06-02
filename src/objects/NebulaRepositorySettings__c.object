@@ -17,6 +17,7 @@ LastModifiedById
 LastModifiedDate
 Name
 OwnerId
+ParentId
 Subject
 RecordTypeId
 SystemModStamp</description>
@@ -32,6 +33,7 @@ LastModifiedById
 LastModifiedDate
 Name
 OwnerId
+ParentId
 Subject
 RecordTypeId
 SystemModStamp</inlineHelpText>
