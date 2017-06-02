@@ -2,7 +2,7 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
-public virtual class SObjectRepository extends NebulaCore implements ISObjectRepository, IDML {
+public virtual class SObjectRepository extends DML implements ISObjectRepository, IDML {
 
     protected IQueryBuilder Query {
         get { return new QueryBuilder(sobjectType, fieldSet, sObjectFieldList); }
