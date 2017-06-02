@@ -27,10 +27,6 @@ public abstract class NebulaCore implements INebulaCore {
     }
 
     public NebulaCore.Module getClassModule() {
-        return this.getModule();
-    }
-
-    public NebulaCore.Module getModule() {
         return this.currentModule;
     }
 
