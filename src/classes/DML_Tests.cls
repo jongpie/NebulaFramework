@@ -1,5 +1,10 @@
+/*************************************************************************************************
+* This file is part of the Nebula Framework project, released under the MIT License.             *
+* See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
+*************************************************************************************************/
 @isTest
 private class DML_Tests {
+
     static IDML dml = new DML();
     static Contact contact = createContact();
 
@@ -85,4 +90,5 @@ private class DML_Tests {
 
         return contact;
     }
+
 }
