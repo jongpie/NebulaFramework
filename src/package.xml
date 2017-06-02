@@ -5,6 +5,10 @@
         <name>ApexClass</name>
     </types>
     <types>
+        <members>Nebula</members>
+        <name>CustomApplication</name>
+    </types>
+    <types>
         <members>NebulaLog__c</members>
         <members>NebulaLoggerSettings__c</members>
         <members>NebulaRecordTypesSettings__c</members>
