@@ -19,10 +19,7 @@ public class TestingUtils {
    }
 
     public static void generateIds(List<SObject> records) {
-        for(SObject record : records) {
-            if(record.Id != null) continue;
-            record.Id = generateId(record.getSObjectType());
-        }
+        for(SObject record : records) record.Id = record.Id != null ? record.Id : generateId(record.getSObjectType());
     }
 
     public static SObject setReadOnlyField(SObject sobj, Schema.SObjectField fieldName, Object value) {
