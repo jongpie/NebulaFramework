@@ -38,13 +38,13 @@ public abstract class SObjectRecordTypes extends NebulaCore {
         // If we don't have the SObject cached, then we need to query
         QueryBuilder query = new QueryBuilder(recordTypeSObjectType, nullFieldSet, nullSObjectFieldList);
 
-        if(NebulaSettings.recordTypesSettings.LazyLoad__c) {
+        if(NebulaSettings.RecordTypesSettings.LazyLoad__c) {
             query.filterBy(new QueryFilter(Schema.RecordType.SObjectType, QueryOperator.EQUALS, this.sobjectName));
             Logger.addEntry(this, 'NebulaSettings.RecordTypesSettings.LazyLoad__c=' + NebulaSettings.RecordTypesSettings.LazyLoad__c);
             Logger.addEntry(this, 'this.sobjectName=' + this.sobjectName);
         }
 
-        if(NebulaSettings.recordTypesSettings.ExcludeManagedRecordTypes__c) {
+        if(NebulaSettings.RecordTypesSettings.ExcludeManagedRecordTypes__c) {
             query.filterBy(new QueryFilter(Schema.RecordType.NamespacePrefix, QueryOperator.EQUALS, null));
         }
 
