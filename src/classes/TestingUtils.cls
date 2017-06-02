@@ -13,9 +13,9 @@ public class TestingUtils {
 
     private static Integer startingNumber = 1;
 
-    public static String generateId(Schema.SObjectType sObjectType) {
+    public static String generateId(Schema.SObjectType sobjectType) {
         String result = String.valueOf(startingNumber++);
-        return sObjectType.getDescribe().getKeyPrefix() + '0'.repeat(12-result.length()) + result;
+        return sobjectType.getDescribe().getKeyPrefix() + '0'.repeat(12-result.length()) + result;
    }
 
     public static void generateIds(List<SObject> records) {
