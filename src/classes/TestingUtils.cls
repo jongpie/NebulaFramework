@@ -44,4 +44,5 @@ public class TestingUtils {
 
         return (SObject)JSON.deserialize(serializedRecord, SObject.class);
     }
+
 }
