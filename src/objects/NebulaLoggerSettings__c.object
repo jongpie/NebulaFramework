@@ -4,7 +4,7 @@
     <enableFeeds>false</enableFeeds>
     <fields>
         <fullName>EnableLogging__c</fullName>
-        <defaultValue>false</defaultValue>
+        <defaultValue>true</defaultValue>
         <externalId>false</externalId>
         <label>Enable Logging</label>
         <trackTrending>false</trackTrending>
