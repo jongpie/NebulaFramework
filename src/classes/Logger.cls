@@ -6,23 +6,23 @@ public without sharing class Logger {
 
     private static Id logId;
     private static Attachment logAttachment;
-    private static List<Logger.Message> logMessages;
+    @testVisible private static List<Logger.Message> logMessages;
 
     static {
         Logger.logMessages   = Logger.logMessages == null ? new List<Logger.Message>() : Logger.logMessages;
         Logger.logAttachment = Logger.logAttachment == null ? createLogAttachment() : Logger.logAttachment;
     }
 
-    public static void addEntry(INebulaCore moduleClass, String message) {
-        addEntry(moduleClass, message, null);
-    }
-
     public static void addEntry(String message) {
-        addEntry(null, message, null);
+        addEntry(null, null, message);
     }
 
-    public static void addEntry(INebulaCore moduleClass, String message, Exception ex) {
-        Logger.Message logMessage = new Logger.Message(moduleClass, message, ex);
+    public static void addEntry(INebulaCore moduleClass, String message) {
+        addEntry(moduleClass, null, message);
+    }
+
+    public static void addEntry(INebulaCore moduleClass, Exception ex, String message) {
+        Logger.Message logMessage = new Logger.Message(moduleClass, ex, message);
         Logger.logMessages.add(logMessage);
     }
 
@@ -55,10 +55,10 @@ public without sharing class Logger {
             parsedMessageString =
                 parsedMessageString
                 + divider
-                + '\nCurrent Module: ' + logMessage.classModule
-                + '\nCurrent Class: ' + logMessage.className
-                + '\nTimestamp: ' + logMessage.timestamp.format('yyyy-MM-dd_hh:mm:ss.SS')
-                + '\n\n' + logMessage.message;
+                + '\nCurrent Module: ' + logMessage.ClassModule
+                + '\nCurrent Class: ' + logMessage.ClassName
+                + '\nTimestamp: ' + logMessage.Timestamp.format('yyyy-MM-dd_hh:mm:ss.SS')
+                + '\n\n' + logMessage.Message;
         }
 
         if(Logger.logAttachment.Id == null) {
@@ -82,18 +82,18 @@ public without sharing class Logger {
     }
 
     private class Message {
-        private NebulaCore.Module classModule;
-        private String className;
-        private Exception ex; // TODO need to add exception info to log
-        private String message;
-        private Datetime timestamp;
+        public NebulaCore.Module ClassModule {get; private set;}
+        public String ClassName {get; private set;}
+        public Exception Error {get; private set;}
+        public String Message {get; private set;}
+        public Datetime Timestamp {get; private set;}
 
-        public Message(INebulaCore moduleClass, String message, Exception ex) {
-            this.classModule = moduleClass == null ? null : moduleClass.getClassModule();
-            this.className   = moduleClass == null ? null : moduleClass.getClassName();
-            this.ex          = ex;
-            this.message     = message;
-            this.timestamp   = System.now();
+        public Message(INebulaCore moduleClass, Exception ex, String message) {
+            this.ClassModule = moduleClass == null ? null : moduleClass.getClassModule();
+            this.ClassName   = moduleClass == null ? null : moduleClass.getClassName();
+            this.Error       = ex;
+            this.Message     = message;
+            this.Timestamp   = System.now();
         }
     }
 
