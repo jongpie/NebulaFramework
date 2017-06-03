@@ -162,7 +162,7 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
 
     private String getQueryFieldString() {
         List<String> queryFieldList = new List<String>(this.queryFields);
-        if(NebulaSettings.RepositorySettings.SortQueryFields__c) queryFieldList.sort();
+        queryFieldList.sort();
         return String.join(queryFieldList, ', ');
     }
 
