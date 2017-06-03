@@ -19,10 +19,6 @@
         <layoutColumns>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>InitialModule__c</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Edit</behavior>
                 <field>InitialClass__c</field>
             </layoutItems>
         </layoutColumns>

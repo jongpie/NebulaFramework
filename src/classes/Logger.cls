@@ -34,7 +34,6 @@ public without sharing class Logger {
 
         NebulaLog__c newLog = new NebulaLog__c(
             InitialClass__c  = NebulaCore.INITIAL_CLASS,
-            InitialModule__c = NebulaCore.INITIAL_MODULE == null ? null : NebulaCore.INITIAL_MODULE.name(),
             TransactionId__c = NebulaCore.TRANSACTION_ID
         );
         insert newLog;

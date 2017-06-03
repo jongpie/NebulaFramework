@@ -64,17 +64,6 @@
         <unique>false</unique>
     </fields>
     <fields>
-        <fullName>InitialModule__c</fullName>
-        <externalId>false</externalId>
-        <label>Initial Module</label>
-        <length>255</length>
-        <required>false</required>
-        <trackHistory>false</trackHistory>
-        <trackTrending>false</trackTrending>
-        <type>Text</type>
-        <unique>false</unique>
-    </fields>
-    <fields>
         <fullName>TransactionId__c</fullName>
         <caseSensitive>false</caseSensitive>
         <externalId>true</externalId>
@@ -91,7 +80,6 @@
         <fullName>All_Logs</fullName>
         <columns>NAME</columns>
         <columns>TransactionId__c</columns>
-        <columns>InitialModule__c</columns>
         <columns>InitialClass__c</columns>
         <columns>CREATEDBY_USER</columns>
         <columns>CREATED_DATE</columns>
@@ -120,7 +108,6 @@
     <pluralLabel>Nebula Logs</pluralLabel>
     <searchLayouts>
         <customTabListAdditionalFields>InitialClass__c</customTabListAdditionalFields>
-        <customTabListAdditionalFields>InitialModule__c</customTabListAdditionalFields>
         <customTabListAdditionalFields>TransactionId__c</customTabListAdditionalFields>
         <customTabListAdditionalFields>CREATEDBY_USER</customTabListAdditionalFields>
         <customTabListAdditionalFields>CREATED_DATE</customTabListAdditionalFields>
