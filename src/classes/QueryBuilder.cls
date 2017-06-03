@@ -2,7 +2,7 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
-public without sharing class QueryBuilder extends NebulaCore implements IQueryBuilder {
+public class QueryBuilder extends NebulaCore implements IQueryBuilder {
 
     private String query;
     private Set<String> queryFields;

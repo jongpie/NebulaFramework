@@ -5,7 +5,7 @@
 @isTest
 private class Logger_Tests {
 
-    private without sharing class FakeNebulaClass extends NebulaCore {}
+    private class FakeNebulaClass extends NebulaCore {}
 
     @isTest
     static void it_should_add_entry_for_a_message_string() {

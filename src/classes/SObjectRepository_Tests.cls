@@ -5,7 +5,7 @@
 @isTest
 private class SObjectRepository_Tests {
 
-    private without sharing class AccountRepository extends SObjectRepository {
+    private class AccountRepository extends SObjectRepository {
         // Test subclass that extends SObjectRepository
         public AccountRepository() {
             super(Schema.Account.SObjectType, new List<Schema.SObjectField>{Schema.Account.Id, Schema.Account.Name});
@@ -34,13 +34,13 @@ private class SObjectRepository_Tests {
         }
     }
 
-    public with sharing class ContactRepository extends SObjectRepository {
+    private class ContactRepository extends SObjectRepository {
         public ContactRepository() {
             super(Schema.Contact.SObjectType, new List<Schema.SObjectField>{Schema.Contact.Id, Schema.Contact.AccountId, Schema.Contact.Email, Schema.Contact.LastName});
         }
     }
 
-    private without sharing class UserRepository extends SObjectRepository {
+    private class UserRepository extends SObjectRepository {
         public UserRepository() {
             super(Schema.User.SObjectType);
         }
