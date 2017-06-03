@@ -42,7 +42,7 @@ private class SObjectRepository_Tests {
 
     private without sharing class UserRepository extends SObjectRepository {
         public UserRepository() {
-            super(Schema.User.SObjectType, new List<Schema.SObjectField>{Schema.User.Id, Schema.User.Name});
+            super(Schema.User.SObjectType);
         }
 
         public override void upsertRecords(SObject record, Schema.SObjectField externalIdField) {

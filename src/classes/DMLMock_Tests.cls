@@ -5,7 +5,7 @@
 @isTest
 private class DMLMock_Tests {
 
-    static IDML dmlRepo = new DMLMock();
+    static IDML dmlRepo = new DMLMock.Base();
     static Schema.Contact con = createContact();
 
     @isTest

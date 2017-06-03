@@ -5,7 +5,7 @@
 @isTest
 public class SObjectRepositoryMocks {
 
-    public virtual class Base extends DMLMock implements ISObjectRepository {
+    public virtual class Base extends DMLMock.Base implements ISObjectRepository {
 
         protected List<SObject> records;
         protected List<Id> recordIdList;
