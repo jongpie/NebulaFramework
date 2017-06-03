@@ -14,7 +14,6 @@ private class Logger_Tests {
 
         System.assertEquals(null, Logger.logMessages[0].ClassModule);
         System.assertEquals(null, Logger.logMessages[0].ClassName);
-        System.assertEquals(null, Logger.logMessages[0].Error);
         System.assertEquals(message, Logger.logMessages[0].Message);
     }
 
@@ -30,7 +29,6 @@ private class Logger_Tests {
 
         System.assertEquals(moduleClass.getClassModule(), Logger.logMessages[0].ClassModule);
         System.assertEquals(moduleClass.getClassName(), Logger.logMessages[0].ClassName);
-        System.assertEquals(null, Logger.logMessages[0].Error);
         System.assertEquals(message, Logger.logMessages[0].Message);
     }
 
@@ -38,16 +36,14 @@ private class Logger_Tests {
     static void it_should_add_entry_for_a_module_class_and_an_exception_and_a_message_string() {
         FakeNebulaClass moduleClass = new FakeNebulaClass();
         String message = 'my test message';
-        Exception error = new Exceptions.InvalidOperationException('test error');
         System.assert(Logger.logMessages.isEmpty());
 
         Test.startTest();
-        Logger.addEntry(moduleClass, error, message);
+        Logger.addEntry(moduleClass, message);
         Test.stopTest();
 
         System.assertEquals(moduleClass.getClassModule(), Logger.logMessages[0].ClassModule);
         System.assertEquals(moduleClass.getClassName(), Logger.logMessages[0].ClassName);
-        System.assertEquals(error.getMessage(), Logger.logMessages[0].Error.getMessage());
         System.assertEquals(message, Logger.logMessages[0].Message);
     }
 

@@ -14,15 +14,11 @@ public without sharing class Logger {
     }
 
     public static void addEntry(String message) {
-        addEntry(null, null, message);
+        addEntry(null, message);
     }
 
     public static void addEntry(INebulaCore moduleClass, String message) {
-        addEntry(moduleClass, null, message);
-    }
-
-    public static void addEntry(INebulaCore moduleClass, Exception ex, String message) {
-        Logger.Message logMessage = new Logger.Message(moduleClass, ex, message);
+        Logger.Message logMessage = new Logger.Message(moduleClass, message);
         Logger.logMessages.add(logMessage);
     }
 
@@ -84,14 +80,12 @@ public without sharing class Logger {
     private class Message {
         public NebulaCore.Module ClassModule {get; private set;}
         public String ClassName {get; private set;}
-        public Exception Error {get; private set;}
         public String Message {get; private set;}
         public Datetime Timestamp {get; private set;}
 
-        public Message(INebulaCore moduleClass, Exception ex, String message) {
+        public Message(INebulaCore moduleClass, String message) {
             this.ClassModule = moduleClass == null ? null : moduleClass.getClassModule();
             this.ClassName   = moduleClass == null ? null : moduleClass.getClassName();
-            this.Error       = ex;
             this.Message     = message;
             this.Timestamp   = System.now();
         }
