@@ -12,7 +12,7 @@ private class DML_Tests {
     static void it_should_do_dml_insert() {
 
         Test.startTest();
-        dml.doInsert(contact);
+        dml.insertRecords(contact);
         Test.stopTest();
 
         System.assert(contact.Id != null);
@@ -25,7 +25,7 @@ private class DML_Tests {
         contact.FirstName = 'Harry';
 
         Test.startTest();
-        dml.doUpdate(contact);
+        dml.updateRecords(contact);
         Test.stopTest();
 
         System.assert(contact.FirstName == 'Harry');
@@ -38,7 +38,7 @@ private class DML_Tests {
         contact.FirstName = 'Harry';
 
         Test.startTest();
-        dml.doUpsert(contact);
+        dml.upsertRecords(contact);
         Test.stopTest();
 
         System.assert(contact.FirstName == 'Harry');
@@ -49,7 +49,7 @@ private class DML_Tests {
         insert contact;
 
         Test.startTest();
-        dml.doDelete(contact);
+        dml.deleteRecords(contact);
         List<Contact> deletedContacts = [SELECT Id, IsDeleted FROM Contact ALL ROWS];
         Test.stopTest();
 
@@ -61,7 +61,7 @@ private class DML_Tests {
         insert contact;
 
         Test.startTest();
-        dml.doHardDelete(contact);
+        dml.hardDeleteRecords(contact);
         List<Contact> deletedContacts = [SELECT Id, IsDeleted FROM Contact ALL ROWS];
         Test.stopTest();
 
@@ -73,8 +73,8 @@ private class DML_Tests {
         insert contact;
 
         Test.startTest();
-        dml.doDelete(contact);
-        dml.doUndelete(contact);
+        dml.deleteRecords(contact);
+        dml.undeleteRecords(contact);
         Test.stopTest();
 
         List<Contact> notDeletedContacts = [SELECT Id FROM Contact];

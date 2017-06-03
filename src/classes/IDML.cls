@@ -4,18 +4,17 @@
 *************************************************************************************************/
 public interface IDML {
 
-    SObject doInsert(SObject record);
-    List<SObject> doInsert(List<SObject> recordList);
-    SObject doUpdate(SObject record);
-    List<SObject> doUpdate(List<SObject> recordList);
-    SObject doUpsert(SObject record);
-    List<SObject> doUpsert(List<SObject> recordList);
-    SObject doUndelete(SObject record);
-    List<SObject> doUndelete(List<SObject> recordList);
-
-    void doDelete(SObject record);
-    void doDelete(List<SObject> recordList);
-    void doHardDelete(SObject record);
-    void doHardDelete(List<SObject> recordList);
+    void insertRecords(SObject record);
+    void insertRecords(List<SObject> recordList);
+    void updateRecords(SObject record);
+    void updateRecords(List<SObject> recordList);
+    void upsertRecords(SObject record);
+    void upsertRecords(List<SObject> recordList);
+    void undeleteRecords(SObject record);
+    void undeleteRecords(List<SObject> recordList);
+    void deleteRecords(SObject record);
+    void deleteRecords(List<SObject> recordList);
+    void hardDeleteRecords(SObject record);
+    void hardDeleteRecords(List<SObject> recordList);
 
 }

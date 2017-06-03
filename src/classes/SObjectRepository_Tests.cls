@@ -33,23 +33,18 @@ private class SObjectRepository_Tests {
                 .getFirstQueryResult();
         }
 
-        public override SObject doUpsert(SObject record) {
+        public override void upsertRecords(SObject record) {
             Account account = (Account)record;
             upsert account;
-
-            return account;
         }
 
-        public override List<SObject> doUpsert(List<SObject> recordList) {
+        public override void upsertRecords(List<SObject> recordList) {
             List<Account> accountList = (List<Account>)recordList;
             upsert accountList;
-
-            return accountList;
         }
 
-        public override SObject doUpdate(SObject record) {
+        public override void updateRecords(SObject record) {
             TestingUtils.updatedRecords.add(record);
-            return record;
         }
     }
 
@@ -244,7 +239,7 @@ private class SObjectRepository_Tests {
         System.assertEquals(null, account.Id);
 
         Test.startTest();
-        new SObjectRepository_Tests.AccountRepository().doInsert(account);
+        new SObjectRepository_Tests.AccountRepository().insertRecords(account);
         Test.stopTest();
 
         System.assertNotEquals(null, account.Id);
@@ -260,7 +255,7 @@ private class SObjectRepository_Tests {
         Datetime originalLastModifiedDate = existingAccount.LastModifiedDate;
 
         Test.startTest();
-        new SObjectRepository_Tests.AccountRepository().doUpdate(existingAccount);
+        new SObjectRepository_Tests.AccountRepository().updateRecords(existingAccount);
         Test.stopTest();
 
         System.assert((Account)TestingUtils.updatedRecords[0] == existingAccount);
@@ -272,7 +267,7 @@ private class SObjectRepository_Tests {
         System.assertEquals(false, existingAccount.IsDeleted);
 
         Test.startTest();
-        new SObjectRepository_Tests.AccountRepository().doDelete(existingAccount);
+        new SObjectRepository_Tests.AccountRepository().deleteRecords(existingAccount);
         Test.stopTest();
 
         existingAccount = [SELECT Id, IsDeleted FROM Account WHERE Id = :existingAccount.Id ALL ROWS];
@@ -285,7 +280,7 @@ private class SObjectRepository_Tests {
         System.assertEquals(false, existingAccount.IsDeleted);
 
         Test.startTest();
-        new SObjectRepository_Tests.AccountRepository().doHardDelete(existingAccount);
+        new SObjectRepository_Tests.AccountRepository().hardDeleteRecords(existingAccount);
         Test.stopTest();
 
         List<Account> existingAccountList = [SELECT Id, IsDeleted FROM Account WHERE Id = :existingAccount.Id ALL ROWS];
@@ -303,7 +298,7 @@ private class SObjectRepository_Tests {
         System.assertEquals(true, existingAccount.IsDeleted);
 
         Test.startTest();
-        new SObjectRepository_Tests.AccountRepository().doUndelete(existingAccount);
+        new SObjectRepository_Tests.AccountRepository().undeleteRecords(existingAccount);
         Test.stopTest();
 
         existingAccount = [SELECT Id, IsDeleted FROM Account WHERE Id = :existingAccount.Id ALL ROWS];
