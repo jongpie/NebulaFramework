@@ -135,7 +135,7 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
         // Only 1 level of child relationships is allowed, so don't include them if the SObject name isn't the current SObject Type
         if(sobjectQueryName == String.valueOf(this.sobjectType)) this.query += this.getChildRelationshipsQueryString();
 
-        this.query +=' FROM ' + sobjectQueryName
+        this.query +='\nFROM ' + sobjectQueryName
             + this.getWhereClauseString()
             + this.getOrderByString()
             + this.getLimitCountString()
@@ -146,8 +146,8 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
 
     private String getSearchQuery(String searchTerm, QuerySearchGroup searchGroup) {
         this.query = 'FIND ' + new QueryArgumentFormatter(searchTerm.toLowerCase()).getValue()
-            + ' IN ' + searchGroup.name().replace('_', ' ')
-            + ' RETURNING ' + this.sobjectType + '('
+            + '\nIN ' + searchGroup.name().replace('_', ' ')
+            + '\nRETURNING ' + this.sobjectType + '('
                 + this.getQueryFieldString()
                 + this.getWhereClauseString()
                 + this.getOrderByString()
