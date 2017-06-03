@@ -5,8 +5,8 @@
 public abstract class NebulaCore implements INebulaCore {
 
     public static final String TRANSACTION_ID;
-    public static String INITIAL_CLASS {public get; private set;}
-    public static Module INITIAL_MODULE {public get; private set;}
+    public static String INITIAL_CLASS {get; private set;}
+    public static Module INITIAL_MODULE {get; private set;}
 
     static {
         NebulaCore.TRANSACTION_ID = new UUID().getValue();
