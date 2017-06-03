@@ -5,7 +5,7 @@
 public virtual class SObjectRepository extends DML implements ISObjectRepository, IDML {
 
     protected IQueryBuilder Query {
-        get { return new QueryBuilder(sobjectType, fieldSet, sObjectFieldList); }
+        get { return new QueryBuilder(sobjectType, fieldSet, sobjectFieldList); }
     }
 
     private final Schema.SObjectType sobjectType;
@@ -27,6 +27,8 @@ public virtual class SObjectRepository extends DML implements ISObjectRepository
     }
 
     private SObjectRepository(Schema.SObjectType sobjectType, Schema.FieldSet fieldSet, List<Schema.SObjectField> sobjectFieldList) {
+        super(sobjectType);
+
         this.currentModule = NebulaCore.Module.REPOSITORY;
 
         this.sobjectType      = sobjectType;

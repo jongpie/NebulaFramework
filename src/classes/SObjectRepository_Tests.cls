@@ -32,25 +32,21 @@ private class SObjectRepository_Tests {
                 )
                 .getFirstQueryResult();
         }
-
-        public override void upsertRecords(SObject record) {
-            Account account = (Account)record;
-            upsert account;
-        }
-
-        public override void upsertRecords(List<SObject> recordList) {
-            List<Account> accountList = (List<Account>)recordList;
-            upsert accountList;
-        }
-
-        public override void updateRecords(SObject record) {
-            TestingUtils.updatedRecords.add(record);
-        }
     }
 
     public with sharing class ContactRepository extends SObjectRepository {
         public ContactRepository() {
-            super(Schema.Contact.SObjectType);
+            super(Schema.Contact.SObjectType, new List<Schema.SObjectField>{Schema.Contact.Id, Schema.Contact.AccountId, Schema.Contact.Email, Schema.Contact.LastName});
+        }
+    }
+
+    private without sharing class UserRepository extends SObjectRepository {
+        public UserRepository() {
+            super(Schema.User.SObjectType, new List<Schema.SObjectField>{Schema.User.Id, Schema.User.Name});
+        }
+
+        public override void upsertRecords(SObject record, Schema.SObjectField externalIdField) {
+            super.upsertRecords(record, externalIdField);
         }
     }
 
@@ -185,7 +181,7 @@ private class SObjectRepository_Tests {
     static void it_should_return_account_and_contacts_with_emails_as_children_records() {
         Account account = [SELECT Id FROM Account LIMIT 1];
 
-        Contact contact = createContact(Account.Id);
+        Contact contact = createContact(account.Id);
         contact.Email = 'email@test.com';
         insert contact;
         contact = [SELECT Id, AccountId, Email FROM Contact WHERE Id = :contact.Id];
@@ -258,7 +254,47 @@ private class SObjectRepository_Tests {
         new SObjectRepository_Tests.AccountRepository().updateRecords(existingAccount);
         Test.stopTest();
 
-        System.assert((Account)TestingUtils.updatedRecords[0] == existingAccount);
+        existingAccount = [SELECT Id, LastModifiedDate FROM Account LIMIT 1];
+        System.assert(existingAccount.LastModifiedDate > originalLastModifiedDate, existingAccount);
+    }
+
+    @isTest
+    static void it_should_upsert_a_single_new_record() {
+        Account newAccount = createAccount();
+        System.assertEquals(null, newAccount.Id);
+
+        Test.startTest();
+        new SObjectRepository_Tests.AccountRepository().upsertRecords(newAccount);
+        Test.stopTest();
+
+        System.assertNotEquals(null, newAccount.Id);
+    }
+
+    @isTest
+    static void it_should_upsert_a_single_existing_record() {
+        Account existingAccount = [SELECT Id, LastModifiedDate FROM Account LIMIT 1];
+        Datetime originalLastModifiedDate = existingAccount.LastModifiedDate;
+
+        Test.startTest();
+        new SObjectRepository_Tests.AccountRepository().upsertRecords(existingAccount);
+        Test.stopTest();
+
+        existingAccount = [SELECT Id, LastModifiedDate FROM Account LIMIT 1];
+        System.assert(existingAccount.LastModifiedDate > originalLastModifiedDate, existingAccount);
+    }
+
+    @isTest
+    static void it_should_upsert_a_single_existing_record_with_external_id() {
+        User existingUser = [SELECT Id, LastModifiedDate, Username FROM User WHERE Id = :UserInfo.getUserId()];
+        Datetime originalLastModifiedDate = existingUser.LastModifiedDate;
+        System.assertNotEquals(null, existingUser.Username);
+
+        Test.startTest();
+        new SObjectRepository_Tests.UserRepository().upsertRecords(existingUser, Schema.User.Username);
+        Test.stopTest();
+
+        existingUser = [SELECT Id, LastModifiedDate FROM User LIMIT 1];
+        System.assert(existingUser.LastModifiedDate > originalLastModifiedDate, existingUser);
     }
 
     @isTest
