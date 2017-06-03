@@ -10,7 +10,7 @@ public abstract class SObjectTriggerHandler extends NebulaCore implements ISObje
         BEFORE_INSERT, BEFORE_UPDATE, BEFORE_DELETE,
         AFTER_INSERT, AFTER_UPDATE, AFTER_DELETE, AFTER_UNDELETE
     }
-    @testVisible private TriggerContext context; // The current context of the trigger
+    @testVisible private TriggerContext currentTriggerContext; // The current context of the trigger
 
     private Integer hashCode; // The hash code for the current records
     private Boolean isTestMode;
@@ -62,7 +62,7 @@ public abstract class SObjectTriggerHandler extends NebulaCore implements ISObje
         Logger.addEntry(this, 'Starting execute method for: ' + sobjectType);
         Logger.addEntry(this, 'Hash codes already processed: ' + SObjectTriggerHandler.hashCodesForProcessedRecords);
         Logger.addEntry(this, 'Hash code for current records: ' + this.hashCode);
-        Logger.addEntry(this, 'Trigger context for current records: ' + this.context);
+        Logger.addEntry(this, 'Trigger context for current records: ' + this.currentTriggerContext);
         Logger.addEntry(this, 'Number of current records: ' + Trigger.size);
 
         if(this.haveRecordsAlreadyBeenProcessed()) {
@@ -70,13 +70,13 @@ public abstract class SObjectTriggerHandler extends NebulaCore implements ISObje
             return;
         } else Logger.addEntry(this, 'Records have not been processed for this context, continuing');
 
-        if(this.context == TriggerContext.BEFORE_INSERT) this.executeBeforeInsert(this.recordList);
-        else if(this.context == TriggerContext.BEFORE_UPDATE) this.executeBeforeUpdate(this.recordList, this.recordMap, this.oldRecordList, this.oldRecordMap);
-        else if(this.context == TriggerContext.BEFORE_DELETE) this.executeBeforeDelete(this.oldRecordList, this.oldRecordMap);
-        else if(this.context == TriggerContext.AFTER_INSERT) this.executeAfterInsert(this.recordList, this.recordMap);
-        else if(this.context == TriggerContext.AFTER_UPDATE) this.executeAfterUpdate(this.recordList, this.recordMap, this.oldRecordList, this.oldRecordMap);
-        else if(this.context == TriggerContext.AFTER_DELETE) this.executeAfterDelete(this.oldRecordList, this.oldRecordMap);
-        else if(this.context == TriggerContext.AFTER_UNDELETE) this.executeAfterUndelete(this.recordList, this.recordMap);
+        if(this.currentTriggerContext == TriggerContext.BEFORE_INSERT) this.executeBeforeInsert(this.recordList);
+        else if(this.currentTriggerContext == TriggerContext.BEFORE_UPDATE) this.executeBeforeUpdate(this.recordList, this.recordMap, this.oldRecordList, this.oldRecordMap);
+        else if(this.currentTriggerContext == TriggerContext.BEFORE_DELETE) this.executeBeforeDelete(this.oldRecordList, this.oldRecordMap);
+        else if(this.currentTriggerContext == TriggerContext.AFTER_INSERT) this.executeAfterInsert(this.recordList, this.recordMap);
+        else if(this.currentTriggerContext == TriggerContext.AFTER_UPDATE) this.executeAfterUpdate(this.recordList, this.recordMap, this.oldRecordList, this.oldRecordMap);
+        else if(this.currentTriggerContext == TriggerContext.AFTER_DELETE) this.executeAfterDelete(this.oldRecordList, this.oldRecordMap);
+        else if(this.currentTriggerContext == TriggerContext.AFTER_UNDELETE) this.executeAfterUndelete(this.recordList, this.recordMap);
 
         if(Trigger.isAfter) Logger.saveLogs();
     }
@@ -92,20 +92,20 @@ public abstract class SObjectTriggerHandler extends NebulaCore implements ISObje
     private void setTriggerContext() {
         if(this.isTestMode || !this.isTriggerExecuting) return;
 
-        if(Trigger.isBefore && Trigger.isInsert) this.context = TriggerContext.BEFORE_INSERT;
-        else if(Trigger.isBefore && Trigger.isUpdate) this.context = TriggerContext.BEFORE_UPDATE;
-        else if(Trigger.isBefore && Trigger.isDelete) this.context = TriggerContext.BEFORE_DELETE;
-        else if(Trigger.isAfter && Trigger.isInsert) this.context = TriggerContext.AFTER_INSERT;
-        else if(Trigger.isAfter && Trigger.isUpdate) this.context = TriggerContext.AFTER_UPDATE;
-        else if(Trigger.isAfter && Trigger.isDelete) this.context = TriggerContext.AFTER_DELETE;
-        else if(Trigger.isAfter && Trigger.isUndelete) this.context = TriggerContext.AFTER_UNDELETE;
+        if(Trigger.isBefore && Trigger.isInsert) this.currentTriggerContext = TriggerContext.BEFORE_INSERT;
+        else if(Trigger.isBefore && Trigger.isUpdate) this.currentTriggerContext = TriggerContext.BEFORE_UPDATE;
+        else if(Trigger.isBefore && Trigger.isDelete) this.currentTriggerContext = TriggerContext.BEFORE_DELETE;
+        else if(Trigger.isAfter && Trigger.isInsert) this.currentTriggerContext = TriggerContext.AFTER_INSERT;
+        else if(Trigger.isAfter && Trigger.isUpdate) this.currentTriggerContext = TriggerContext.AFTER_UPDATE;
+        else if(Trigger.isAfter && Trigger.isDelete) this.currentTriggerContext = TriggerContext.AFTER_DELETE;
+        else if(Trigger.isAfter && Trigger.isUndelete) this.currentTriggerContext = TriggerContext.AFTER_UNDELETE;
     }
 
     private void validateTriggerContext() {
         if(this.isTestMode) return;
 
         String errorMessage = 'Trigger handler called outside of trigger execution ' + this.isTriggerExecuting;
-        if(!this.isTriggerExecuting || this.context == null) throw new Exceptions.SObjectTriggerHandlerException(errorMessage);
+        if(!this.isTriggerExecuting || this.currentTriggerContext == null) throw new Exceptions.SObjectTriggerHandlerException(errorMessage);
     }
 
     private void setTriggerRecords() {
@@ -162,15 +162,15 @@ public abstract class SObjectTriggerHandler extends NebulaCore implements ISObje
         // This method is a safeguard that checks to see if we have recursion problems and stops if we do
         // It allows each context to occur once for a given hash code
 
-        if(this.context == TriggerContext.BEFORE_INSERT) {
+        if(this.currentTriggerContext == TriggerContext.BEFORE_INSERT) {
             // BEFORE_INSERT doesn't have record IDs yet, so the hash here will never match the other hashes
             // Since Salesforce makes it impossible to recursively run "insert record", we can let the platform handle it
             return false;
         } else if(!SObjectTriggerHandler.hashCodesForProcessedRecords.containsKey(this.hashCode)) {
-            SObjectTriggerHandler.hashCodesForProcessedRecords.put(this.hashCode, new Set<TriggerContext>{this.context});
+            SObjectTriggerHandler.hashCodesForProcessedRecords.put(this.hashCode, new Set<TriggerContext>{this.currentTriggerContext});
             return false;
-        } else if(!SObjectTriggerHandler.hashCodesForProcessedRecords.get(this.hashCode).contains(this.context)) {
-            SObjectTriggerHandler.hashCodesForProcessedRecords.get(this.hashCode).add(this.context);
+        } else if(!SObjectTriggerHandler.hashCodesForProcessedRecords.get(this.hashCode).contains(this.currentTriggerContext)) {
+            SObjectTriggerHandler.hashCodesForProcessedRecords.get(this.hashCode).add(this.currentTriggerContext);
             return false;
         } else {
             return true;
