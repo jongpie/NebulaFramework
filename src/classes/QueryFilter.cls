@@ -4,33 +4,41 @@
 *************************************************************************************************/
 public class QueryFilter implements IQueryFilter {
 
-    public List<Schema.SObjectField> ParentRelationshipFields {get; private set;}
-    public Schema.SObjectField SObjectField {get; private set;}
-    public Schema.SObjectType SObjectType {get; private set;}
-    public QueryOperator Operator {get; private set;}
-    public Object Value {get; private set;}
-    public String QueryFieldName {get; private set;}
+    private List<Schema.SObjectField> parentRelationshipFields;
+    private Schema.SObjectField sobjectField;
+    private Schema.SObjectType sobjectType;
+    private QueryOperator operator;
+    private Object providedValue;
+    @testVisible private String queryFieldName;
 
-    public QueryFilter(Schema.SObjectField fieldToFilter, QueryOperator operator, Object value) {
-        this(new List<Schema.SObjectField>(), fieldToFilter, operator, value);
+    public QueryFilter(Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue) {
+        this(new List<Schema.SObjectField>(), fieldToFilter, operator, providedValue);
     }
 
-    public QueryFilter(Schema.SObjectField parentRelationshipField, Schema.SObjectField fieldToFilter, QueryOperator operator, Object value) {
-        this(new List<Schema.SObjectField>{parentRelationshipField}, fieldToFilter, operator, value);
+    public QueryFilter(Schema.SObjectField parentRelationshipField, Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue) {
+        this(new List<Schema.SObjectField>{parentRelationshipField}, fieldToFilter, operator, providedValue);
     }
 
-    public QueryFilter(List<Schema.SObjectField> sortedParentRelationshipFields, Schema.SObjectField fieldToFilter, QueryOperator operator, Object value) {
+    public QueryFilter(List<Schema.SObjectField> sortedParentRelationshipFields, Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue) {
         this.parentRelationshipFields = sortedParentRelationshipFields;
         this.sobjectField             = fieldToFilter;
-        this.sobjectType              = new SObjectFieldDescriber(fieldToFilter).sobjectType;
+        this.sobjectType              = new SObjectFieldDescriber(fieldToFilter).SObjectType;
         this.operator                 = operator;
-        this.value                    = value;
+        this.providedValue            = providedValue;
 
         this.setQueryFieldName();
     }
 
+    public Object getProvidedValue() {
+        return this.providedValue;
+    }
+
+    public Schema.SObjectField getSObjectField() {
+        return this.sobjectField;
+    }
+
     public String getValue() {
-        return this.queryFieldName + ' ' + this.operator.getValue() + ' ' + new QueryArgumentFormatter(this.value).getValue();
+        return this.queryFieldName + ' ' + this.operator.getValue() + ' ' + new QueryArgumentFormatter(this.providedValue).getValue();
     }
 
     private void setQueryFieldName() {

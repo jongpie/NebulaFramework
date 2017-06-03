@@ -72,20 +72,29 @@ public virtual class SObjectRepository extends DML implements ISObjectRepository
             .getQueryResults();
     }
 
-    public virtual List<SObject> getByFieldForIds(Schema.SObjectField field, Object value, Set<Id> idSet) {
-        return this.getByFieldForIds(field, value, new List<Id>(idSet));
+    public virtual List<SObject> getByIdAndQueryFilters(Set<Id> idSet, List<IQueryFilter> queryFilters) {
+        return this.getByIdAndQueryFilters(new List<Id>(idSet), queryFilters);
     }
 
-    public virtual List<SObject> getByFieldForIds(Schema.SObjectField field, Object value, List<Id> idList) {
+    public virtual List<SObject> getByIdAndQueryFilters(List<Id> idList, List<IQueryFilter> queryFilters) {
         return this.Query
             .filterBy(new QueryFilter(this.idField, QueryOperator.IS_IN, idList))
-            .filterBy(new QueryFilter(field, QueryOperator.EQUALS, value))
+            .filterBy(queryFilters)
             .getQueryResults();
     }
 
     // SOSL
+    public virtual List<SObject> getSearchResults(String searchTerm) {
+        return this.getSearchResults(searchTerm, QuerySearchGroup.ALL_FIELDS, null);
+    }
+
     public virtual List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup) {
-        return (List<SObject>)this.Query
+        return this.getSearchResults(searchTerm, searchGroup, null);
+    }
+
+    public virtual List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup, List<IQueryFilter> queryFilters) {
+        return this.Query
+            .filterBy(queryFilters)
             .limitCount(10)
             .getSearchResults(searchTerm, searchGroup);
     }

@@ -4,6 +4,8 @@
 *************************************************************************************************/
 public interface IQueryFilter {
 
+    Object getProvidedValue();
+    Schema.SObjectField getSObjectField();
     String getValue();
 
 }

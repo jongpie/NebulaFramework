@@ -13,11 +13,13 @@ public interface ISObjectRepository {
     List<SObject> getById(List<Id> recordIdList);
     List<SObject> get(IQueryFilter queryFilter);
     List<SObject> get(List<IQueryFilter> queryFilters);
-    List<SObject> getByFieldForIds(Schema.SObjectField field, Object value, List<Id> idList);
-    List<SObject> getByFieldForIds(Schema.SObjectField field, Object value, Set<Id> idSet);
+    List<SObject> getByIdAndQueryFilters(Set<Id> idSet, List<IQueryFilter> queryFilters);
+    List<SObject> getByIdAndQueryFilters(List<Id> idList, List<IQueryFilter> queryFilters);
 
     // SOSL
+    List<SObject> getSearchResults(String searchTerm);
     List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup);
+    List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup, List<IQueryFilter> queryFilters);
 
     // Additional methods
     IQueryBuilder getQueryBuilder();

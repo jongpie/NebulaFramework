@@ -67,20 +67,31 @@ public class SObjectRepositoryMocks {
             return queryFilters;
         }
 
-        public virtual List<SObject> getByFieldForIds(Schema.SObjectField field, Object value, Set<Id> idList) {
-            return this.getByFieldForIds(field,value,new List<Id>(idList));
+        public virtual List<SObject> getByIdAndQueryFilters(Set<Id> idList, List<IQueryFilter> queryFilters) {
+            return this.getByIdAndQueryFilters(new List<Id>(idList), queryFilters);
         }
 
-        public virtual List<SObject> getByFieldForIds(Schema.SObjectField field, Object value, List<Id> idList) {
+        public virtual List<SObject> getByIdAndQueryFilters(List<Id> idList, List<IQueryFilter> queryFilters) {
             List<SObject> records = this.getById(idList);
-
-            for(SObject record : records) record.put(field,value);
+            for(SObject record : records) {
+                for(IQueryFilter queryFilter : queryFilters) {
+                    record.put(queryFilter.getSObjectField(), queryFilter.getProvidedValue());
+                }
+            }
 
             return records;
         }
 
         // SOSL
+        public virtual List<SObject> getSearchResults(String searchTerm) {
+            return this.returnListOfSObjects();
+        }
+
         public virtual List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup) {
+            return this.returnListOfSObjects();
+        }
+
+        public virtual List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup, List<IQueryFilter> queryFilters) {
             return this.returnListOfSObjects();
         }
 

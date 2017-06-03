@@ -148,13 +148,15 @@ private class SObjectRepository_Tests {
     }
 
     @isTest
-    static void it_should_return_by_field_for_ids_in_set() {
+    static void it_should_return_for_ids_in_set_and_query_filters() {
         Map<Id, Account> expectedAccountMap = new Map<Id, Account>([SELECT Id FROM Account]);
-        List<SObjectField> accountFields = new List<SObjectField>{Schema.Account.Id, Schema.Account.Name};
-        ISObjectRepository repo = new SObjectRepository(Account.SObjectType, accountFields);
+        List<Schema.SObjectField> accountFields = new List<Schema.SObjectField>{Schema.Account.Id, Schema.Account.Name};
+        ISObjectRepository repo = new SObjectRepository(Schema.Account.SObjectType, accountFields);
 
         Test.startTest();
-        List<Account> returnedAccountList = (List<Account>)repo.getByFieldForIds(Account.Name, 'My Test Company', expectedAccountMap.keyset());
+        QueryFilter queryFilter = new QueryFilter(Schema.Account.Name, QueryOperator.EQUALS, 'My Test Company');
+        List<QueryFilter> queryFilters = new List<QueryFilter>{queryFilter};
+        List<Account> returnedAccountList = (List<Account>)repo.getByIdAndQueryFilters(expectedAccountMap.keyset(), queryFilters);
         Test.stopTest();
 
         System.assertNotEquals(null, expectedAccountMap);
@@ -165,11 +167,13 @@ private class SObjectRepository_Tests {
     @isTest
     static void it_should_return_by_field_for_ids_in_list() {
         Map<Id, Account> expectedAccountMap = new Map<Id, Account>([SELECT Id FROM Account]);
-        List<SObjectField> accountFields = new List<SObjectField>{Schema.Account.Id, Schema.Account.Name};
-        ISObjectRepository repo = new SObjectRepository(Account.SObjectType, accountFields);
+        List<Schema.SObjectField> accountFields = new List<Schema.SObjectField>{Schema.Account.Id, Schema.Account.Name};
+        ISObjectRepository repo = new SObjectRepository(Schema.Account.SObjectType, accountFields);
 
         Test.startTest();
-        List<Account> returnedAccountList = (List<Account>)repo.getByFieldForIds(Schema.Account.Name, 'My Test Company', new List<Id>(expectedAccountMap.keyset()));
+        QueryFilter queryFilter = new QueryFilter(Schema.Account.Name, QueryOperator.EQUALS, 'My Test Company');
+        List<QueryFilter> queryFilters = new List<QueryFilter>{queryFilter};
+        List<Account> returnedAccountList = (List<Account>)repo.getByIdAndQueryFilters(new List<Id>(expectedAccountMap.keyset()), queryFilters);
         Test.stopTest();
 
         System.assertNotEquals(null, expectedAccountMap);
@@ -212,7 +216,7 @@ private class SObjectRepository_Tests {
     }
 
     @isTest
-    static void it_should_search_in_all_fields() {
+    static void it_should_search_for_search_term() {
         String searchTerm = 'Gillespie';
         Map<Id, Account> soslAccountMap = new Map<Id, Account>([SELECT Id, Name, OwnerId, Owner.Name FROM Account]);
         Test.setFixedSearchResults(new List<Id>(soslAccountMap.keySet()));
@@ -221,7 +225,45 @@ private class SObjectRepository_Tests {
         System.assertNotEquals(0, expectedAccountList.size());
 
         Test.startTest();
-        List<Account> returnedAccountList = (List<Account>)new SObjectRepository_Tests.AccountRepository().getSearchResults(searchTerm, QuerySearchGroup.ALL_FIELDS);
+        List<Account> returnedAccountList = (List<Account>)new SObjectRepository_Tests.AccountRepository().getSearchResults(searchTerm);
+        Test.stopTest();
+
+        System.assertNotEquals(null, expectedAccountList);
+        System.assert(!expectedAccountList.isEmpty());
+        System.assertEquals(expectedAccountList.size(), returnedAccountList.size());
+    }
+
+    @isTest
+    static void it_should_search_for_search_term_and_search_group() {
+        String searchTerm = 'Gillespie';
+        Map<Id, Account> soslAccountMap = new Map<Id, Account>([SELECT Id, Name, OwnerId, Owner.Name FROM Account]);
+        Test.setFixedSearchResults(new List<Id>(soslAccountMap.keySet()));
+
+        List<Account> expectedAccountList = [FIND :searchTerm IN ALL FIELDS RETURNING Account(Id, Name)][0];
+        System.assertNotEquals(0, expectedAccountList.size());
+
+        Test.startTest();
+        List<Account> returnedAccountList = (List<Account>)new SObjectRepository_Tests.AccountRepository().getSearchResults(searchTerm, QuerySearchGroup.NAME_FIELDS);
+        Test.stopTest();
+
+        System.assertNotEquals(null, expectedAccountList);
+        System.assert(!expectedAccountList.isEmpty());
+        System.assertEquals(expectedAccountList.size(), returnedAccountList.size());
+    }
+
+    @isTest
+    static void it_should_search_for_search_term_and_search_group_and_query_filters() {
+        String searchTerm = 'Gillespie';
+        Map<Id, Account> soslAccountMap = new Map<Id, Account>([SELECT Id, Name, OwnerId, Owner.Name FROM Account]);
+        Test.setFixedSearchResults(new List<Id>(soslAccountMap.keySet()));
+
+        List<Account> expectedAccountList = [FIND :searchTerm IN ALL FIELDS RETURNING Account(Id, Name)][0];
+        System.assertNotEquals(0, expectedAccountList.size());
+
+        Test.startTest();
+        QueryFilter queryFilter = new QueryFilter(Schema.Account.CreatedDate, QueryOperator.EQUALS, QueryDateLiteral.TODAY);
+        List<QueryFilter> queryFilters = new List<QueryFilter>{queryFilter};
+        List<Account> returnedAccountList = (List<Account>)new SObjectRepository_Tests.AccountRepository().getSearchResults(searchTerm, QuerySearchGroup.NAME_FIELDS, queryFilters);
         Test.stopTest();
 
         System.assertNotEquals(null, expectedAccountList);
