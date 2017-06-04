@@ -33,7 +33,7 @@ public virtual class SObjectRepository extends DML implements ISObjectRepository
 
         this.sobjectType      = sobjectType;
         this.fieldSet         = fieldSet;
-        this.sObjectFieldList = sObjectFieldList;
+        this.sobjectFieldList = sobjectFieldList;
         this.sobjectFieldMap  = sobjectType.getDescribe().fields.getMap();
         this.idField          = this.getField('Id');
     }
