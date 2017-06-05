@@ -38,17 +38,6 @@ public virtual class SObjectRepository extends DML implements ISObjectRepository
         this.idField          = this.getField('Id');
     }
 
-    // Add filters to the query without actually executing the query
-    public virtual ISObjectRepository filterBy(IQueryFilter queryFilter) {
-        return this.filterBy(new List<IQueryFilter>{queryFilter});
-    }
-
-    public virtual ISObjectRepository filterBy(List<IQueryFilter> queryFilters) {
-        for(IQueryFilter queryFilter : queryFilters) this.Query.filterBy(queryFilter);
-
-        return this;
-    }
-
     // SOQL
     public virtual SObject getById(Id recordId) {
         return this.Query

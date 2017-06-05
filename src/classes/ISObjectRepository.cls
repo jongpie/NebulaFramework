@@ -4,10 +4,6 @@
 *************************************************************************************************/
 public interface ISObjectRepository {
 
-    // Manipulate queries without executing them
-    ISObjectRepository filterBy(IQueryFilter queryFilter);
-    ISObjectRepository filterBy(List<IQueryFilter> queryFilters);
-
     // SOQL
     SObject getById(Id recordId);
     List<SObject> getById(List<Id> recordIdList);

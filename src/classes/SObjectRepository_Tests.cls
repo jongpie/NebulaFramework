@@ -28,7 +28,7 @@ private class SObjectRepository_Tests {
                 .filterBy(new QueryFilter(Schema.Account.Id, QueryOperator.EQUALS, accountId))
                 .includeChildrenRecords(
                     Schema.Contact.AccountId,
-                    new ContactRepository().filterBy(new QueryFilter(Schema.Contact.Email, QueryOperator.NOT_EQUAL_TO, null))
+                    new ContactRepository()
                 )
                 .getFirstQueryResult();
         }
@@ -182,18 +182,16 @@ private class SObjectRepository_Tests {
     }
 
     @isTest
-    static void it_should_return_account_and_contacts_with_emails_as_children_records() {
+    static void it_should_return_account_and_contacts_as_children_records() {
         Account account = [SELECT Id FROM Account LIMIT 1];
 
         Contact contact = createContact(account.Id);
-        contact.Email = 'email@test.com';
         insert contact;
-        contact = [SELECT Id, AccountId, Email FROM Contact WHERE Id = :contact.Id];
+        contact = [SELECT Id, AccountId FROM Contact WHERE Id = :contact.Id];
         System.assertEquals(account.Id, contact.AccountId);
-        System.assertNotEquals(null, contact.Email);
 
         Account expectedAccount = [
-            SELECT Id, (SELECT Id, AccountId, Email FROM Contacts)
+            SELECT Id, (SELECT Id, AccountId FROM Contacts)
             FROM Account
             WHERE Id = :account.Id
         ];
@@ -212,7 +210,6 @@ private class SObjectRepository_Tests {
         System.assertEquals(expectedAccount.Contacts.size(), account.Contacts.size());
         Contact firstContact = account.Contacts[0];
         System.assertEquals(contact.Id, firstContact.Id);
-        System.assertEquals(contact.Email, firstContact.Email);
     }
 
     @isTest
