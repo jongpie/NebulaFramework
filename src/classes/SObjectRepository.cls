@@ -5,7 +5,7 @@
 public virtual class SObjectRepository extends DML implements ISObjectRepository, IDML {
 
     protected IQueryBuilder Query {
-        get { return new QueryBuilder(sobjectType, fieldSet, sobjectFieldList); }
+        get { return new QueryBuilder(this.sobjectType, this.fieldSet, this.sobjectFieldList); }
     }
 
     private final Schema.SObjectType sobjectType;
