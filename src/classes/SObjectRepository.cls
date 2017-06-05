@@ -95,7 +95,6 @@ public virtual class SObjectRepository extends DML implements ISObjectRepository
     public virtual List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup, List<IQueryFilter> queryFilters) {
         return this.Query
             .filterBy(queryFilters)
-            .limitCount(10)
             .getSearchResults(searchTerm, searchGroup);
     }
 
