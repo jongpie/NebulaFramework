@@ -31,7 +31,7 @@ private class QueryArgumentFormatter_Tests {
 
     @isTest
     static void it_should_return_query_string_for_query_date_literal() {
-        QueryDateLiteral providedValue = new QueryDateLiteral().YESTERDAY;
+        QueryDateLiteral providedValue = QueryDateLiteral.YESTERDAY;
         String expectedString          = providedValue.getValue();
 
         Test.startTest();
@@ -142,6 +142,18 @@ private class QueryArgumentFormatter_Tests {
     }
 
     @isTest
+    static void it_should_return_query_string_for_sobject_type() {
+        Schema.SObjectType providedValue = Schema.Lead.SObjectType;
+        String expectedString = '\'' + providedValue.getDescribe().getName() + '\'';
+
+        Test.startTest();
+        String returnedValue = new QueryArgumentFormatter(providedValue).getValue();
+        Test.stopTest();
+
+        System.assertEquals(expectedString, returnedValue);
+    }
+
+    @isTest
     static void it_should_return_query_string_for_string() {
         String providedValue  = 'test';
         String expectedString = '\'' + providedValue + '\'';
@@ -154,7 +166,7 @@ private class QueryArgumentFormatter_Tests {
     }
 
     @isTest
-    static void it_should_return_query_string_for_unsported_type() {
+    static void it_should_return_query_string_for_unsupported_type() {
         UUID providedValue  = new UUID();
         String expectedString = String.valueOf(providedValue);
 
