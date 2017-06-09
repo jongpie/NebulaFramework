@@ -9,12 +9,14 @@ public abstract class SObjectRecordTypes extends NebulaCore {
     public final Map<Id, RecordType> ALL_RECORD_TYPES_BY_ID;
     public final Map<String, RecordType> ALL_RECORD_TYPES_BY_DEVELOPER_NAME;
 
+    private Schema.SObjectType sobjectType;
     private String sobjectName;
 
-    public SObjectRecordTypes(Schema.DescribeSObjectResult describeSObjectResult) {
+    public SObjectRecordTypes(Schema.SObjectType sobjectType) {
         this.currentModule = NebulaCore.Module.RECORD_TYPES;
 
-        this.sobjectName = describeSObjectResult.getName();
+        this.sobjectType = sobjectType;
+        this.sobjectName = this.sobjectType.getDescribe().getName();
 
         Logger.addEntry(this, 'Getting record types for ' + this.sobjectName);
 
@@ -29,27 +31,29 @@ public abstract class SObjectRecordTypes extends NebulaCore {
     private void populateCache() {
         if(cachedRecordTypesBySObjectMap.containsKey(this.sobjectName)) return;
 
+        Schema.SObjectType recordTypeSObjectType = Schema.getGlobalDescribe().get('RecordType');
+        Schema.FieldSet nullFieldSet;
+        List<Schema.SObjectField> nullSObjectFieldList;
+
         // If we don't have the SObject cached, then we need to query
-        List<String> fieldList = new List<String>(Schema.SObjectType.RecordType.fields.getMap().keySet());
+        QueryBuilder query = new QueryBuilder(recordTypeSObjectType, nullFieldSet, nullSObjectFieldList);
 
-        String query = 'SELECT ' + String.join(fieldList, ', ') + ' FROM RecordType';
-
-        List<String> whereClauseList = new List<String>();
-
-        if(NebulaSettings.recordTypesSettings.LazyLoad__c){
-            whereClauseList.add('SObjectType = \'' + this.sobjectName + '\'');
-            Logger.addEntry(this, 'NebulaSettings.recordTypesSettings.LazyLoad__c=' + NebulaSettings.recordTypesSettings.LazyLoad__c);
+        if(NebulaSettings.RecordTypesSettings.LazyLoad__c) {
+            query.filterBy(new QueryFilter(Schema.RecordType.SObjectType, QueryOperator.EQUALS, this.sobjectName));
+            Logger.addEntry(this, 'NebulaSettings.RecordTypesSettings.LazyLoad__c=' + NebulaSettings.RecordTypesSettings.LazyLoad__c);
             Logger.addEntry(this, 'this.sobjectName=' + this.sobjectName);
         }
-        if(NebulaSettings.recordTypesSettings.ExcludeManagedRecordTypes__c) whereClauseList.add('NamespacePrefix = null');
-        if(!whereClauseList.isEmpty()) query += ' WHERE ' + String.join(whereClauseList, ' AND ');
 
-        query += ' ORDER BY DeveloperName';
+        if(NebulaSettings.RecordTypesSettings.ExcludeManagedRecordTypes__c) {
+            query.filterBy(new QueryFilter(Schema.RecordType.NamespacePrefix, QueryOperator.EQUALS, null));
+        }
 
-        Logger.addEntry(this, 'SObjectRecordTypes query=' + query);
+        query.orderBy(Schema.RecordType.DeveloperName);
+
+        Logger.addEntry(this, 'SObjectRecordTypes query=' + query.getQuery());
 
         if(!cachedRecordTypesBySObjectMap.containsKey(this.sobjectName)) cachedRecordTypesBySObjectMap.put(this.sobjectName, new List<RecordType>());
-        List<RecordType> recordTypeList = (List<RecordType>)Database.query(query);
+        List<RecordType> recordTypeList = (List<RecordType>)query.getQueryResults();
         for(RecordType recordType : recordTypeList) cachedRecordTypesBySObjectMap.get(this.sobjectName).add(recordType);
 
         Logger.addEntry(this, 'cachedRecordTypesBySObjectMap=' + cachedRecordTypesBySObjectMap);
@@ -69,4 +73,5 @@ public abstract class SObjectRecordTypes extends NebulaCore {
 
         return allRecordTypesByDeveloperName;
     }
+
 }

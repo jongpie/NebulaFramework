@@ -64,37 +64,6 @@
         <unique>false</unique>
     </fields>
     <fields>
-        <fullName>InitialModule__c</fullName>
-        <externalId>false</externalId>
-        <label>Initial Module</label>
-        <length>255</length>
-        <required>false</required>
-        <trackHistory>false</trackHistory>
-        <trackTrending>false</trackTrending>
-        <type>Text</type>
-        <unique>false</unique>
-    </fields>
-    <fields>
-        <fullName>RecordTypesSettings__c</fullName>
-        <externalId>false</externalId>
-        <label>Record Types Settings</label>
-        <length>32768</length>
-        <trackHistory>false</trackHistory>
-        <trackTrending>false</trackTrending>
-        <type>LongTextArea</type>
-        <visibleLines>3</visibleLines>
-    </fields>
-    <fields>
-        <fullName>RepositorySettings__c</fullName>
-        <externalId>false</externalId>
-        <label>Repository Settings</label>
-        <length>32768</length>
-        <trackHistory>false</trackHistory>
-        <trackTrending>false</trackTrending>
-        <type>LongTextArea</type>
-        <visibleLines>3</visibleLines>
-    </fields>
-    <fields>
         <fullName>TransactionId__c</fullName>
         <caseSensitive>false</caseSensitive>
         <externalId>true</externalId>
@@ -105,16 +74,6 @@
         <trackTrending>false</trackTrending>
         <type>Text</type>
         <unique>true</unique>
-    </fields>
-    <fields>
-        <fullName>TriggerHandlerSettings__c</fullName>
-        <externalId>false</externalId>
-        <label>Trigger Handler Settings</label>
-        <length>32768</length>
-        <trackHistory>false</trackHistory>
-        <trackTrending>false</trackTrending>
-        <type>LongTextArea</type>
-        <visibleLines>5</visibleLines>
     </fields>
     <label>Nebula Log</label>
     <listViews>
@@ -147,6 +106,12 @@
         <type>AutoNumber</type>
     </nameField>
     <pluralLabel>Nebula Logs</pluralLabel>
-    <searchLayouts/>
+    <searchLayouts>
+        <customTabListAdditionalFields>InitialClass__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>TransactionId__c</customTabListAdditionalFields>
+        <customTabListAdditionalFields>CREATEDBY_USER</customTabListAdditionalFields>
+        <customTabListAdditionalFields>CREATED_DATE</customTabListAdditionalFields>
+    </searchLayouts>
     <sharingModel>ReadWrite</sharingModel>
+    <visibility>Public</visibility>
 </CustomObject>

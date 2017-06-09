@@ -1,3 +1,7 @@
+/*************************************************************************************************
+* This file is part of the Nebula Framework project, released under the MIT License.             *
+* See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
+*************************************************************************************************/
 @isTest
 private class SObjectRepositoryMocks_Tests {
 
@@ -5,7 +9,7 @@ private class SObjectRepositoryMocks_Tests {
     static void it_should_fake_returning_by_id() {
         Id testId = getTestId();
 
-        Sobject returnedObj = new SObjectRepositoryMocks.Base(null).getById(testId);
+        SObject returnedObj = new SObjectRepositoryMocks.Base(null).getById(testId);
 
         System.assert(returnedObj.Id == testId);
     }
@@ -14,11 +18,11 @@ private class SObjectRepositoryMocks_Tests {
     static void it_should_fake_returning_by_field_and_value() {
         Id testId = getTestId();
         SObjectField field = getField();
-        String value = getFieldValue();
 
-        SObject returnedObj = new SObjectRepositoryMocks.Base(null).getByFieldForIds(field,value, new Set<Id>{testId})[0];
+        List<QueryFilter> queryFilters = new List<QueryFilter>{new QueryFilter(field, QueryOperator.EQUALS, getFieldValue())};
+        SObject returnedObj = new SObjectRepositoryMocks.Base(null).getByIdAndQueryFilters(new Set<Id>{testId}, queryFilters)[0];
 
-        System.assert(returnedObj.get(String.valueOf(field)) == value);
+        System.assertEquals(getFieldValue(), returnedObj.get(String.valueOf(field)));
     }
 
     @isTest

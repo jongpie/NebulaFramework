@@ -1,12 +1,17 @@
+/*************************************************************************************************
+* This file is part of the Nebula Framework project, released under the MIT License.             *
+* See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
+*************************************************************************************************/
 @isTest
 private class DMLMock_Tests {
-    static IDML dmlRepo = new DMLMock();
+
+    static IDML dmlRepo = new DMLMock.Base();
     static Schema.Contact con = createContact();
 
     @isTest
     static void it_should_fake_dml_insert() {
         Test.startTest();
-        dmlRepo.doInsert(con);
+        dmlRepo.insertRecords(con);
         Test.stopTest();
 
         System.assert(TestingUtils.insertedRecords.size() > 0);
@@ -15,7 +20,7 @@ private class DMLMock_Tests {
     @isTest
     static void it_should_fake_dml_update() {
         Test.startTest();
-        dmlRepo.doUpdate(con);
+        dmlRepo.updateRecords(con);
         Test.stopTest();
 
         System.assert(!TestingUtils.updatedRecords.isEmpty());
@@ -24,7 +29,7 @@ private class DMLMock_Tests {
     @isTest
     static void it_should_fake_dml_upsert() {
         Test.startTest();
-        dmlRepo.doUpsert(con);
+        dmlRepo.upsertRecords(con);
         Test.stopTest();
 
         System.assert(!TestingUtils.upsertedRecords.isEmpty());
@@ -33,7 +38,7 @@ private class DMLMock_Tests {
     @isTest
     static void it_should_fake_dml_delete() {
         Test.startTest();
-        dmlRepo.doDelete(con);
+        dmlRepo.deleteRecords(con);
         Test.stopTest();
 
         System.assert(!TestingUtils.deletedRecords.isEmpty());
@@ -42,7 +47,7 @@ private class DMLMock_Tests {
     @isTest
     static void it_should_fake_dml_hard_delete() {
         Test.startTest();
-        dmlRepo.doHardDelete(con);
+        dmlRepo.hardDeleteRecords(con);
         Test.stopTest();
 
         System.assert(!TestingUtils.deletedRecords.isEmpty());
@@ -51,7 +56,7 @@ private class DMLMock_Tests {
     @isTest
     static void it_should_fake_dml_undelete() {
         Test.startTest();
-        dmlRepo.doUndelete(con);
+        dmlRepo.undeleteRecords(con);
         Test.stopTest();
 
         System.assert(!TestingUtils.undeletedRecords.isEmpty());
@@ -60,10 +65,10 @@ private class DMLMock_Tests {
     @isTest
     static void it_should_mock_updating_read_only_fields_when_updating_data() {
         Schema.Lead l = new Schema.Lead();
-        l = (Lead)TestingUtils.setReadOnlyField(l, Schema.Lead.IsConverted, 'true');
+        l = (Lead)TestingUtils.setReadOnlyField(l, Schema.Lead.IsConverted, true);
 
         Test.startTest();
-        dmlRepo.doUpdate(l);
+        dmlRepo.updateRecords(l);
         Test.stoptest();
 
         SObject record = TestingUtils.updatedRecords[0];
@@ -80,4 +85,5 @@ private class DMLMock_Tests {
 
         return con;
     }
+
 }

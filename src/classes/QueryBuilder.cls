@@ -2,7 +2,7 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
-public without sharing class QueryBuilder extends NebulaCore implements IQueryBuilder {
+public class QueryBuilder extends NebulaCore implements IQueryBuilder {
 
     private String query;
     private Set<String> queryFields;
@@ -19,16 +19,18 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
     private final Map<String, Schema.SObjectField> sobjectTypeFieldMap;
 
     public QueryBuilder(Schema.SObjectType sobjectType, Schema.FieldSet fieldSet, List<Schema.SObjectField> sobjectFieldList) {
-        this.sobjectType      = sobjectType;
-        this.sobjectFieldList = sobjectFieldList;
-        this.fieldSet         = fieldSet;
+        this.currentModule = NebulaCore.Module.REPOSITORY;
 
-        this.forUpdate                = false;
+        this.sobjectType         = sobjectType;
+        this.sobjectFieldList    = sobjectFieldList;
+        this.fieldSet            = fieldSet;
+        this.sobjectTypeFieldMap = this.sobjectType.getDescribe().fields.getMap();
+
         this.queryFields              = new Set<String>();
-        this.orderByList              = new List<String>();
-        this.sobjectTypeFieldMap      = this.sobjectType.getDescribe().fields.getMap();
-        this.whereClauseList          = new List<String>();
         this.childRelationshipQueries = new List<String>();
+        this.whereClauseList          = new List<String>();
+        this.orderByList              = new List<String>();
+        this.forUpdate                = false;
 
         this.addCommonQueryFields();
         this.addFieldSetMembers();
@@ -41,9 +43,9 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
     }
 
     public IQueryBuilder filterBy(List<IQueryFilter> queryFilters) {
-        for(IQueryFilter queryFilter : queryFilters) {
-            this.whereClauseList.add(queryFilter.getValue());
-        }
+        if(queryFilters == null) return this;
+
+        for(IQueryFilter queryFilter : queryFilters) this.whereClauseList.add(queryFilter.getValue());
         return this;
     }
 
@@ -133,7 +135,7 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
         // Only 1 level of child relationships is allowed, so don't include them if the SObject name isn't the current SObject Type
         if(sobjectQueryName == String.valueOf(this.sobjectType)) this.query += this.getChildRelationshipsQueryString();
 
-        this.query +=' FROM ' + sobjectQueryName
+        this.query +='\nFROM ' + sobjectQueryName
             + this.getWhereClauseString()
             + this.getOrderByString()
             + this.getLimitCountString()
@@ -144,8 +146,8 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
 
     private String getSearchQuery(String searchTerm, QuerySearchGroup searchGroup) {
         this.query = 'FIND ' + new QueryArgumentFormatter(searchTerm.toLowerCase()).getValue()
-            + ' IN ' + searchGroup.name().replace('_', ' ')
-            + ' RETURNING ' + this.sobjectType + '('
+            + '\nIN ' + searchGroup.name().replace('_', ' ')
+            + '\nRETURNING ' + this.sobjectType + '('
                 + this.getQueryFieldString()
                 + this.getWhereClauseString()
                 + this.getOrderByString()
@@ -160,8 +162,8 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
 
     private String getQueryFieldString() {
         List<String> queryFieldList = new List<String>(this.queryFields);
-        if(NebulaSettings.repositorySettings.SortQueryFields__c) queryFieldList.sort();
-        return String.join(queryFieldList, ',');
+        queryFieldList.sort();
+        return String.join(queryFieldList, ', ');
     }
 
     private String getChildRelationshipsQueryString() {
@@ -187,7 +189,7 @@ public without sharing class QueryBuilder extends NebulaCore implements IQueryBu
     }
 
     private void addCommonQueryFields() {
-        if(!NebulaSettings.repositorySettings.IncludeCommonFields__c) return;
+        if(!NebulaSettings.RepositorySettings.IncludeCommonFields__c) return;
         // Auto-add the common fields that are available for the SObject Type
         List<String> commonFieldNameList = new List<String>{
             'Id', 'CaseNumber', 'CreatedById', 'CreatedDate', 'IsClosed', 'LastModifiedById', 'LastModifiedDate',

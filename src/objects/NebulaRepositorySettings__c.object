@@ -17,6 +17,7 @@ LastModifiedById
 LastModifiedDate
 Name
 OwnerId
+ParentId
 Subject
 RecordTypeId
 SystemModStamp</description>
@@ -32,26 +33,11 @@ LastModifiedById
 LastModifiedDate
 Name
 OwnerId
+ParentId
 Subject
 RecordTypeId
 SystemModStamp</inlineHelpText>
         <label>Include Common Fields</label>
-        <trackTrending>false</trackTrending>
-        <type>Checkbox</type>
-    </fields>
-    <fields>
-        <fullName>SortQueryFields__c</fullName>
-        <defaultValue>true</defaultValue>
-        <description>When enabled, the list of query fields in the dynamic query are sorted when the query is built. For example:
-&apos;SELECT Status, Id, Name FROM Lead&apos;
-becomes
-&apos;SELECT Id, Name, Status FROM Lead&apos;</description>
-        <externalId>false</externalId>
-        <inlineHelpText>When enabled, the list of query fields in the dynamic query are sorted when the query is built. For example:
-&apos;SELECT Status, Id, Name FROM Lead&apos;
-becomes
-&apos;SELECT Id, Name, Status FROM Lead&apos;</inlineHelpText>
-        <label>Sort Query Fields</label>
         <trackTrending>false</trackTrending>
         <type>Checkbox</type>
     </fields>

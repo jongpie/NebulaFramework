@@ -1,5 +1,10 @@
+/*************************************************************************************************
+* This file is part of the Nebula Framework project, released under the MIT License.             *
+* See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
+*************************************************************************************************/
 @isTest
 private class SObjectTriggerHandler_Tests {
+
     private class LeadTriggerHandlerTest extends SObjectTriggerHandler {
         public LeadTriggerHandlerTest() {
             super(true);
@@ -19,6 +24,7 @@ private class SObjectTriggerHandler_Tests {
     }
 
     static List<Lead> leadList = new List<Lead>();
+
     static void setupData() {
         for(Integer i = 0; i < 5; i++) {
             Lead lead = new Lead(
@@ -38,7 +44,7 @@ private class SObjectTriggerHandler_Tests {
         upsert triggerHandlerSettings;
 
         LeadTriggerHandlerTest leadTriggerHandler = new LeadTriggerHandlerTest();
-        leadTriggerHandler.context    = SObjectTriggerHandler.TriggerContext.BEFORE_INSERT;
+        leadTriggerHandler.currentTriggerContext  = SObjectTriggerHandler.TriggerContext.BEFORE_INSERT;
         leadTriggerHandler.recordList = leadList;
 
         Test.startTest();
@@ -56,7 +62,7 @@ private class SObjectTriggerHandler_Tests {
 
     //     Test.startTest();
     //     for(SObjectTriggerHandler.TriggerContext context : SObjectTriggerHandler.TriggerContext.values()) {
-    //         leadTriggerHandler.context = context;
+    //         leadTriggerHandler.currentTriggerContext = context;
     //         leadTriggerHandler.execute();
     //     }
     //     Test.stopTest();
@@ -66,7 +72,7 @@ private class SObjectTriggerHandler_Tests {
     // static void executeBeforeInsert() {
     //     LeadTriggerHandlerTest leadTriggerHandler = new LeadTriggerHandlerTest();
     //     // Set the variables for the relevant context
-    //     leadTriggerHandler.context    = SObjectTriggerHandler.TriggerContext.BEFORE_INSERT;
+    //     leadTriggerHandler.currentTriggerContext = SObjectTriggerHandler.TriggerContext.BEFORE_INSERT;
     //     leadTriggerHandler.recordList = leadList;
 
     //     Test.startTest();
@@ -80,11 +86,11 @@ private class SObjectTriggerHandler_Tests {
     // static void executeBeforeUpdate() {
     //     LeadTriggerHandlerTest leadTriggerHandler = new LeadTriggerHandlerTest();
     //     // Set the variables for the relevant context
-    //     leadTriggerHandler.context       = SObjectTriggerHandler.TriggerContext.BEFORE_UPDATE;
-    //     leadTriggerHandler.recordList    = leadList;
-    //     leadTriggerHandler.recordMap     = new Map<Id, Lead>(leadList);
-    //     leadTriggerHandler.oldRecordList = leadList;
-    //     leadTriggerHandler.oldRecordMap  = new Map<Id, Lead>(leadList);
+    //     leadTriggerHandler.currentTriggerContext = SObjectTriggerHandler.TriggerContext.BEFORE_UPDATE;
+    //     leadTriggerHandler.recordList            = leadList;
+    //     leadTriggerHandler.recordMap             = new Map<Id, Lead>(leadList);
+    //     leadTriggerHandler.oldRecordList         = leadList;
+    //     leadTriggerHandler.oldRecordMap          = new Map<Id, Lead>(leadList);
 
     //     Test.startTest();
 
@@ -92,4 +98,5 @@ private class SObjectTriggerHandler_Tests {
 
     //     Test.stopTest();
     // }
+
 }

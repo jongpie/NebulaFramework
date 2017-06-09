@@ -190,8 +190,4 @@ public without sharing class QueryDateLiteral {
         return new QueryDateLiteral(parsedValue);
     }
 
-    private QueryDateLiteral setValue(String value) {
-        this.value = value;
-        return this;
-    }
 }
