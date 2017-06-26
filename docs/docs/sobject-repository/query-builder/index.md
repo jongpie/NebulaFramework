@@ -1,0 +1,192 @@
+# Overview
+SObjectRepository.cls is one of the core classes of the Nebula framework. This class is intended to handle
+* All DML actions for a given SObject type, like insert, update & delete
+* All queries for a given SObject type, with several predefined queries, as well as the ability to dynamically generate queries
+
+>**Nebula Best Practice:** Each SObject that you use in your org should havee 1 class to extend SObjectRepository. For example, if you use the lead object, you will create LeadRepository.cls. If you use the cases object, then create CaseRepository.cls, etc. In some more complex systems, having multiple repositories per SObject can also be used.
+
+Using SObject repositories provides several benefits
+1. DML actions can be easily altered for your entire codebase
+2. Queries can be dynamically generated
+3. Query fields can be added & removed declaratively when using field sets. This lets you declaratively resolve 'SObject row was retrieved via SOQL without querying the requested field' errors
+4. Automatically include all fields to your queries, removing the need to constantly update queries when new fields are added to your SObject. Note: This feature is like having 'select * from <sobject>'. It can be a great time saver for smaller objects, but performance issues may occur with larger objects, so use carefully.
+5. Filter conditions can be easily added to all queries within a repo class by adding filters to your constructor. For example, this sample class filters out all converted leads for all queries (both inherited queries from Nebula and any custom query methods that you add)
+```
+public with sharing class CaseRepository extends SObjectRepository {
+    
+    public LeadRepository() {
+        super(Schema.Lead.SObjectType);
+        // Filters in the constructor are applied to all methods in the class
+        // This filter means that only leads that have not been converted will be included
+        this.Query.filterBy(new QueryFilter(Schema.Lead.IsConverted, QueryOperator.EQUALS, false));
+    }
+
+}
+
+```
+
+# Implementation
+Nebula provides 3 options for implementing a repository. You can decide which option best fits your use case (or you can even use a combination of the 3 options).
+
+## Constructor - Only SObject Type Provided
+The most basic implementation can be done by extending SObjectRepository, using just a few lines of code
+```
+public with sharing class CaseRepository extends SObjectRepository {
+    
+    public CaseRepository() {
+        // When only an SObject type is provided, all fields for the SObject are included in your queries
+        super(Schema.Case.SObjectType);
+    }
+
+}
+```
+
+Your new class, CaseRepository.cls, automatically inherits all of the methods in ISObjectRepository.cls and IDML.cls. It also leverages IQueryBuilder methods to dynamically generate queries. Using the super constructor shown above, the framework will automatically include all case fields in every query. If you want to specify the desired fields, you can use either a field set or list of SObject fields.
+
+## Constructor - SObject Type & Field Set Provided
+```
+public with sharing class CaseRepository extends SObjectRepository {
+
+    public CaseRepository(Schema.FieldSet myFieldSet) {
+         // When a field set is provided, only the fields in the field set are included in your queries
+         super(Schema.Case.SObjectType, myFieldSet));
+    }
+
+}
+```
+
+## Constructor - SObject Type & List of SObject Fields Provided
+```
+public with sharing class CaseRepository extends SObjectRepository {
+
+    public CaseRepository(List<Schema.FieldSet> mySObjectFields) {
+        // When a list of SObject fields is provided, only the fields in the field set are included in your queries
+        super(Schema.Case.SObjectType, mySObjectFields));
+    }
+
+}
+```
+
+## Additional Settings
+The custome setting Nebula Repository Settings (NebulaRepositorySettings__c) can be used to further control the behavior of the class SObjectRepository.cls. 
+
+>**Note:** Nebula's custom settings can be accessed programatically through the class NebulaSettings.
+
+1. Include Common Fields (API Name: IncludeCommonFields__c). If enabled, the following fields are auto-added to your queries if they exist on the SObject. You do not need to add these fields to your field set or list of SObject fields when this option is enabled. This feature can be used with all 3 super constructor's for SObjectRepository.cls
+    * Id
+    * CaseNumber
+    * CreatedById
+    * CreatedDate
+    * IsClosed
+    * LastModifiedById
+    * LastModifiedDate
+    * Name
+    * OwnerId
+    * Subject
+    * RecordTypeId
+    * SystemModStamp
+2. Sort Query Fields (API Name: SortQueryFields__c)When enabled, the list of query fields in the dynamic query are sorted when the query is built. For example:
+`SELECT Status, Id, Name FROM Lead`
+becomes
+`SELECT Id, Name, Status FROM Lead`
+
+# Filtering Queries
+Queries generated by SObject repositories can be filtered by creating instances of QueryFilter.cls - any query filters provided are used to generate the 'WHERE' clause in the dynamic SOQL & SOSL queries.
+
+Nebula can filter queries at 3 levels, based on which QueryFilter constructor you use.
+
+## 1. Basic Filter: Create a Method to Return Converted Leads for the Current User
+Scenario: You have a lead repository (LeadRepository.cls) and you want to create a method that returns accounts owned by the current user. In SOQL, it would be 
+```
+SELECT Id FROM Account 
+WHERE OwnerId = :UserInfo.getUserId()
+```
+
+### QueryFilter Constructor to Use
+
+```public QueryFilter(Schema.SObjectField fieldToFilter, QueryOperator operator, Object value)```
+
+### Creating Your Method with QueryFilter
+```
+public with sharing class AccountRepository extends SObjectRepository {
+    
+    public AccountRepository() {
+        super(Schema.Account.SObjectType);
+    }
+
+    public List<Account> getMyAccounts() {
+        return (List<Lead>)this.Query
+            // Only include accounts owned by the current user
+            .filterBy(new QueryFilter(Schema.Account.OwnerId, QueryOperator.EQUALS, UserInfo.getUserId()))
+            .getQueryResults();
+    }
+
+}
+```
+
+***
+
+## 2. Parent Filter: Create a Method to Return Accounts Owned by Inactive Users
+Scenario: You have an account repository (AccountRepository.cls) and you want to create a method that returns accounts that are owned by inactive users. In SOQL, it would be 
+```
+SELECT Id FROM Account 
+WHERE Owner.IsActive = false
+```
+
+### QueryFilter Constructor to Use
+
+```public QueryFilter(Schema.SObjectField parentRelationshipField, Schema.SObjectField fieldToFilter, QueryOperator operator, Object value)```
+
+### Creating Your Method with QueryFilter
+```
+public with sharing class AccountRepository extends SObjectRepository {
+    
+    public AccountRepository() {
+        super(Schema.Account.SObjectType);
+    }
+
+    public List<Account> getAccountsWithInactiveOwners() {
+        return (List<Account>)this.Query
+            // Only include accounts owned by users with a certain profile
+            .filterBy(new QueryFilter(Schema.Account.OwnerId, Schema.User.IsActive, QueryOperator.EQUALS, false))
+            .getQueryResults();
+    }
+
+}
+```
+
+***
+
+## 3. Grandparent Filter: Create a Method to Return Accounts Owned by Inactive Users
+Scenario: You have an account repository (AccountRepository.cls) and you want to create a method that returns accounts owned by users with a certain profile called 'MyCustomProfile'. In SOQL, it would be 
+```
+SELECT Id FROM Account 
+WHERE Owner.Profile.Name = 'MyCustomProfile'
+```
+
+### QueryFilter Constructor to Use
+
+```public QueryFilter(List<Schema.SObjectField> sortedParentRelationshipFields, Schema.SObjectField fieldToFilter, QueryOperator operator, Object value)```
+
+### Creating Your Method with QueryFilter
+```
+public with sharing class AccountRepository extends SObjectRepository {
+    
+    public AccountRepository() {
+        super(Schema.Account.SObjectType);
+    }
+
+    public List<Account> getAccountsOwnedByMyCustomProfile() {
+        // Nebula uses your provided list of fields to build the relationships between the objects
+        List<Schema.SObjectField> grandparentFields = new List<Schema.SObjectField>{
+            Schema.Account.OwnerId, Schema.User.ProfileId
+        };
+
+        return (List<Account>)this.Query
+            // Only include accounts owned by users with a certain profile
+            .filterBy(new QueryFilter(grandparentFields, Schema.Profile.Name, QueryOperator.EQUALS, 'MyCustomProfile'))
+            .getQueryResults();
+    }
+
+}
+```
