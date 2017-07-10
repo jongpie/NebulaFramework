@@ -1,6 +1,6 @@
 # Nebula Framework for Salesforce Apex
 [![Deploy to Salesforce](https://img.shields.io/badge/salesforce-deploy-blue.svg)](https://githubsfdeploy.herokuapp.com)
-[![License: MIT](https://img.shields.io/badge/License-MIT-lightgrey.svg)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/license-MIT-d742f4.svg)](https://opensource.org/licenses/MIT)
 [![Travis CI](https://img.shields.io/travis/jongpie/NebulaFramework/master.svg)](https://travis-ci.org/jongpie/NebulaFramework)
 [![Code Climate](https://img.shields.io/codeclimate/github/jongpie/NebulaFramework.svg)](https://codeclimate.com/github/jongpie/NebulaFramework)
 [![Coveralls](https://img.shields.io/coveralls/jongpie/NebulaFramework/master.svg)](https://coveralls.io/github/jongpie/NebulaFramework)
