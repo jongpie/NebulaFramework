@@ -26,14 +26,14 @@ The framework also provides several additional classes to make development easie
 3. **Environment.cls** - provides information about the current Salesforce environment
 4. **UUID.cls** - Used to reate a randomly-generated unique ID in your code, using the Universally Unique Identifier (UUID) standard
 
-## Architecture & Design
-Nebula uses interfaces, virtual & abstract classes and custom settings (and a few other Salesforce features) to provide a baseline for your own Apex development. The framework can be used as-is: simply extend or implement Nebula's classes and build your business logic on top of it. But if you want to customise how Nebula works, most classes & methods can be overridden with your own logic as needed.
+## Usage
+Nebula uses interfaces, virtual & abstract classes and some Salesforce features (like custom settings) to provide a baseline for your own Apex development. You can deploy the latest version of Nebula to your org and build your implementation on top of it. If you want to customise how Nebula works, most classes & methods can be overridden with your own logic. Ideally, you should minimise any code changes to Nebula's classes so that you can easily upgrade in the future when new versions of Nebula are released.
 
-The framework also aims to follow (and encourage) the use of Salesforce best practices - but no solution can fit everyone's needs, so Nebula leverages custom settings to give you control over how the framework works within your Salesforce implementation. There are 4 settings
-1. Logger Settings (API Name: NebulaLoggerSettings__c) - Controls the behavior of the class Logger.cls
-2. Record Type Settings (API Name: NebulaRecordTypesSettings__c) - Controls the behavior of the class SObjectRecordTypes.cls
-3. Repository Seetings (API Name: NebulaRepositorySettings__c) - Controls the behavior of the class SObjectRepository.cls
-4. Trigger Handler Settings (API Name: NebulaTriggerHandlerSettings__c - Controls the behavior of the class SObjectTriggerHandler.cls
+Nebula also leverages custom settings to give you control over how the framework works within your Salesforce environment. There are 4 settings
+1. **Logger Settings (API Name: NebulaLoggerSettings__c)** - Controls the behavior of the class Logger.cls
+2. **Record Type Settings (API Name: NebulaRecordTypesSettings__c)** - Controls the behavior of the class SObjectRecordTypes.cls
+3. **Repository Seetings (API Name: NebulaRepositorySettings__c)** - Controls the behavior of the class SObjectRepository.cls
+4. **Trigger Handler Settings (API Name: NebulaTriggerHandlerSettings__c)** - Controls the behavior of the class SObjectTriggerHandler.cls
 
 ## Versioning
 We use [Semantic Versioning](http://semver.org/) for versioning, like 'v1.0.2' (MAJOR.MINOR.PATCH):
