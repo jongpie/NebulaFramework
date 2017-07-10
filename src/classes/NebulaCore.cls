@@ -4,6 +4,8 @@
 *************************************************************************************************/
 public abstract class NebulaCore implements INebulaCore {
 
+    public enum Module { RECORD_TYPES, REPOSITORY, SETTINGS, TRIGGER_HANDLER }
+
     public static final String TRANSACTION_ID;
     public static String INITIAL_CLASS {get; private set;}
 
@@ -11,8 +13,6 @@ public abstract class NebulaCore implements INebulaCore {
         NebulaCore.TRANSACTION_ID = new UUID().getValue();
         System.debug('NebulaCore.TRANSACTION_ID=' + NebulaCore.TRANSACTION_ID);
     }
-
-    public enum Module { RECORD_TYPES, REPOSITORY, SETTINGS, TRIGGER_HANDLER }
 
     protected final Module currentModule;
 
