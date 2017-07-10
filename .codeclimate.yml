@@ -1,8 +1,11 @@
-
 engines:
     apexmetrics:
-      enabled: true
+        enabled: true
+    fixme:
+        enabled: true
+    markdownlint:
+        enabled: true
 ratings:
     paths:
-      - "**.cls"
-      - "**.trigger"
+        - "**.cls"
+        - "**.trigger"
