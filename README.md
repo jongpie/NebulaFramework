@@ -1,12 +1,7 @@
 # Nebula Framework for Salesforce Apex
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Travis CI](https://travis-ci.org/jongpie/NebulaFramework.svg?branch=master)](https://travis-ci.org/jongpie/NebulaFramework)
 [![Code Climate](https://codeclimate.com/github/jongpie/NebulaFramework.png)](https://codeclimate.com/github/jongpie/NebulaFramework)
-
-| Name     | Build Status                                                                                                                            |
-| -------- | --------                                                                                                                                |
-| master   | [![Travis CI - master](https://travis-ci.org/jongpie/NebulaFramework.svg?branch=master)](https://travis-ci.org/jongpie/NebulaFramework) |
-| dev      | [![Travis CI - dev](https://travis-ci.org/jongpie/NebulaFramework.svg?branch=dev)](https://travis-ci.org/jongpie/NebulaFramework)       |
-
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 Nebula is a backend development framework for Salesforce's Apex language. It aims to...
 1. Provide a foundation for Apex development, with the flexibility to be easily adapted to meet your implementation needs
