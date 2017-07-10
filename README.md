@@ -23,11 +23,11 @@ Nebula focusses on streamlining how you work with SObjects
 The framework also provides several additional classes to make development easier
 1. **SObjectRecordTypes.cls** - Record types are an important feature of the Force.com platform. Unfortunately, Apex has limitations with handling them - record types have a field called DeveloperName that (you guessed it!) should be used by developers... but native Apex describe methods cannot access this field. Nebula tries to overcome these shortcomings by providing cacheable query results of record types so you can access all record type details.
 2. **Logger.cls** - a flexible logging solution for Apex, leveraged by the framework itself
-3. **Environment.cls** - provides critical (although missing from Apex-proper) information about the current Salesforce environment
+3. **Environment.cls** - provides information about the current Salesforce environment
 4. **UUID.cls** - Used to reate a randomly-generated unique ID in your code, using the Universally Unique Identifier (UUID) standard
 
 ## Architecture & Design
-Apex & the Force.com platform provide a great baseline, but we are limited on how we can extend it - the biggest limitation is that SObjects cannot be extended. Nebula uses interfaces, virtual & abstract classes as much as possible so that you can extend & override its logic with your own as needed.
+Nebula uses interfaces, virtual & abstract classes and custom settings (and a few other Salesforce features) to provide a baseline for your own Apex development. The framework can be used as-is: simply extend or implement Nebula's classes and build your business logic on top of it. But if you want to customise how Nebula works, most classes & methods can be overridden with your own logic as needed.
 
 The framework also aims to follow (and encourage) the use of Salesforce best practices - but no solution can fit everyone's needs, so Nebula leverages custom settings to give you control over how the framework works within your Salesforce implementation. There are 4 settings
 1. Logger Settings (API Name: NebulaLoggerSettings__c) - Controls the behavior of the class Logger.cls
