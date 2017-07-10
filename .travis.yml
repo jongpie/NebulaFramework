@@ -9,7 +9,7 @@ node_js:
     - "7"
 install:
     - npm install -g jsforce-metadata-tools
-    - pip install codeclimate-test-reporter
+    - pip install --user codeclimate-test-reporter
 script:
     - jsforce-deploy --dry-run -u $DEPLOYMENT_USERNAME -p $DEPLOYMENT_PASSWORD$DEPLOYMENT_TOKEN -D $TRAVIS_BUILD_DIR/src -l $DEPLOYMENT_LOGIN_URL --rollbackOnError true --testLevel $DEPLOYMENT_TEST_LEVEL --pollTimeout $POLL_TIMEOUT
     - apexcov --username=$DEPLOYMENT_USERNAME --password=$DEPLOYMENT_PASSWORD$DEPLOYMENT_TOKEN
