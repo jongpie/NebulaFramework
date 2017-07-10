@@ -1,7 +1,8 @@
+
 engines:
     apexmetrics:
       enabled: true
 ratings:
     paths:
-      - "src/**.cls"
-      - "src/**.trigger"
+      - "**.cls"
+      - "**.trigger"
