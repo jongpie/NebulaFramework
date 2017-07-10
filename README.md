@@ -14,18 +14,17 @@ Nebula is a backend development framework for Salesforce's Apex language. It aim
 </a>
 
 ## Features
-The core of Nebula focusses on streamlining how you work with SObjects
-1. SObject Repositories (SObjectRepository.cls) - this module is an abstraction layer that bridges the gap between CRUD operations and your business logic, making the implementation of SObjects much easier. It also eliminates the need for writing SOQL & SOSL queries, allowing you to more easily write dynamic queries without
-    * SObjectRepositoryMock.cls can be used in unit tests for test-driven development (TDD) & to drastically reduce the time of your unit tests.
-    * SObjectRepository.cls provides dynamic querying of SObjects
-2. SObject Trigger Handlers (SObjectTriggerHandler.cls) - this module provides a trigger framework. It handles how to implement triggers (and your business logic) into the Force.com platform and provides additional features recursion prevention.
-    * Each SObject that you use in your org should 1 handler class & 1 trigger. For example, if you use the lead object, you will create LeadTriggerHandler.cls & Lead.trigger (which will call LeadTriggerHandler.cls)
+Nebula focusses on streamlining how you work with SObjects
+1. **SObjectRepository.cls** - this module is an abstraction layer that bridges the gap between CRUD operations and your business logic, making the implementation of SObjects much easier
+    * **QueryBuilder.cls** powers Nebula's querying, allowing you to dynamically build reuseable SOQL & SOSL queries without resorting to building query strings
+    * **SObjectRepositoryMock.cls** can be used in unit tests for test-driven development (TDD) & to drastically reduce the time of your unit tests.
+2. **SObjectTriggerHandler.cls** - this module provides a trigger framework. It handles how to implement triggers (and your business logic) into the Force.com platform and provides additional features recursion prevention.
 
 The framework also provides several additional classes to make development easier
-1. SObjectRecordTypes.cls - Record types are an important feature of the Force.com platform. Unfortunately, Apex has limitations with handling them - record types have a field called DeveloperName that (you guessed it!) should be used by developers... but native Apex describe methods cannot access this field. Nebula tries to overcome these shortcomings by providing cacheable query results of record types so you can access all record type details.
-2. Logger.cls - a flexible logging solution for Apex, leveraged by the framework itself
-3. Environment.cls - provides critical (although missing from Apex-proper) information about the current Salesforce environment
-4. UUID.cls - Used to reate a randomly-generated unique ID in your code, using the Universally Unique Identifier (UUID) standard
+1. **SObjectRecordTypes.cls** - Record types are an important feature of the Force.com platform. Unfortunately, Apex has limitations with handling them - record types have a field called DeveloperName that (you guessed it!) should be used by developers... but native Apex describe methods cannot access this field. Nebula tries to overcome these shortcomings by providing cacheable query results of record types so you can access all record type details.
+2. **Logger.cls** - a flexible logging solution for Apex, leveraged by the framework itself
+3. **Environment.cls** - provides critical (although missing from Apex-proper) information about the current Salesforce environment
+4. **UUID.cls** - Used to reate a randomly-generated unique ID in your code, using the Universally Unique Identifier (UUID) standard
 
 ## Architecture & Design
 Apex & the Force.com platform provide a great baseline, but we are limited on how we can extend it - the biggest limitation is that SObjects cannot be extended. Nebula uses interfaces, virtual & abstract classes as much as possible so that you can extend & override its logic with your own as needed.
