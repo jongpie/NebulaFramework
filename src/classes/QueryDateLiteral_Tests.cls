@@ -148,85 +148,85 @@ public class QueryDateLiteral_Tests {
     @isTest
     static void it_should_return_n_days_ago_string() {
         QueryDateLiteral dateLiteral = QueryDateLiteral.N_DAYS_AGO(n_number);
-        System.assertEquals('N_DAYS_AGO: ' + n_number, dateLiteral.getValue());
+        System.assertEquals('N_DAYS_AGO:' + n_number, dateLiteral.getValue());
     }
 
     @isTest
     static void it_should_return_last_n_days_string() {
         QueryDateLiteral dateLiteral = QueryDateLiteral.LAST_N_DAYS(n_number);
-        System.assertEquals('LAST_N_DAYS: ' + n_number, dateLiteral.getValue());
+        System.assertEquals('LAST_N_DAYS:' + n_number, dateLiteral.getValue());
     }
 
     @isTest
     static void it_should_return_last_n_weeks_string() {
         QueryDateLiteral dateLiteral = QueryDateLiteral.LAST_N_WEEKS(n_number);
-        System.assertEquals('LAST_N_WEEKS: ' + n_number, dateLiteral.getValue());
+        System.assertEquals('LAST_N_WEEKS:' + n_number, dateLiteral.getValue());
     }
 
     @isTest
     static void it_should_return_last_n_months_string() {
         QueryDateLiteral dateLiteral = QueryDateLiteral.LAST_N_MONTHS(n_number);
-        System.assertEquals('LAST_N_MONTHS: ' + n_number, dateLiteral.getValue());
+        System.assertEquals('LAST_N_MONTHS:' + n_number, dateLiteral.getValue());
     }
 
     @isTest
     static void it_should_return_last_n_quarters_string() {
         QueryDateLiteral dateLiteral = QueryDateLiteral.LAST_N_QUARTERS(n_number);
-        System.assertEquals('LAST_N_QUARTERS: ' + n_number, dateLiteral.getValue());
+        System.assertEquals('LAST_N_QUARTERS:' + n_number, dateLiteral.getValue());
     }
 
     @isTest
     static void it_should_return_last_n_years_string() {
         QueryDateLiteral dateLiteral = QueryDateLiteral.LAST_N_YEARS(n_number);
-        System.assertEquals('LAST_N_YEARS: ' + n_number, dateLiteral.getValue());
+        System.assertEquals('LAST_N_YEARS:' + n_number, dateLiteral.getValue());
     }
 
     @isTest
     static void it_should_return_last_n_fiscal_years_string() {
         QueryDateLiteral dateLiteral = QueryDateLiteral.LAST_N_FISCAL_YEARS(n_number);
-        System.assertEquals('LAST_N_FISCAL_YEARS: ' + n_number, dateLiteral.getValue());
+        System.assertEquals('LAST_N_FISCAL_YEARS:' + n_number, dateLiteral.getValue());
     }
 
     @isTest
     static void it_should_return_next_n_days_string() {
         QueryDateLiteral dateLiteral = QueryDateLiteral.NEXT_N_DAYS(n_number);
-        System.assertEquals('NEXT_N_DAYS: ' + n_number, dateLiteral.getValue());
+        System.assertEquals('NEXT_N_DAYS:' + n_number, dateLiteral.getValue());
     }
 
     @isTest
     static void it_should_return_next_n_weeks_string() {
         QueryDateLiteral dateLiteral = QueryDateLiteral.NEXT_N_WEEKS(n_number);
-        System.assertEquals('NEXT_N_WEEKS: ' + n_number, dateLiteral.getValue());
+        System.assertEquals('NEXT_N_WEEKS:' + n_number, dateLiteral.getValue());
     }
 
     @isTest
     static void it_should_return_next_n_months_string() {
         QueryDateLiteral dateLiteral = QueryDateLiteral.NEXT_N_MONTHS(n_number);
-        System.assertEquals('NEXT_N_MONTHS: ' + n_number, dateLiteral.getValue());
+        System.assertEquals('NEXT_N_MONTHS:' + n_number, dateLiteral.getValue());
     }
 
     @isTest
     static void it_should_return_next_n_quarters_string() {
         QueryDateLiteral dateLiteral = QueryDateLiteral.NEXT_N_QUARTERS(n_number);
-        System.assertEquals('NEXT_N_QUARTERS: ' + n_number, dateLiteral.getValue());
+        System.assertEquals('NEXT_N_QUARTERS:' + n_number, dateLiteral.getValue());
     }
 
     @isTest
     static void it_should_return_next_n_fiscal_quarters_string() {
         QueryDateLiteral dateLiteral = QueryDateLiteral.NEXT_N_FISCAL_QUARTERS(n_number);
-        System.assertEquals('NEXT_N_FISCAL_QUARTERS: ' + n_number, dateLiteral.getValue());
+        System.assertEquals('NEXT_N_FISCAL_QUARTERS:' + n_number, dateLiteral.getValue());
     }
 
     @isTest
     static void it_should_return_next_n_years_string() {
         QueryDateLiteral dateLiteral = QueryDateLiteral.NEXT_N_YEARS(n_number);
-        System.assertEquals('NEXT_N_YEARS: ' + n_number, dateLiteral.getValue());
+        System.assertEquals('NEXT_N_YEARS:' + n_number, dateLiteral.getValue());
     }
 
     @isTest
     static void it_should_return_next_n_fiscal_years_string() {
         QueryDateLiteral dateLiteral = QueryDateLiteral.NEXT_N_FISCAL_YEARS(n_number);
-        System.assertEquals('NEXT_N_FISCAL_YEARS: ' + n_number, dateLiteral.getValue());
+        System.assertEquals('NEXT_N_FISCAL_YEARS:' + n_number, dateLiteral.getValue());
     }
 
 }
