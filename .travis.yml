@@ -11,7 +11,7 @@ install:
     - npm install -g jsforce-metadata-tools
     - pip install --user codeclimate-test-reporter
 script:
-    - jsforce-deploy --dry-run -u $DEPLOYMENT_USERNAME -p $DEPLOYMENT_PASSWORD$DEPLOYMENT_TOKEN -D $TRAVIS_BUILD_DIR/src -l $DEPLOYMENT_LOGIN_URL --rollbackOnError true --testLevel $DEPLOYMENT_TEST_LEVEL --pollTimeout $POLL_TIMEOUT
+    - jsforce-deploy $DEPLOYMENT_DRY_RUN -u $DEPLOYMENT_USERNAME -p $DEPLOYMENT_PASSWORD$DEPLOYMENT_TOKEN -D $TRAVIS_BUILD_DIR/src -l $DEPLOYMENT_LOGIN_URL --rollbackOnError true --testLevel $DEPLOYMENT_TEST_LEVEL --pollTimeout $POLL_TIMEOUT --pollInterval $POLL_INTERVAL--verbose
     - apexcov --username=$DEPLOYMENT_USERNAME --password=$DEPLOYMENT_PASSWORD$DEPLOYMENT_TOKEN --instance=$DEPLOYMENT_LOGIN_URL
     - cd ./coverage
     - ls
