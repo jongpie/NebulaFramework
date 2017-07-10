@@ -11,10 +11,6 @@ Nebula is a backend development framework for Salesforce's Apex language. It aim
 3. Standardise how your code is written & organised
 4. Overcome some gaps in Apex and the Force.com platform
 
-<a href="https://githubsfdeploy.herokuapp.com?owner=jongpie&repo=NebulaFramework">
-     <img alt="Deploy to Salesforce"src="https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/src/main/webapp/resources/img/deploy.png">
-</a>
-
 ## Features
 Nebula focusses on streamlining how you work with SObjects
 1. **SObjectRepository.cls** - this module handles all DML actions & querying needs for an SObject, making the implementation of SObjects much easier & faster
