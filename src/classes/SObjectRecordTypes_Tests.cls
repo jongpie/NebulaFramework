@@ -46,7 +46,7 @@ private class SObjectRecordTypes_Tests {
         List<RecordType> expectedRecordTypeList = [SELECT Id, DeveloperName, NamespacePrefix FROM RecordType WHERE SObjectType = 'Lead' AND NamespacePrefix = null];
 
         NebulaRecordTypesSettings__c recordTypesSettings = NebulaRecordTypesSettings__c.getInstance();
-        recordTypesSettings.ExcludeManagedRecordTypes__c = true;
+        recordTypesSettings.IncludeManagedRecordTypes__c = false;
         upsert recordTypesSettings;
 
         Test.startTest();

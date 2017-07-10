@@ -4,12 +4,12 @@
     <description>Controls the behavior of the class SObjectRecordTypes.cls</description>
     <enableFeeds>false</enableFeeds>
     <fields>
-        <fullName>ExcludeManagedRecordTypes__c</fullName>
-        <defaultValue>false</defaultValue>
-        <description>Determines if managed record types are excluded from queries. If you do not use any managed record types, then you should enabled this.</description>
+        <fullName>IncludeManagedRecordTypes__c</fullName>
+        <defaultValue>true</defaultValue>
+        <description>Determines if managed record types are included in queries. If you do not use any managed record types, then you can disable this.</description>
         <externalId>false</externalId>
-        <inlineHelpText>Determines if managed record types are excluded from queries. If you do not use any managed record types, then you should enabled this.</inlineHelpText>
-        <label>Exclude Managed Record Types</label>
+        <inlineHelpText>Determines if managed record types are included in queries. If you do not use any managed record types, then you can disable this.</inlineHelpText>
+        <label>Include Managed Record Types</label>
         <trackTrending>false</trackTrending>
         <type>Checkbox</type>
     </fields>

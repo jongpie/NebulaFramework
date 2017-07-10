@@ -44,7 +44,7 @@ public abstract class SObjectRecordTypes extends NebulaCore {
             Logger.addEntry(this, 'this.sobjectName=' + this.sobjectName);
         }
 
-        if(NebulaSettings.RecordTypesSettings.ExcludeManagedRecordTypes__c) {
+        if(!NebulaSettings.RecordTypesSettings.IncludeManagedRecordTypes__c) {
             query.filterBy(new QueryFilter(Schema.RecordType.NamespacePrefix, QueryOperator.EQUALS, null));
         }
 
