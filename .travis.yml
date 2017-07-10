@@ -15,4 +15,5 @@ script:
     - apexcov --username=$DEPLOYMENT_USERNAME --password=$DEPLOYMENT_PASSWORD$DEPLOYMENT_TOKEN --instance=$DEPLOYMENT_LOGIN_URL
     - cd ./coverage
     - ls
+    - cat lcov.info
     - codeclimate-test-reporter --file lcov.info
