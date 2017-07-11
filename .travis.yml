@@ -3,17 +3,9 @@ env:
     - GOPATH=$HOME/go PATH=$GOPATH/bin:$PATH
 before_script:
     - npm install -g coveralls
-    - go get github.com/jpmonette/apexcov
-
 node_js:
     - "7"
 install:
     - npm install -g jsforce-metadata-tools
-    - pip install --user codeclimate-test-reporter
 script:
     - jsforce-deploy $DEPLOYMENT_DRY_RUN -u $DEPLOYMENT_USERNAME -p $DEPLOYMENT_PASSWORD$DEPLOYMENT_TOKEN -D $TRAVIS_BUILD_DIR/src -l $DEPLOYMENT_LOGIN_URL --rollbackOnError true --testLevel $DEPLOYMENT_TEST_LEVEL --pollTimeout $POLL_TIMEOUT --pollInterval $POLL_INTERVAL--verbose
-    - apexcov --username=$DEPLOYMENT_USERNAME --password=$DEPLOYMENT_PASSWORD$DEPLOYMENT_TOKEN --instance=$DEPLOYMENT_LOGIN_URL
-    - cd ./coverage
-    - ls
-    - cat lcov.info
-    - codeclimate-test-reporter --file lcov.info

@@ -3,7 +3,6 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-d742f4.svg)](https://opensource.org/licenses/MIT)
 [![Travis CI](https://img.shields.io/travis/jongpie/NebulaFramework/master.svg)](https://travis-ci.org/jongpie/NebulaFramework)
 [![Code Climate](https://img.shields.io/codeclimate/github/jongpie/NebulaFramework.svg)](https://codeclimate.com/github/jongpie/NebulaFramework)
-[![Coveralls](https://img.shields.io/coveralls/jongpie/NebulaFramework/master.svg)](https://coveralls.io/github/jongpie/NebulaFramework)
 
 Nebula is a backend development framework for Salesforce's Apex language. It aims to...
 1. Provide a foundation for Apex development, with the flexibility to be easily adapted to meet your implementation needs
@@ -19,10 +18,10 @@ Nebula focusses on streamlining how you work with SObjects
 2. **SObjectTriggerHandler.cls** - this module provides a trigger framework to handle all trigger contexts provided by Salesforce and provides additional features, like recursion prevention.
 
 The framework also provides several additional classes to make development easier
-1. **SObjectRecordTypes.cls** - Record types are an important feature of the Force.com platform. Unfortunately, Apex has limitations with handling them - record types have a field called DeveloperName that (you guessed it!) should be used by developers... but native Apex describe methods cannot access this field. Nebula tries to overcome these shortcomings by providing cacheable query results of record types so you can access all record type details.
+1. **SObjectRecordTypes.cls** - record types are an important feature of the Force.com platform. Unfortunately, Apex has limitations with handling them - record types have a field called DeveloperName that (you guessed it!) should be used by developers... but native Apex describe methods cannot access this field. Nebula tries to overcome this by providing cacheable query results of record types so you can access the DeveloperName.
 2. **Logger.cls** - a flexible logging solution for Apex, leveraged by the framework itself
 3. **Environment.cls** - provides information about the current Salesforce environment
-4. **UUID.cls** - Used to reate a randomly-generated unique ID in your code, using the Universally Unique Identifier (UUID) standard
+4. **UUID.cls** - used to reate a randomly-generated unique ID in your code, using the Universally Unique Identifier (UUID) standard
 
 ## Usage
 Nebula uses interfaces, virtual & abstract classes and some Salesforce features (like custom settings) to provide a baseline for your own Apex development. You can deploy the latest version of Nebula to your org and build your implementation on top of it. If you want to customise how Nebula works, most classes & methods can be overridden with your own logic. Ideally, you should minimise any code changes to Nebula's classes so that you can easily upgrade in the future when new versions of Nebula are released.
