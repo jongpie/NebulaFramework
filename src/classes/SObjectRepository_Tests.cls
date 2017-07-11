@@ -150,8 +150,7 @@ private class SObjectRepository_Tests {
     @isTest
     static void it_should_return_for_ids_in_set_and_query_filters() {
         Map<Id, Account> expectedAccountMap = new Map<Id, Account>([SELECT Id FROM Account]);
-        List<Schema.SObjectField> accountFields = new List<Schema.SObjectField>{Schema.Account.Id, Schema.Account.Name};
-        ISObjectRepository repo = new SObjectRepository(Schema.Account.SObjectType, accountFields);
+        ISObjectRepository repo = new SObjectRepository_Tests.AccountRepository();
 
         Test.startTest();
         QueryFilter queryFilter = new QueryFilter(Schema.Account.Name, QueryOperator.EQUALS, 'My Test Company');
@@ -168,7 +167,7 @@ private class SObjectRepository_Tests {
     static void it_should_return_by_field_for_ids_in_list() {
         Map<Id, Account> expectedAccountMap = new Map<Id, Account>([SELECT Id FROM Account]);
         List<Schema.SObjectField> accountFields = new List<Schema.SObjectField>{Schema.Account.Id, Schema.Account.Name};
-        ISObjectRepository repo = new SObjectRepository(Schema.Account.SObjectType, accountFields);
+        ISObjectRepository repo = new SObjectRepository_Tests.AccountRepository();
 
         Test.startTest();
         QueryFilter queryFilter = new QueryFilter(Schema.Account.Name, QueryOperator.EQUALS, 'My Test Company');
