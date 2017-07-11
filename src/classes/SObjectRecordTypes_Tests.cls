@@ -18,9 +18,9 @@ private class SObjectRecordTypes_Tests {
 
         Test.startTest();
 
-        System.assertEquals(expectedRecordTypeList.size(), new SObjectRecordTypes_Tests.LeadRecordTypes().ALL_RECORD_TYPES_BY_ID.size());
+        System.assertEquals(expectedRecordTypeList.size(), new SObjectRecordTypes_Tests.LeadRecordTypes().getAllById().size());
         for(RecordType recordType : expectedRecordTypeList) {
-            System.assert(new SObjectRecordTypes_Tests.LeadRecordTypes().ALL_RECORD_TYPES_BY_ID.containsKey(recordType.Id));
+            System.assert(new SObjectRecordTypes_Tests.LeadRecordTypes().getAllById().containsKey(recordType.Id));
         }
 
         Test.stopTest();
@@ -32,9 +32,9 @@ private class SObjectRecordTypes_Tests {
 
         Test.startTest();
 
-        System.assertEquals(expectedRecordTypeList.size(), new SObjectRecordTypes_Tests.LeadRecordTypes().ALL_RECORD_TYPES_BY_DEVELOPER_NAME.size());
+        System.assertEquals(expectedRecordTypeList.size(), new SObjectRecordTypes_Tests.LeadRecordTypes().getAllByDeveloperName().size());
         for(RecordType recordType : expectedRecordTypeList) {
-            System.assert(new SObjectRecordTypes_Tests.LeadRecordTypes().ALL_RECORD_TYPES_BY_DEVELOPER_NAME.containsKey(recordType.DeveloperName));
+            System.assert(new SObjectRecordTypes_Tests.LeadRecordTypes().getAllByDeveloperName().containsKey(recordType.DeveloperName));
         }
 
         Test.stopTest();
@@ -51,11 +51,11 @@ private class SObjectRecordTypes_Tests {
 
         Test.startTest();
 
-        System.assertEquals(expectedRecordTypeList.size(), new SObjectRecordTypes_Tests.LeadRecordTypes().ALL_RECORD_TYPES_BY_ID.size());
+        System.assertEquals(expectedRecordTypeList.size(), new SObjectRecordTypes_Tests.LeadRecordTypes().getAllById().size());
         for(RecordType recordType : expectedRecordTypeList) {
-            System.assert(new SObjectRecordTypes_Tests.LeadRecordTypes().ALL_RECORD_TYPES_BY_ID.containsKey(recordType.Id));
+            System.assert(new SObjectRecordTypes_Tests.LeadRecordTypes().getAllById().containsKey(recordType.Id));
         }
-        for(RecordType recordType : new SObjectRecordTypes_Tests.LeadRecordTypes().ALL_RECORD_TYPES_BY_ID.values()) {
+        for(RecordType recordType : new SObjectRecordTypes_Tests.LeadRecordTypes().getAllById().values()) {
             System.assertEquals(null, recordType.NamespacePrefix);
         }
 
@@ -72,7 +72,7 @@ private class SObjectRecordTypes_Tests {
 
         System.assertEquals(0, Limits.getQueries());
         for(Integer i = 0; i < 10; i++) {
-            System.debug(new SObjectRecordTypes_Tests.LeadRecordTypes().ALL_RECORD_TYPES_BY_ID);
+            System.debug(new SObjectRecordTypes_Tests.LeadRecordTypes().getAllById());
         }
 
         System.assertEquals(1, Limits.getQueries());
@@ -90,7 +90,7 @@ private class SObjectRecordTypes_Tests {
 
         System.assertEquals(0, Limits.getQueries());
         for(Integer i = 0; i < 10; i++) {
-            System.debug(new SObjectRecordTypes_Tests.LeadRecordTypes().ALL_RECORD_TYPES_BY_ID);
+            System.debug(new SObjectRecordTypes_Tests.LeadRecordTypes().getAllById());
         }
 
         System.assertEquals(1, Limits.getQueries());
