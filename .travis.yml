@@ -1,8 +1,4 @@
 language: node_js
-env:
-    - GOPATH=$HOME/go PATH=$GOPATH/bin:$PATH
-before_script:
-    - npm install -g coveralls
 node_js:
     - "7"
 install:
