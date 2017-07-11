@@ -4,7 +4,7 @@
 [![Travis CI](https://img.shields.io/travis/jongpie/NebulaFramework/master.svg)](https://travis-ci.org/jongpie/NebulaFramework)
 [![Code Climate](https://img.shields.io/codeclimate/github/jongpie/NebulaFramework.svg)](https://codeclimate.com/github/jongpie/NebulaFramework)
 
-Nebula is a backend development framework for Salesforce's Apex language. It aims to...
+Nebula is a development framework for Salesforce's Apex language on the Force.com platform. It aims to...
 1. Provide a foundation for Apex development, with the flexibility to be easily adapted to meet your implementation needs
 2. Promote the design of scalable, bulkified code
 3. Standardise how your code is written & organised
