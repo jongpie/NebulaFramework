@@ -41,11 +41,9 @@ public abstract class SObjectRecordTypes extends NebulaCore implements ISObjectR
         if(cachedRecordTypesBySObjectMap.containsKey(this.sobjectName)) return;
 
         Schema.SObjectType recordTypeSObjectType = Schema.getGlobalDescribe().get('RecordType');
-        Schema.FieldSet nullFieldSet;
-        List<Schema.SObjectField> nullSObjectFieldList;
 
         // If we don't have the SObject cached, then we need to query
-        QueryBuilder query = new QueryBuilder(recordTypeSObjectType, nullFieldSet, nullSObjectFieldList);
+        QueryBuilder query = new QueryBuilder(recordTypeSObjectType);
 
         if(NebulaSettings.RecordTypesSettings.LazyLoad__c) {
             query.filterBy(new QueryFilter(Schema.RecordType.SObjectType, QueryOperator.EQUALS, this.sobjectName));
