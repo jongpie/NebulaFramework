@@ -35,7 +35,7 @@ public without sharing class UUID {
     }
 
     private String formatValue(String unformattedValue) {
-        // Remove any alpha-numeric characters. Should be unnecessary, but better to be safe than sorry.
+        // Remove any non-alphanumeric characters. Should be unnecessary, but better to be safe than sorry.
         unformattedValue = unformattedValue.replaceAll('[^a-zA-Z0-9]', '');
 
         String formattedValue = unformattedValue.substring(0, 8)
