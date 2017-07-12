@@ -1,6 +1,9 @@
 engines:
     apexmetrics:
         enabled: true
+        config:
+            file_extensions: "php"
+            rulesets: "./tools/codeclimate/apex/complexity.xml,./tools/codeclimate/apex/performance.xml,./tools/codeclimate/apex/style.xml,./tools/codeclimate/apex/apexunit.xml,./tools/codeclimate/apex/security.xml,./tools/codeclimate/apex/braces.xml"
     fixme:
         enabled: true
     markdownlint:
