@@ -4,6 +4,8 @@
 *************************************************************************************************/
 public without sharing class Environment {
 
+    private Environment() {}
+
     public static String BaseUrl {
         get {return URL.getSalesforceBaseUrl().toExternalForm();}
         private set;
