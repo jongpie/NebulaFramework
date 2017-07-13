@@ -27,13 +27,19 @@ The framework also provides several additional classes to make development easie
 Nebula uses interfaces, virtual & abstract classes and some Salesforce features (like custom settings) to provide a baseline for your own Apex development. You can deploy the latest version of Nebula to your org and build your implementation on top of it. If you want to customise how Nebula works, most classes & methods can be overridden with your own logic. Ideally, you should minimise any code changes to Nebula's classes so that you can easily upgrade in the future when new versions of Nebula are released.
 
 Nebula also leverages custom settings to give you control over how the framework works within your Salesforce environment. There are 4 settings
-1. **Logger Settings (API Name: NebulaLoggerSettings__c)** - Controls the behavior of the class Logger.cls
-2. **Record Type Settings (API Name: NebulaRecordTypesSettings__c)** - Controls the behavior of the class SObjectRecordTypes.cls
-3. **Repository Seetings (API Name: NebulaRepositorySettings__c)** - Controls the behavior of the class SObjectRepository.cls
-4. **Trigger Handler Settings (API Name: NebulaTriggerHandlerSettings__c)** - Controls the behavior of the class SObjectTriggerHandler.cls
+1. **Logger Settings (API Name: NebulaLoggerSettings__c)**
+    * Enable or disable logging
+2. **Record Type Settings (API Name: NebulaRecordTypesSettings__c)**
+    * Choose how record types are cached
+    * Select if you want to include managed record types
+3. **Repository Settings (API Name: NebulaRepositorySettings__c)**
+    * Automatically include common fields in your queries, like record ID, audit fields (CreatedById, CreatedDate, etc), Name field (or Subject field, where applicable) and more
+4. **Trigger Handler Settings (API Name: NebulaTriggerHandlerSettings__c)**   
+    * Easily disable all triggers & handlers (great for data migration and other admin tasks),
+    * Enable or disable recursion prevention
 
 ## Versioning
-We use [Semantic Versioning](http://semver.org/) for versioning, like 'v1.0.2' (MAJOR.MINOR.PATCH):
+Releases are versioned using [Semantic Versioning](http://semver.org/) in the format 'v1.0.2' (MAJOR.MINOR.PATCH):
 
 - MAJOR version when incompatible API changes are made
 - MINOR version new functionality is added in a backwards-compatible manner
