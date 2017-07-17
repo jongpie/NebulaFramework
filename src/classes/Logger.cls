@@ -4,6 +4,8 @@
 *************************************************************************************************/
 public without sharing class Logger {
 
+    private Logger() {}
+
     private static Id logId;
     private static Attachment logAttachment;
     @testVisible private static List<Logger.Message> logMessages;

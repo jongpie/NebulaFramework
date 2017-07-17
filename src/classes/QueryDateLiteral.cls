@@ -4,18 +4,6 @@
 *************************************************************************************************/
 public without sharing class QueryDateLiteral {
 
-    private final static String LAST_N = 'LAST_N_{0}: {1}';
-    private final static String NEXT_N = 'NEXT_N_{0}: {1}';
-    private final static String N_DAYS_AGO = 'N_DAYS_AGO: {0}';
-
-    private final static String DAYS            = 'DAYS';
-    private final static String WEEKS           = 'WEEKS';
-    private final static String MONTHS          = 'MONTHS';
-    private final static String QUARTERS        = 'QUARTERS';
-    private final static String FISCAL_QUARTERS = 'FISCAL_QUARTERS';
-    private final static String YEARS           = 'YEARS';
-    private final static String FISCAL_YEARS    = 'FISCAL_YEARS';
-
     private String value;
 
     public String getValue() {
@@ -26,167 +14,103 @@ public without sharing class QueryDateLiteral {
         this.value = value;
     }
 
-    //Actual constant literals
-    public static QueryDateLiteral YESTERDAY {
-        get { return new QueryDateLiteral('YESTERDAY'); }
-    }
+    // Actual constant literals
+    public static final QueryDateLiteral YESTERDAY           = new QueryDateLiteral('YESTERDAY');
+    public static final QueryDateLiteral TODAY               = new QueryDateLiteral('TODAY');
+    public static final QueryDateLiteral TOMORROW            = new QueryDateLiteral('TOMORROW');
+    public static final QueryDateLiteral LAST_WEEK           = new QueryDateLiteral('LAST_WEEK');
+    public static final QueryDateLiteral THIS_WEEK           = new QueryDateLiteral('THIS_WEEK');
+    public static final QueryDateLiteral NEXT_WEEK           = new QueryDateLiteral('NEXT_WEEK');
+    public static final QueryDateLiteral LAST_MONTH          = new QueryDateLiteral('LAST_MONTH');
+    public static final QueryDateLiteral THIS_MONTH          = new QueryDateLiteral('THIS_MONTH');
+    public static final QueryDateLiteral NEXT_MONTH          = new QueryDateLiteral('NEXT_MONTH');
+    public static final QueryDateLiteral LAST_90_DAYS        = new QueryDateLiteral('LAST_90_DAYS');
+    public static final QueryDateLiteral NEXT_90_DAYS        = new QueryDateLiteral('NEXT_90_DAYS');
+    public static final QueryDateLiteral LAST_QUARTER        = new QueryDateLiteral('LAST_QUARTER');
+    public static final QueryDateLiteral THIS_QUARTER        = new QueryDateLiteral('THIS_QUARTER');
+    public static final QueryDateLiteral NEXT_QUARTER        = new QueryDateLiteral('NEXT_QUARTER');
+    public static final QueryDateLiteral LAST_FISCAL_QUARTER = new QueryDateLiteral('LAST_FISCAL_QUARTER');
+    public static final QueryDateLiteral THIS_FISCAL_QUARTER = new QueryDateLiteral('THIS_FISCAL_QUARTER');
+    public static final QueryDateLiteral NEXT_FISCAL_QUARTER = new QueryDateLiteral('NEXT_FISCAL_QUARTER');
+    public static final QueryDateLiteral LAST_YEAR           = new QueryDateLiteral('LAST_YEAR');
+    public static final QueryDateLiteral THIS_YEAR           = new QueryDateLiteral('THIS_YEAR');
+    public static final QueryDateLiteral NEXT_YEAR           = new QueryDateLiteral('NEXT_YEAR');
+    public static final QueryDateLiteral LAST_FISCAL_YEAR    = new QueryDateLiteral('LAST_FISCAL_YEAR');
+    public static final QueryDateLiteral THIS_FISCAL_YEAR    = new QueryDateLiteral('THIS_FISCAL_YEAR');
+    public static final QueryDateLiteral NEXT_FISCAL_YEAR    = new QueryDateLiteral('NEXT_FISCAL_YEAR');
 
-    public static QueryDateLiteral TODAY {
-        get { return new QueryDateLiteral('TODAY'); }
-    }
+    private static final String LAST_N     = 'LAST_N_{0}:{1}';
+    private static final String NEXT_N     = 'NEXT_N_{0}:{1}';
+    private static final String N_DAYS_AGO = 'N_DAYS_AGO:{0}';
 
-    public static QueryDateLiteral TOMORROW {
-        get { return new QueryDateLiteral('TOMORROW'); }
-    }
+    private static final String DAYS            = 'DAYS';
+    private static final String WEEKS           = 'WEEKS';
+    private static final String MONTHS          = 'MONTHS';
+    private static final String QUARTERS        = 'QUARTERS';
+    private static final String YEARS           = 'YEARS';
+    private static final String FISCAL_QUARTERS = 'FISCAL_QUARTERS';
+    private static final String FISCAL_YEARS    = 'FISCAL_YEARS';
 
-    public static QueryDateLiteral LAST_WEEK {
-        get { return new QueryDateLiteral('LAST_WEEK'); }
-    }
-
-    public static QueryDateLiteral THIS_WEEK {
-        get { return new QueryDateLiteral('THIS_WEEK'); }
-    }
-
-    public static QueryDateLiteral NEXT_WEEK {
-        get { return new QueryDateLiteral('NEXT_WEEK'); }
-    }
-
-    public static QueryDateLiteral LAST_MONTH {
-        get { return new QueryDateLiteral('LAST_MONTH'); }
-    }
-
-    public static QueryDateLiteral THIS_MONTH {
-         get { return new QueryDateLiteral('THIS_MONTH'); }
-    }
-
-    public static QueryDateLiteral NEXT_MONTH {
-       get { return new QueryDateLiteral('NEXT_MONTH'); }
-    }
-
-    public static QueryDateLiteral LAST_90_DAYS {
-        get { return new QueryDateLiteral('LAST_90_DAYS'); }
-    }
-
-    public static QueryDateLiteral NEXT_90_DAYS {
-       get { return new QueryDateLiteral('NEXT_90_DAYS'); }
-    }
-
-    public static QueryDateLiteral THIS_QUARTER {
-        get { return new QueryDateLiteral('THIS_QUARTER'); }
-    }
-
-    public static QueryDateLiteral THIS_FISCAL_QUARTER {
-        get { return new QueryDateLiteral('THIS_FISCAL_QUARTER'); }
-    }
-
-    public static QueryDateLiteral LAST_QUARTER {
-        get { return new QueryDateLiteral('LAST_QUARTER'); }
-    }
-
-    public static QueryDateLiteral LAST_FISCAL_QUARTER {
-        get { return new QueryDateLiteral('LAST_FISCAL_QUARTER'); }
-    }
-
-    public static QueryDateLiteral NEXT_QUARTER {
-        get { return new QueryDateLiteral('NEXT_QUARTER'); }
-    }
-
-    public static QueryDateLiteral NEXT_FISCAL_QUARTER {
-       get { return new QueryDateLiteral('NEXT_FISCAL_QUARTER'); }
-    }
-
-    public static QueryDateLiteral THIS_YEAR {
-       get { return new QueryDateLiteral('THIS_YEAR'); }
-    }
-
-    public static QueryDateLiteral THIS_FISCAL_YEAR {
-        get { return new QueryDateLiteral('THIS_FISCAL_YEAR'); }
-    }
-
-    public static QueryDateLiteral LAST_YEAR {
-        get { return new QueryDateLiteral('LAST_YEAR'); }
-    }
-
-    public static QueryDateLiteral LAST_FISCAL_YEAR {
-       get { return new QueryDateLiteral('LAST_FISCAL_YEAR'); }
-    }
-
-    public static QueryDateLiteral NEXT_YEAR {
-        get { return new QueryDateLiteral('NEXT_YEAR'); }
-    }
-
-    public static QueryDateLiteral NEXT_FISCAL_YEAR {
-        get { return new QueryDateLiteral('NEXT_FISCAL_YEAR'); }
-    }
-
-    ////Buildable literals
-     public static QueryDateLiteral N_DAYS_AGO(Integer num) {
+    // Buildable literals
+    public static QueryDateLiteral N_DAYS_AGO(Integer num) {
         String parsedValue = String.format(N_DAYS_AGO, new List<String>{String.valueOf(num)});
         return new QueryDateLiteral(parsedValue);
     }
 
-     public static QueryDateLiteral LAST_N_DAYS(Integer num) {
-        String parsedValue = String.format(LAST_N, new List<String>{DAYS,String.valueOf(num)});
-        return new QueryDateLiteral(parsedValue);
+    public static QueryDateLiteral LAST_N_DAYS(Integer num) {
+        return buildQueryDateLiteral(LAST_N, DAYS, num);
     }
 
-     public static QueryDateLiteral LAST_N_WEEKS(Integer num) {
-        String parsedValue = String.format(LAST_N, new List<String>{WEEKS, String.valueof(num)});
-        return new QueryDateLiteral(parsedValue);
+    public static QueryDateLiteral LAST_N_WEEKS(Integer num) {
+        return buildQueryDateLiteral(LAST_N, WEEKS, num);
     }
 
-     public static QueryDateLiteral LAST_N_MONTHS(Integer num) {
-        String parsedValue = String.format(LAST_N, new List<String>{MONTHS, String.valueOf(num)});
-        return new QueryDateLiteral(parsedValue);
+    public static QueryDateLiteral LAST_N_MONTHS(Integer num) {
+        return buildQueryDateLiteral(LAST_N, MONTHS, num);
     }
 
-     public static QueryDateLiteral LAST_N_QUARTERS(Integer num) {
-        String parsedValue = String.format(LAST_N, new List<String>{QUARTERS, String.valueOf(num)});
-        return new QueryDateLiteral(parsedValue);
+    public static QueryDateLiteral LAST_N_QUARTERS(Integer num) {
+        return buildQueryDateLiteral(LAST_N, QUARTERS, num);
     }
 
-     public static QueryDateLiteral LAST_N_YEARS(Integer num) {
-        String parsedValue = String.format(LAST_N, new List<String>{YEARS, String.valueOf(num)});
-        return new QueryDateLiteral(parsedValue);
+    public static QueryDateLiteral LAST_N_YEARS(Integer num) {
+        return buildQueryDateLiteral(LAST_N, YEARS, num);
     }
 
-     public static QueryDateLiteral LAST_N_FISCAL_YEARS(Integer num) {
-        String parsedValue = String.format(LAST_N, new List<String>{FISCAL_YEARS, String.valueOf(num)});
-        return new QueryDateLiteral(parsedValue);
+    public static QueryDateLiteral LAST_N_FISCAL_YEARS(Integer num) {
+        return buildQueryDateLiteral(LAST_N, FISCAL_YEARS, num);
     }
 
-     public static QueryDateLiteral NEXT_N_DAYS(Integer num) {
-        String parsedValue = String.format(NEXT_N, new List<String>{DAYS, String.valueOf(num)});
-        return new QueryDateLiteral(parsedValue);
+    public static QueryDateLiteral NEXT_N_DAYS(Integer num) {
+        return buildQueryDateLiteral(NEXT_N, DAYS, num);
     }
 
-     public static QueryDateLiteral NEXT_N_WEEKS(Integer num) {
-        String parsedValue = String.format(NEXT_N, new List<String>{WEEKS, String.valueOf(num)});
-        return new QueryDateLiteral(parsedValue);
+    public static QueryDateLiteral NEXT_N_WEEKS(Integer num) {
+        return buildQueryDateLiteral(NEXT_N, WEEKS, num);
     }
 
-     public static QueryDateLiteral NEXT_N_MONTHS(Integer num) {
-        String parsedValue = String.format(NEXT_N, new List<String>{MONTHS, String.valueOf(num)});
-        return new QueryDateLiteral(parsedValue);
+    public static QueryDateLiteral NEXT_N_MONTHS(Integer num) {
+        return buildQueryDateLiteral(NEXT_N, MONTHS, num);
     }
 
-     public static QueryDateLiteral NEXT_N_QUARTERS(Integer num) {
-        String parsedValue = String.format(NEXT_N, new List<String>{QUARTERS, String.valueOf(num)});
-        return new QueryDateLiteral(parsedValue);
+    public static QueryDateLiteral NEXT_N_QUARTERS(Integer num) {
+        return buildQueryDateLiteral(NEXT_N, QUARTERS, num);
     }
 
-     public static QueryDateLiteral NEXT_N_FISCAL_QUARTERS(Integer num) {
-        String parsedValue = String.format(NEXT_N, new List<String>{FISCAL_QUARTERS, String.valueOf(num)});
-        return new QueryDateLiteral(parsedValue);
+    public static QueryDateLiteral NEXT_N_FISCAL_QUARTERS(Integer num) {
+        return buildQueryDateLiteral(NEXT_N, FISCAL_QUARTERS, num);
     }
 
-     public static QueryDateLiteral NEXT_N_YEARS(Integer num) {
-        String parsedValue = String.format(NEXT_N, new List<String>{YEARS, String.valueOf(num)});
-        return new QueryDateLiteral(parsedValue);
+    public static QueryDateLiteral NEXT_N_YEARS(Integer num) {
+        return buildQueryDateLiteral(NEXT_N, YEARS, num);
     }
 
-     public static QueryDateLiteral NEXT_N_FISCAL_YEARS(Integer num) {
-        String parsedValue = String.format(NEXT_N, new List<String>{FISCAL_YEARS, String.valueOf(num)});
+    public static QueryDateLiteral NEXT_N_FISCAL_YEARS(Integer num) {
+        return buildQueryDateLiteral(NEXT_N, FISCAL_YEARS, num);
+    }
+
+    private static QueryDateLiteral buildQueryDateLiteral(String base, String period, Integer num) {
+        String parsedValue = String.format(base, new List<String>{period, String.valueOf(num)});
         return new QueryDateLiteral(parsedValue);
     }
 

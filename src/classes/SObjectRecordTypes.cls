@@ -2,12 +2,9 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
-public abstract class SObjectRecordTypes extends NebulaCore {
+public abstract class SObjectRecordTypes extends NebulaCore implements ISObjectRecordTypes {
 
     private static Map<String, List<RecordType>> cachedRecordTypesBySObjectMap = new Map<String, List<RecordType>>();
-
-    public final Map<Id, RecordType> ALL_RECORD_TYPES_BY_ID;
-    public final Map<String, RecordType> ALL_RECORD_TYPES_BY_DEVELOPER_NAME;
 
     private Schema.SObjectType sobjectType;
     private String sobjectName;
@@ -21,9 +18,21 @@ public abstract class SObjectRecordTypes extends NebulaCore {
         Logger.addEntry(this, 'Getting record types for ' + this.sobjectName);
 
         this.populateCache();
+    }
 
-        this.ALL_RECORD_TYPES_BY_ID             = this.getAllRecordTypesById();
-        this.ALL_RECORD_TYPES_BY_DEVELOPER_NAME = this.getAllRecordTypesByDeveloperName();
+    public Map<Id, RecordType> getAllById() {
+        return new Map<Id, RecordType>(cachedRecordTypesBySObjectMap.get(this.sobjectName));
+    }
+
+    public Map<String, RecordType> getAllByDeveloperName() {
+        Map<String, RecordType> allRecordTypesByDeveloperName = new Map<String, RecordType>();
+        for(RecordType recordType : this.getAllById().values()) {
+            if(recordType.SObjectType != this.sobjectName) continue;
+
+            allRecordTypesByDeveloperName.put(recordType.DeveloperName, recordType);
+        }
+
+        return allRecordTypesByDeveloperName;
     }
 
     // TODO clean up all this mess for cache, getRecordTypes, getAllRecordTypesByDeveloperName, etc
@@ -32,11 +41,9 @@ public abstract class SObjectRecordTypes extends NebulaCore {
         if(cachedRecordTypesBySObjectMap.containsKey(this.sobjectName)) return;
 
         Schema.SObjectType recordTypeSObjectType = Schema.getGlobalDescribe().get('RecordType');
-        Schema.FieldSet nullFieldSet;
-        List<Schema.SObjectField> nullSObjectFieldList;
 
         // If we don't have the SObject cached, then we need to query
-        QueryBuilder query = new QueryBuilder(recordTypeSObjectType, nullFieldSet, nullSObjectFieldList);
+        QueryBuilder query = new QueryBuilder(recordTypeSObjectType);
 
         if(NebulaSettings.RecordTypesSettings.LazyLoad__c) {
             query.filterBy(new QueryFilter(Schema.RecordType.SObjectType, QueryOperator.EQUALS, this.sobjectName));
@@ -44,7 +51,7 @@ public abstract class SObjectRecordTypes extends NebulaCore {
             Logger.addEntry(this, 'this.sobjectName=' + this.sobjectName);
         }
 
-        if(NebulaSettings.RecordTypesSettings.ExcludeManagedRecordTypes__c) {
+        if(!NebulaSettings.RecordTypesSettings.IncludeManagedRecordTypes__c) {
             query.filterBy(new QueryFilter(Schema.RecordType.NamespacePrefix, QueryOperator.EQUALS, null));
         }
 
@@ -57,21 +64,6 @@ public abstract class SObjectRecordTypes extends NebulaCore {
         for(RecordType recordType : recordTypeList) cachedRecordTypesBySObjectMap.get(this.sobjectName).add(recordType);
 
         Logger.addEntry(this, 'cachedRecordTypesBySObjectMap=' + cachedRecordTypesBySObjectMap);
-    }
-
-    private Map<Id, RecordType> getAllRecordTypesById() {
-        return new Map<Id, RecordType>(cachedRecordTypesBySObjectMap.get(this.sobjectName));
-    }
-
-    private Map<String, RecordType> getAllRecordTypesByDeveloperName() {
-        Map<String, RecordType> allRecordTypesByDeveloperName = new Map<String, RecordType>();
-        for(RecordType recordType : this.getAllRecordTypesById().values()) {
-            if(recordType.SObjectType != this.sobjectName) continue;
-
-            allRecordTypesByDeveloperName.put(recordType.DeveloperName, recordType);
-        }
-
-        return allRecordTypesByDeveloperName;
     }
 
 }
