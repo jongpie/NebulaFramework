@@ -9,8 +9,8 @@ private class CollectionUtils_Tests {
     static void it_should_say_that_a_list_is_a_list_and_a_collection() {
         List<Integer> collectionToCheck = new List<Integer>{1, 2, 3};
 
-        System.assertEquals(true,CollectionUtils.isCollection(collectionToCheck));
-        System.assertEquals(true,CollectionUtils.isList(collectionToCheck));
+        System.assertEquals(true, CollectionUtils.isCollection(collectionToCheck));
+        System.assertEquals(true, CollectionUtils.isList(collectionToCheck));
 
         System.assertEquals(false, CollectionUtils.isSet(collectionToCheck));
         System.assertEquals(false, CollectionUtils.isMap(collectionToCheck));
@@ -20,8 +20,8 @@ private class CollectionUtils_Tests {
     static void it_should_say_that_a_set_is_a_set_and_a_collection() {
         Set<String> collectionToCheck = new Set<String>{'A', 'B', 'C'};
 
-        System.assertEquals(true,CollectionUtils.isCollection(collectionToCheck));
-        System.assertEquals(true,CollectionUtils.isSet(collectionToCheck));
+        System.assertEquals(true, CollectionUtils.isCollection(collectionToCheck));
+        System.assertEquals(true, CollectionUtils.isSet(collectionToCheck));
 
         System.assertEquals(false, CollectionUtils.isList(collectionToCheck));
         System.assertEquals(false, CollectionUtils.isMap(collectionToCheck));
@@ -31,8 +31,8 @@ private class CollectionUtils_Tests {
     static void it_should_say_that_a_map_is_a_map_and_a_collection() {
         Map<Id, User> collectionToCheck = new Map<Id, User>([SELECT Id FROM User]);
 
-        System.assertEquals(true,CollectionUtils.isCollection(collectionToCheck));
-        System.assertEquals(true,CollectionUtils.isMap(collectionToCheck));
+        System.assertEquals(true, CollectionUtils.isCollection(collectionToCheck));
+        System.assertEquals(true, CollectionUtils.isMap(collectionToCheck));
 
         System.assertEquals(false, CollectionUtils.isList(collectionToCheck));
         System.assertEquals(false, CollectionUtils.isSet(collectionToCheck));
