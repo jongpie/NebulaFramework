@@ -17,8 +17,8 @@ public class Scheduler {
         return this.schedule(jobName, hourlyCRON);
     }
 
-    public String scheduleDaily(String jobName, List<String> startingHourAndMinute) {
-        String dailyCRON = String.format(DAILY_CRON, startingHourAndMinute);
+    public String scheduleDaily(String jobName, String startingHour, String startingMinute) {
+        String dailyCRON = String.format(DAILY_CRON, new List<String>{startingHour, startingMinute});
         return this.schedule(jobName, dailyCRON);
     }
 
