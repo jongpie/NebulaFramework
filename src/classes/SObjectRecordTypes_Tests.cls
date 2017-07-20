@@ -62,6 +62,28 @@ private class SObjectRecordTypes_Tests {
         Test.stopTest();
     }
 
+
+    @isTest
+    static void it_should_return_a_map_of_all_record_types_by_id_excluding_managed_record_types() {
+        List<RecordType> expectedRecordTypeList = [SELECT Id, DeveloperName, NamespacePrefix FROM RecordType WHERE SObjectType = 'Lead' AND NamespacePrefix = null];
+
+        NebulaRecordTypesSettings__c recordTypesSettings = NebulaRecordTypesSettings__c.getInstance();
+        recordTypesSettings.ExcludeManagedRecordTypes__c = true;
+        upsert recordTypesSettings;
+
+        Test.startTest();
+
+        System.assertEquals(expectedRecordTypeList.size(), new SObjectRecordTypes_Tests.LeadRecordTypes().ALL_RECORD_TYPES_BY_ID.size());
+        for(RecordType recordType : expectedRecordTypeList) {
+            System.assert(new SObjectRecordTypes_Tests.LeadRecordTypes().ALL_RECORD_TYPES_BY_ID.containsKey(recordType.Id));
+        }
+        for(RecordType recordType : new SObjectRecordTypes_Tests.LeadRecordTypes().ALL_RECORD_TYPES_BY_ID.values()) {
+            System.assertEquals(null, recordType.NamespacePrefix);
+        }
+
+        Test.stopTest();
+    }
+
     @isTest
     static void it_should_cache_the_query_results_when_lazy_load_is_enabled() {
         NebulaRecordTypesSettings__c recordTypesSettings = NebulaRecordTypesSettings__c.getInstance();
