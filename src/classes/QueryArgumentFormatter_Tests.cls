@@ -20,10 +20,36 @@ private class QueryArgumentFormatter_Tests {
     @isTest
     static void it_should_return_query_string_for_list() {
         List<Integer> providedValueList  = new List<Integer>{1, 2, 3};
-        String expectedString = '(' + String.join(providedValueList, ',') + ')';
+        String expectedString = '(1, 2, 3)';
 
         Test.startTest();
         String returnedValue = new QueryArgumentFormatter(providedValueList).getValue();
+        Test.stopTest();
+
+        System.assertEquals(expectedString, returnedValue);
+    }
+
+    @isTest
+    static void it_should_return_query_string_for_set() {
+        Set<String> providedValueSet = new Set<String>{'A', 'B', 'C'};
+        String expectedString = '(\'A\', \'B\', \'C\')';
+
+        Test.startTest();
+        String returnedValue = new QueryArgumentFormatter(providedValueSet).getValue();
+        Test.stopTest();
+
+        System.assertEquals(expectedString, returnedValue);
+    }
+
+    @isTest
+    static void it_should_return_query_string_for_map() {
+        Map<Id, User> providedValueMap = new Map<Id, User>([SELECT Id FROM User LIMIT 10]);
+        List<Id> sortedIdList = new List<Id>(providedValueMap.keySet());
+        sortedIdList.sort();
+        String expectedString = '(\'' + String.join(sortedIdList, '\', \'') + '\')';
+
+        Test.startTest();
+        String returnedValue = new QueryArgumentFormatter(providedValueMap).getValue();
         Test.stopTest();
 
         System.assertEquals(expectedString, returnedValue);

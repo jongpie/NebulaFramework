@@ -18,7 +18,9 @@ public virtual class QueryArgumentFormatter extends NebulaCore implements IQuery
 
     protected virtual String objectToQueryString(Object valueToFormat) {
         if(valueToFormat == null) return null;
-        else if(valueToFormat instanceof List<Object>) return this.listToQueryString((List<Object>)valueToFormat);
+        else if(CollectionUtils.isList(valueToFormat)) return this.listToQueryString((List<Object>)valueToFormat);
+        else if(CollectionUtils.isSet(valueToFormat)) return this.setToQueryString(valueToFormat);
+        else if(CollectionUtils.isMap(valueToFormat)) return this.mapToQueryString(valueToFormat);
         else if(valueToFormat instanceof QueryDateLiteral) {
             QueryDateLiteral dateLiteral = (QueryDateLiteral)valueToFormat;
             return dateLiteral.getValue();
@@ -45,13 +47,31 @@ public virtual class QueryArgumentFormatter extends NebulaCore implements IQuery
         else return String.valueOf(valueToFormat);
     }
 
-    protected virtual String listToQueryString(List<Object> valueList) {
+    private String listToQueryString(List<Object> valueList) {
         List<String> parsedValueList = new List<String>();
         for(Object value : valueList) parsedValueList.add(this.objectToQueryString(value));
-        return '(' + String.join(parsedValueList, ',') + ')';
+        return '(' + String.join(parsedValueList, ', ') + ')';
     }
 
-    protected virtual String wrapInSingleQuotes(String input) {
+    private String setToQueryString(Object valueSet) {
+        String unformattedString = String.valueOf(valueSet).replace('{', '').replace('}', '');
+        List<String> parsedValueList = new List<String>();
+        for(String collectionItem : unformattedString.split(',')) {
+            parsedValueList.add(this.objectToQueryString(collectionItem));
+        }
+
+        return '(' + String.join(parsedValueList, ', ') + ')';
+    }
+
+    private String mapToQueryString(Object valueMap) {
+        Map<String, Object> m = (Map<String, Object>)JSON.deserializeUntyped(JSON.serialize(valueMap));
+
+        return this.setToQueryString(m.keySet());
+    }
+
+    private String wrapInSingleQuotes(String input) {
+        input = input.trim();
+
         if(input.left(1) != '\'') input = '\'' + input;
         if(input.right(1) != '\'') input = input + '\'';
         return input;
