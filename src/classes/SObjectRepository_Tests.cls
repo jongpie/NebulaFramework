@@ -331,7 +331,7 @@ private class SObjectRepository_Tests {
         new SObjectRepository_Tests.UserRepository().upsertRecords(existingUser, Schema.User.Username);
         Test.stopTest();
 
-        existingUser = [SELECT Id, LastModifiedDate FROM User LIMIT 1];
+        existingUser = [SELECT Id, LastModifiedDate FROM User WHERE Id = :existingUser.Id];
         System.assert(existingUser.LastModifiedDate > originalLastModifiedDate, existingUser);
     }
 
