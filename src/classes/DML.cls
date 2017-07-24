@@ -4,12 +4,6 @@
 *************************************************************************************************/
 public abstract class DML extends NebulaCore implements IDML {
 
-    private Schema.SObjectType sobjectType;
-
-    public DML(Schema.SObjectType sobjectType) {
-        this.sobjectType = sobjectType;
-    }
-
     public virtual void insertRecords(SObject record) {
         this.insertRecords(new List<SObject>{record});
     }
@@ -74,7 +68,7 @@ public abstract class DML extends NebulaCore implements IDML {
         // This is fine for the bulk method, where we can assume the caller is passing in an explicit list, but for a single record,
         // the only way to successfully perform the upsert is to dynamically spin up a list of the SObject's type
 
-        String listType = 'List<' + this.sobjectType + '>';
+        String listType = 'List<' + record.getSObjectType() + '>';
         List<SObject> castRecords = (List<SObject>)Type.forName(listType).newInstance();
         castRecords.add(record);
 
