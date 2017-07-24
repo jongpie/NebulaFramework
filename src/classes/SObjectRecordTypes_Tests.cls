@@ -5,22 +5,22 @@
 @isTest
 private class SObjectRecordTypes_Tests {
 
-    private class LeadRecordTypes extends SObjectRecordTypes {
+    private class UserRecordTypes extends SObjectRecordTypes {
         // Test subclass that extends SObjectRecordTypes
-        public LeadRecordTypes() {
-            super(Schema.Lead.SObjectType);
+        public UserRecordTypes() {
+            this.setSObjectType(Schema.User.SObjectType);
         }
     }
 
     @isTest
     static void it_should_return_a_map_of_all_record_types_by_id() {
-        List<RecordType> expectedRecordTypeList = [SELECT Id, DeveloperName FROM RecordType WHERE SObjectType = 'Lead'];
+        List<RecordType> expectedRecordTypeList = [SELECT Id, DeveloperName FROM RecordType WHERE SObjectType = 'User'];
 
         Test.startTest();
 
-        System.assertEquals(expectedRecordTypeList.size(), new SObjectRecordTypes_Tests.LeadRecordTypes().getAllById().size());
+        System.assertEquals(expectedRecordTypeList.size(), new SObjectRecordTypes_Tests.UserRecordTypes().getAllById().size());
         for(RecordType recordType : expectedRecordTypeList) {
-            System.assert(new SObjectRecordTypes_Tests.LeadRecordTypes().getAllById().containsKey(recordType.Id));
+            System.assert(new SObjectRecordTypes_Tests.UserRecordTypes().getAllById().containsKey(recordType.Id));
         }
 
         Test.stopTest();
@@ -28,13 +28,13 @@ private class SObjectRecordTypes_Tests {
 
     @isTest
     static void it_should_return_a_map_of_all_record_types_by_developer_name() {
-        List<RecordType> expectedRecordTypeList = [SELECT Id, DeveloperName FROM RecordType WHERE SObjectType = 'Lead'];
+        List<RecordType> expectedRecordTypeList = [SELECT Id, DeveloperName FROM RecordType WHERE SObjectType = 'User'];
 
         Test.startTest();
 
-        System.assertEquals(expectedRecordTypeList.size(), new SObjectRecordTypes_Tests.LeadRecordTypes().getAllByDeveloperName().size());
+        System.assertEquals(expectedRecordTypeList.size(), new SObjectRecordTypes_Tests.UserRecordTypes().getAllByDeveloperName().size());
         for(RecordType recordType : expectedRecordTypeList) {
-            System.assert(new SObjectRecordTypes_Tests.LeadRecordTypes().getAllByDeveloperName().containsKey(recordType.DeveloperName));
+            System.assert(new SObjectRecordTypes_Tests.UserRecordTypes().getAllByDeveloperName().containsKey(recordType.DeveloperName));
         }
 
         Test.stopTest();
@@ -43,7 +43,7 @@ private class SObjectRecordTypes_Tests {
 
     @isTest
     static void it_should_return_a_map_of_all_record_types_by_id_excluding_managed_record_types() {
-        List<RecordType> expectedRecordTypeList = [SELECT Id, DeveloperName, NamespacePrefix FROM RecordType WHERE SObjectType = 'Lead' AND NamespacePrefix = null];
+        List<RecordType> expectedRecordTypeList = [SELECT Id, DeveloperName, NamespacePrefix FROM RecordType WHERE SObjectType = 'User' AND NamespacePrefix = null];
 
         NebulaRecordTypesSettings__c recordTypesSettings = NebulaRecordTypesSettings__c.getInstance();
         recordTypesSettings.IncludeManagedRecordTypes__c = false;
@@ -51,11 +51,11 @@ private class SObjectRecordTypes_Tests {
 
         Test.startTest();
 
-        System.assertEquals(expectedRecordTypeList.size(), new SObjectRecordTypes_Tests.LeadRecordTypes().getAllById().size());
+        System.assertEquals(expectedRecordTypeList.size(), new SObjectRecordTypes_Tests.UserRecordTypes().getAllById().size());
         for(RecordType recordType : expectedRecordTypeList) {
-            System.assert(new SObjectRecordTypes_Tests.LeadRecordTypes().getAllById().containsKey(recordType.Id));
+            System.assert(new SObjectRecordTypes_Tests.UserRecordTypes().getAllById().containsKey(recordType.Id));
         }
-        for(RecordType recordType : new SObjectRecordTypes_Tests.LeadRecordTypes().getAllById().values()) {
+        for(RecordType recordType : new SObjectRecordTypes_Tests.UserRecordTypes().getAllById().values()) {
             System.assertEquals(null, recordType.NamespacePrefix);
         }
 
@@ -72,7 +72,7 @@ private class SObjectRecordTypes_Tests {
 
         System.assertEquals(0, Limits.getQueries());
         for(Integer i = 0; i < 10; i++) {
-            System.debug(new SObjectRecordTypes_Tests.LeadRecordTypes().getAllById());
+            System.debug(new SObjectRecordTypes_Tests.UserRecordTypes().getAllById());
         }
 
         System.assertEquals(1, Limits.getQueries());
@@ -90,7 +90,7 @@ private class SObjectRecordTypes_Tests {
 
         System.assertEquals(0, Limits.getQueries());
         for(Integer i = 0; i < 10; i++) {
-            System.debug(new SObjectRecordTypes_Tests.LeadRecordTypes().getAllById());
+            System.debug(new SObjectRecordTypes_Tests.UserRecordTypes().getAllById());
         }
 
         System.assertEquals(1, Limits.getQueries());

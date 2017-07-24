@@ -9,15 +9,20 @@ public abstract class SObjectRecordTypes extends NebulaCore implements ISObjectR
     private Schema.SObjectType sobjectType;
     private String sobjectName;
 
-    public SObjectRecordTypes(Schema.SObjectType sobjectType) {
+    public SObjectRecordTypes() {
         this.currentModule = NebulaCore.Module.RECORD_TYPES;
+    }
 
+    // TODO: finalize method
+    public ISObjectRecordTypes setSObjectType(Schema.SObjectType sobjectType) {
         this.sobjectType = sobjectType;
         this.sobjectName = this.sobjectType.getDescribe().getName();
 
         Logger.addEntry(this, 'Getting record types for ' + this.sobjectName);
 
         this.populateCache();
+
+        return this;
     }
 
     public Map<Id, RecordType> getAllById() {
@@ -43,16 +48,16 @@ public abstract class SObjectRecordTypes extends NebulaCore implements ISObjectR
         Schema.SObjectType recordTypeSObjectType = Schema.getGlobalDescribe().get('RecordType');
 
         // If we don't have the SObject cached, then we need to query
-        QueryBuilder query = new QueryBuilder(recordTypeSObjectType);
+        IQueryBuilder query = (IQueryBuilder)NebulaFactory.getQueryBuilder(this.sobjectType);
 
         if(NebulaSettings.RecordTypesSettings.LazyLoad__c) {
-            query.filterBy(new QueryFilter(Schema.RecordType.SObjectType, QueryOperator.EQUALS, this.sobjectName));
+            query.filterBy(NebulaFactory.getQueryFilter().initialize(Schema.RecordType.SObjectType, QueryOperator.EQUALS, this.sobjectName));
             Logger.addEntry(this, 'NebulaSettings.RecordTypesSettings.LazyLoad__c=' + NebulaSettings.RecordTypesSettings.LazyLoad__c);
             Logger.addEntry(this, 'this.sobjectName=' + this.sobjectName);
         }
 
         if(!NebulaSettings.RecordTypesSettings.IncludeManagedRecordTypes__c) {
-            query.filterBy(new QueryFilter(Schema.RecordType.NamespacePrefix, QueryOperator.EQUALS, null));
+            query.filterBy(NebulaFactory.getQueryFilter().initialize(Schema.RecordType.NamespacePrefix, QueryOperator.EQUALS, null));
         }
 
         query.orderBy(Schema.RecordType.DeveloperName);

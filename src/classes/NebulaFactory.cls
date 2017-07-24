@@ -27,8 +27,9 @@ public without sharing class NebulaFactory {
         return (IQueryFilter)createInterfaceImplementation(IQueryFilter.class, DEFAULT_QUERY_FILTER_IMPLEMENTATION);
     }
 
-    public static ISObjectRecordTypes getSObjectRecordTypes() {
-        return (ISObjectRecordTypes)createInterfaceImplementation(ISObjectRecordTypes.class, DEFAULT_SOBJECT_RECORD_TYPES_IMPLEMENTATION);
+    public static ISObjectRecordTypes getSObjectRecordTypes(Schema.SObjectType sobjectType) {
+        ISObjectRecordTypes sobjectRecordTypes = (ISObjectRecordTypes)createInterfaceImplementation(ISObjectRecordTypes.class, DEFAULT_SOBJECT_RECORD_TYPES_IMPLEMENTATION);
+        return sobjectRecordTypes.setSObjectType(sobjectType);
     }
 
     public static ISObjectRepository getSObjectRepository() {
