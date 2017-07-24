@@ -18,16 +18,33 @@ public without sharing class UUID {
         return uuidMatcher.matches();
     }
 
+    private String value;
+
+    public UUID() {
+        this.setValue();
+    }
+
     public String getValue() {
+        return value;
+    }
+
+    private void setValue() {
         Blob generatedBlob = Crypto.GenerateAESKey(128);
         String hex = EncodingUtil.ConvertTohex(generatedBlob);
-        String uuid = hex.substring(0, 8)
-            + '-' + hex.substring(8, 12)
-            + '-' + hex.substring(12, 16)
-            + '-' + hex.substring(16, 20)
-            + '-' + hex.substring(20);
+        this.value = this.formatValue(hex);
+    }
 
-        return uuid.toUpperCase();
+    private String formatValue(String unformattedValue) {
+        // Remove any non-alphanumeric characters. Should be unnecessary, but better to be safe than sorry.
+        unformattedValue = unformattedValue.replaceAll('[^a-zA-Z0-9]', '');
+
+        String formattedValue = unformattedValue.substring(0, 8)
+            + '-' + unformattedValue.substring(8, 12)
+            + '-' + unformattedValue.substring(12, 16)
+            + '-' + unformattedValue.substring(16, 20)
+            + '-' + unformattedValue.substring(20);
+
+        return formattedValue.toUpperCase();
     }
 
 }

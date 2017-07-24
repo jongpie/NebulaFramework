@@ -18,6 +18,10 @@ public class QueryBuilder extends NebulaCore implements IQueryBuilder {
     private final SObjectType sobjectType;
     private final Map<String, Schema.SObjectField> sobjectTypeFieldMap;
 
+    public QueryBuilder(Schema.SObjectType sobjectType) {
+        this(sobjectType, null, null);
+    }
+
     public QueryBuilder(Schema.SObjectType sobjectType, Schema.FieldSet fieldSet, List<Schema.SObjectField> sobjectFieldList) {
         this.currentModule = NebulaCore.Module.REPOSITORY;
 
@@ -223,7 +227,7 @@ public class QueryBuilder extends NebulaCore implements IQueryBuilder {
     }
 
     private void logEntry(List<Object> results) {
-        String logEntry = 'Query:\n' + this.query + '\n\nResults:\n' + results;
+        String logEntry = 'Query:\n' + this.query + '\n\nResults:\n' + JSON.serialize(results);
         Logger.addEntry(this, logEntry);
     }
 

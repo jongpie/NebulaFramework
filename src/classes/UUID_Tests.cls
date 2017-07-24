@@ -17,6 +17,16 @@ private class UUID_Tests {
     }
 
     @isTest
+    static void it_should_reuse_a_UUID_on_subsequent_calls_to_getValue() {
+        UUID theUUID = new UUID();
+        String originalValue = theUUID.getValue();
+
+        for(Integer i = 0; i < 5; i++) {
+            System.assertEquals(originalValue, theUUID.getValue());
+        }
+    }
+
+    @isTest
     static void it_should_verify_that_a_UUID_is_a_UUID() {
         String generatedUUID = new UUID().getValue();
         System.assert(UUID.isValid(generatedUUID));
