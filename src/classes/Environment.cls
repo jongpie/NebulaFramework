@@ -4,8 +4,6 @@
 *************************************************************************************************/
 public without sharing class Environment {
 
-    private Environment() {}
-
     public static String BaseUrl {
         get {return URL.getSalesforceBaseUrl().toExternalForm();}
         private set;
@@ -26,6 +24,11 @@ public without sharing class Environment {
         private set;
     }
 
+    public static String NamespacePrefix {
+        get {return organization.NamespacePrefix;}
+        private set;
+    }
+
     public static String Type {
         get {return organization.OrganizationType;}
         private set;
@@ -33,7 +36,7 @@ public without sharing class Environment {
 
     private static Organization organization {
         get {
-            if(organization == null) organization = [SELECT Id, InstanceName, IsSandbox, Name, OrganizationType FROM Organization];
+            if(organization == null) organization = [SELECT Id, InstanceName, IsSandbox, Name, NamespacePrefix, OrganizationType FROM Organization];
             return organization;
         }
         private set;
