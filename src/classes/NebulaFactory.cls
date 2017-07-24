@@ -96,8 +96,9 @@ public without sharing class NebulaFactory {
         
         INebulaCore core = (INebulaCore)impl;
         if(toDo == 'Inherit') return core;
-        else if(toDo == 'With') return core.withSharing();
-        else if(toDo == 'Without') return core.withoutSharing();
+        // TODO: finish implementing
+        //else if(toDo == 'With') return core.withSharing();
+        //else if(toDo == 'Without') return core.withoutSharing();
         else return core;
     }
 
