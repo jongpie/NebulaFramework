@@ -35,6 +35,15 @@ public class QueryFilter implements IQueryFilter {
     // }
 
     public IQueryFilter initialize(Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue) {
+        return this.initialize(new List<Schema.SObjectField>(), fieldToFilter, operator, providedValue);
+    }
+
+    public IQueryFilter initialize(Schema.SObjectField parentRelationshipField, Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue) {
+        return this.initialize(new List<Schema.SObjectField>{parentRelationshipField}, fieldToFilter, operator, providedValue);
+    }
+
+    public IQueryFilter initialize(List<Schema.SObjectField> parentRelationshipFieldChain, Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue) {
+        this.parentRelationshipFields = parentRelationshipFieldChain;
         this.sobjectField             = fieldToFilter;
         this.sobjectType              = new SObjectFieldDescriber(fieldToFilter).SObjectType;
         this.operator                 = operator;

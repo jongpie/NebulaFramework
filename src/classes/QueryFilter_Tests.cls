@@ -12,7 +12,7 @@ private class QueryFilter_Tests {
         List<String> values              = new List<String>{'derp'};
 
         Test.startTest();
-        QueryFilter queryFilter = new QueryFilter(sobjectField, operator, values);
+        QueryFilter queryFilter = (QueryFilter)new QueryFilter().initialize(sobjectField, operator, values);
         Test.stopTest();
 
         String expectedQueryFieldName = 'CompanyName';
@@ -30,7 +30,7 @@ private class QueryFilter_Tests {
         String value                                       = 'derp@test.com';
 
         Test.startTest();
-        QueryFilter queryFilter = new QueryFilter(parentRelationshipSObjectField, sobjectField, operator, value);
+        QueryFilter queryFilter = (QueryFilter)new QueryFilter().initialize(parentRelationshipSObjectField, sobjectField, operator, value);
         Test.stopTest();
 
         String expectedQueryFieldName = 'CreatedBy.Email';
@@ -51,7 +51,7 @@ private class QueryFilter_Tests {
         String value                     = 'derp';
 
         Test.startTest();
-        QueryFilter queryFilter = new QueryFilter(grandparentFields, sobjectField, operator, value);
+        QueryFilter queryFilter = (QueryFilter)new QueryFilter().initialize(grandparentFields, sobjectField, operator, value);
         Test.stopTest();
 
         String expectedQueryFieldName = 'Owner.Manager.Profile.Name';
