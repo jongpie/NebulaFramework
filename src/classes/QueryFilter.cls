@@ -13,25 +13,26 @@ public class QueryFilter implements IQueryFilter {
 
     public QueryFilter() {
             //TODO
+            this.parentRelationshipFields = new List<Schema.SObjectField>();
     }
 
-    public QueryFilter(Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue) {
-        this(new List<Schema.SObjectField>(), fieldToFilter, operator, providedValue);
-    }
-
-    public QueryFilter(Schema.SObjectField parentRelationshipField, Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue) {
-        this(new List<Schema.SObjectField>{parentRelationshipField}, fieldToFilter, operator, providedValue);
-    }
-
-    public QueryFilter(List<Schema.SObjectField> parentRelationshipFieldChain, Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue) {
-        this.parentRelationshipFields = parentRelationshipFieldChain;
-        this.sobjectField             = fieldToFilter;
-        this.sobjectType              = new SObjectFieldDescriber(fieldToFilter).SObjectType;
-        this.operator                 = operator;
-        this.providedValue            = providedValue;
-
-        this.setQueryFieldName();
-    }
+    // public QueryFilter(Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue) {
+    //     this(new List<Schema.SObjectField>(), fieldToFilter, operator, providedValue);
+    // }
+    //
+    // public QueryFilter(Schema.SObjectField parentRelationshipField, Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue) {
+    //     this(new List<Schema.SObjectField>{parentRelationshipField}, fieldToFilter, operator, providedValue);
+    // }
+    //
+    // public QueryFilter(List<Schema.SObjectField> parentRelationshipFieldChain, Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue) {
+    //     this.parentRelationshipFields = parentRelationshipFieldChain;
+    //     this.sobjectField             = fieldToFilter;
+    //     this.sobjectType              = new SObjectFieldDescriber(fieldToFilter).SObjectType;
+    //     this.operator                 = operator;
+    //     this.providedValue            = providedValue;
+    //
+    //     this.setQueryFieldName();
+    // }
 
     public IQueryFilter initialize(Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue) {
         this.sobjectField             = fieldToFilter;
