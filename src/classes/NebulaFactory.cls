@@ -26,7 +26,7 @@ public without sharing class NebulaFactory {
 
     public static IQueryFilter getQueryFilter(Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue) {
         IQueryFilter queryFilter = (IQueryFilter)createInterfaceImplementation(IQueryFilter.class, DEFAULT_QUERY_FILTER_IMPLEMENTATION);
-        return queryFilter.initialize(fieldToFilter, operator, providedValue);
+        return queryFilter.setValue(fieldToFilter, operator, providedValue);
     }
 
     public static ISObjectRecordTypes getSObjectRecordTypes(Schema.SObjectType sobjectType) {

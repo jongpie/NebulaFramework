@@ -80,6 +80,8 @@ public class SObjectRepositoryMocks {
             List<SObject> records = this.getById(idList);
             for(SObject record : records) {
                 for(IQueryFilter queryFilter : queryFilters) {
+                    if(queryFilter.getSObjectField() == null) continue;
+
                     record.put(queryFilter.getSObjectField(), queryFilter.getProvidedValue());
                 }
             }

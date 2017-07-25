@@ -4,15 +4,14 @@
 *************************************************************************************************/
 public interface IQueryFilter {
 
-    //TODO
-    // Setup methods
-    IQueryFilter initialize(Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue);
-    IQueryFilter initialize(Schema.SObjectField parentRelationshipField, Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue);
-    IQueryFilter initialize(List<Schema.SObjectField> parentRelationshipFieldChain, Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue);
+    // Setter methods
+    IQueryFilter setValue(Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue);
+    IQueryFilter setValue(List<Schema.SObjectField> fieldToFilterChain, QueryOperator operator, Object providedValue);
 
     // Getter methods
-    Object getProvidedValue();
-    Schema.SObjectField getSObjectField();
     String getValue();
+    Schema.SObjectField getSObjectField();
+    QueryOperator getQueryOperator();
+    Object getProvidedValue();
 
 }

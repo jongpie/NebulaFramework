@@ -12,7 +12,7 @@ private class QueryFilter_Tests {
         List<String> values              = new List<String>{'derp'};
 
         Test.startTest();
-        QueryFilter queryFilter = (QueryFilter)new QueryFilter().initialize(sobjectField, operator, values);
+        QueryFilter queryFilter = (QueryFilter)new QueryFilter().setValue(sobjectField, operator, values);
         Test.stopTest();
 
         String expectedQueryFieldName = 'CompanyName';
@@ -30,7 +30,8 @@ private class QueryFilter_Tests {
         String value                                       = 'derp@test.com';
 
         Test.startTest();
-        QueryFilter queryFilter = (QueryFilter)new QueryFilter().initialize(parentRelationshipSObjectField, sobjectField, operator, value);
+        List<Schema.SObjectField> parentFieldToFilter = new List<Schema.SObjectField>{parentRelationshipSObjectField, sobjectField};
+        QueryFilter queryFilter = (QueryFilter)new QueryFilter().setValue(parentFieldToFilter, operator, value);
         Test.stopTest();
 
         String expectedQueryFieldName = 'CreatedBy.Email';
@@ -42,16 +43,15 @@ private class QueryFilter_Tests {
 
     @isTest
     static void it_should_return_the_query_filter_for_a_grandparent_field() {
-        List<Schema.SObjectField> grandparentFields = new List<Schema.SObjectField>{
-            Schema.Lead.OwnerId, Schema.User.ManagerId, Schema.User.ProfileId
+        List<Schema.SObjectField> grandparentFieldToFilter = new List<Schema.SObjectField>{
+            Schema.Lead.OwnerId, Schema.User.ManagerId, Schema.User.ProfileId, Schema.Profile.Name
         };
 
-        Schema.SObjectField sobjectField = Schema.Profile.Name;
         QueryOperator operator           = QueryOperator.EQUALS;
         String value                     = 'derp';
 
         Test.startTest();
-        QueryFilter queryFilter = (QueryFilter)new QueryFilter().initialize(grandparentFields, sobjectField, operator, value);
+        QueryFilter queryFilter = (QueryFilter)new QueryFilter().setValue(grandparentFieldToFilter, operator, value);
         Test.stopTest();
 
         String expectedQueryFieldName = 'Owner.Manager.Profile.Name';

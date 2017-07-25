@@ -4,7 +4,7 @@
 *************************************************************************************************/
 public class QueryFilter implements IQueryFilter {
 
-    private List<Schema.SObjectField> parentRelationshipFields;
+    private List<Schema.SObjectField> fieldToFilterChain;
     private Schema.SObjectField sobjectField;
     private Schema.SObjectType sobjectType;
     private QueryOperator operator;
@@ -12,72 +12,61 @@ public class QueryFilter implements IQueryFilter {
     @testVisible private String queryFieldName;
 
     public QueryFilter() {
-            //TODO
-            this.parentRelationshipFields = new List<Schema.SObjectField>();
+        this.queryFieldName     = '';
+        this.fieldToFilterChain = new List<Schema.SObjectField>();
     }
 
-    // public QueryFilter(Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue) {
-    //     this(new List<Schema.SObjectField>(), fieldToFilter, operator, providedValue);
-    // }
-    //
-    // public QueryFilter(Schema.SObjectField parentRelationshipField, Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue) {
-    //     this(new List<Schema.SObjectField>{parentRelationshipField}, fieldToFilter, operator, providedValue);
-    // }
-    //
-    // public QueryFilter(List<Schema.SObjectField> parentRelationshipFieldChain, Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue) {
-    //     this.parentRelationshipFields = parentRelationshipFieldChain;
-    //     this.sobjectField             = fieldToFilter;
-    //     this.sobjectType              = new SObjectFieldDescriber(fieldToFilter).SObjectType;
-    //     this.operator                 = operator;
-    //     this.providedValue            = providedValue;
-    //
-    //     this.setQueryFieldName();
-    // }
-
-    public IQueryFilter initialize(Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue) {
-        return this.initialize(new List<Schema.SObjectField>(), fieldToFilter, operator, providedValue);
+    public IQueryFilter setValue(Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue) {
+        return this.setValue(new List<Schema.SObjectField>{fieldToFilter}, operator, providedValue);
     }
 
-    public IQueryFilter initialize(Schema.SObjectField parentRelationshipField, Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue) {
-        return this.initialize(new List<Schema.SObjectField>{parentRelationshipField}, fieldToFilter, operator, providedValue);
-    }
-
-    public IQueryFilter initialize(List<Schema.SObjectField> parentRelationshipFieldChain, Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue) {
-        this.parentRelationshipFields = parentRelationshipFieldChain;
-        this.sobjectField             = fieldToFilter;
-        this.sobjectType              = new SObjectFieldDescriber(fieldToFilter).SObjectType;
-        this.operator                 = operator;
-        this.providedValue            = providedValue;
+    public IQueryFilter setValue(List<Schema.SObjectField> fieldToFilterChain, QueryOperator operator, Object providedValue) {
+        this.fieldToFilterChain = fieldToFilterChain;
+        this.sobjectType        = new SObjectFieldDescriber(fieldToFilterChain[0]).SObjectType;
+        this.operator           = operator;
+        this.providedValue      = providedValue;
 
         this.setQueryFieldName();
 
         return this;
     }
 
-    public Object getProvidedValue() {
-        return this.providedValue;
+    public String getValue() {
+        IQueryArgumentFormatter argumentFormatter = NebulaFactory.getQueryArgumentFormatter();
+        return this.queryFieldName + ' ' + this.operator.getValue() + ' ' + argumentFormatter.getValue(this.providedValue);
     }
 
     public Schema.SObjectField getSObjectField() {
         return this.sobjectField;
     }
 
-    public String getValue() {
-        // TODO cleanup
-        //return this.queryFieldName + ' ' + this.operator.getValue() + ' ' + new QueryArgumentFormatter(this.providedValue).getValue();
-        //IQueryArgumentFormatter argumentFormatter = (IQueryArgumentFormatter)NebulaImplementation1.QUERY_ARGUMENT_FORMATTER_IMPLEMENTATION.newInstance();
-        IQueryArgumentFormatter argumentFormatter = NebulaFactory.getQueryArgumentFormatter();
-        return this.queryFieldName + ' ' + this.operator.getValue() + ' ' + argumentFormatter.getValue(this.providedValue);
+    public QueryOperator getQueryOperator() {
+        return this.operator;
+    }
+
+    public Object getProvidedValue() {
+        return this.providedValue;
     }
 
     private void setQueryFieldName() {
-        this.queryFieldName = '';
-        SObjectType currentSObjectType = this.SObjectType;
-        for(Schema.SObjectField parentRelationshipField : this.parentRelationshipFields) {
-            this.queryFieldName += parentRelationshipField.getDescribe().getRelationshipName() + '.';
-            currentSObjectType = new SObjectFieldDescriber(parentRelationshipField).SObjectType;
+        Schema.SObjectField lastField = (Schema.SObjectField)CollectionUtils.pop(this.fieldToFilterChain);
+
+        List<String> fieldChain = new List<String>();
+        for(Schema.SObjectField parentField : this.fieldToFilterChain) {
+            fieldChain.add(parentField.getDescribe().getRelationshipName());
         }
-        this.queryFieldName += this.sobjectField;
+
+        String parsedFieldChain = '';
+        if(fieldChain.isEmpty()) {
+            // If there are no fields in the chain, then the last field is a field on the current sobject
+            this.sobjectField = lastField;
+        } else {
+            // If there is a chain of fields, build a string with the dot notation needed for SOQL/SOSL
+            parsedFieldChain = String.join(fieldChain, '.') + '.';
+        }
+
+        // Set the fully qualified field name
+        this.queryFieldName =  parsedFieldChain + lastField.getDescribe().getName();
     }
 
 }
