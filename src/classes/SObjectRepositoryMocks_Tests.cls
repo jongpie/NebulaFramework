@@ -19,7 +19,7 @@ private class SObjectRepositoryMocks_Tests {
         Id testId = getTestId();
         SObjectField field = getField();
 
-        List<IQueryFilter> queryFilters = new List<IQueryFilter>{NebulaFactory.getQueryFilter().initialize(field, QueryOperator.EQUALS, getFieldValue())};
+        List<IQueryFilter> queryFilters = new List<IQueryFilter>{NebulaFactory.getQueryFilter(field, QueryOperator.EQUALS, getFieldValue())};
         SObject returnedObj = new SObjectRepositoryMocks.Base(null).getByIdAndQueryFilters(new Set<Id>{testId}, queryFilters)[0];
 
         System.assertEquals(getFieldValue(), returnedObj.get(String.valueOf(field)));
