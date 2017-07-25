@@ -5,11 +5,10 @@
 public abstract class SObjectRepository extends DML implements ISObjectRepository, IDML {
 
     protected IQueryBuilder Query {
-        //TODO
         get { return new QueryBuilder().setSObjectType(this.getSObjectType()); }
+        private set;
     }
 
-    private Schema.FieldSet fieldSet;
     private List<Schema.SObjectField> sobjectFieldList;
     private Map<String, Schema.SObjectField> sobjectFieldMap;
     private Schema.SObjectField idField;

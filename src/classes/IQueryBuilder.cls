@@ -5,22 +5,21 @@
 public interface IQueryBuilder {
 
     // Setup methods
-    //TODO
-    //IQueryBuilder initialize(Schema.SObjectType sobjectType);
     IQueryBuilder setSObjectType(Schema.SObjectType sobjectType);
 
     // Field methods
-    IQueryBuilder addFields(Schema.FieldSet fieldSet);
-    IQueryBuilder addFields(List<Schema.SObjectField> fields);
     IQueryBuilder addAllFields();
     IQueryBuilder addAllStandardFields();
     IQueryBuilder addAllCustomFields();
+    IQueryBuilder addFields(Schema.FieldSet fieldSet);
+    IQueryBuilder addFields(List<Schema.SObjectField> fields);
 
     // Filter methods
     IQueryBuilder filterBy(IQueryFilter queryFilter);
     IQueryBuilder filterBy(List<IQueryFilter> queryFilters);
 
     // Children query methods
+    // TODO I think I hate these - change them since I'm breaking everything anuyway
     IQueryBuilder includeChildrenRecords(Schema.SObjectField childToParentRelationshipField, ISObjectRepository childSObjectRepository);
     IQueryBuilder includeChildrenRecords(Map<Schema.SObjectField, ISObjectRepository> childFieldToChildSObjectRepositoryrMap);
 

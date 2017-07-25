@@ -13,10 +13,6 @@ public class QueryBuilder extends NebulaCore implements IQueryBuilder {
     @testVisible private Boolean forUpdate;
     private Integer limitCount;
 
-    private Boolean addAllFields;
-    // TODO remove maybe
-    //private Schema.FieldSet fieldSet;
-    //private List<Schema.SObjectField> sobjectFieldList;
     private SObjectType sobjectType;
     private Map<String, Schema.SObjectField> sobjectTypeFieldMap;
 
@@ -28,10 +24,10 @@ public class QueryBuilder extends NebulaCore implements IQueryBuilder {
         this.whereClauseList          = new List<String>();
         this.orderByList              = new List<String>();
         this.forUpdate                = false;
-        this.addAllFields             = false;
     }
 
     public IQueryBuilder setSObjectType(Schema.SObjectType sobjectType) {
+        // TODO verify/refactor so that this method doesnt have to be called as the first method
         this.sobjectType         = sobjectType;
         this.sobjectTypeFieldMap = sobjectType.getDescribe().fields.getMap();
         this.addCommonQueryFields();
@@ -49,12 +45,8 @@ public class QueryBuilder extends NebulaCore implements IQueryBuilder {
     }
 
     public IQueryBuilder addAllFields() {
-        // TODO
-        this.addAllFields = true;
         for(Schema.SObjectField field : this.sobjectTypeFieldMap.values()) {
-            Schema.DescribeFieldResult fieldDescribe = field.getDescribe();
-
-            this.queryFields.add(fieldDescribe.getName());
+            this.queryFields.add(field.getDescribe().getName());
         }
         return this;
     }

@@ -48,7 +48,6 @@ public without sharing class NebulaFactory {
         String configuredClassName = interfaceConfigs.get(interfaceName).ApexClass__c;
         configuredClassName = configuredClassName == null ? defaultImplementation.getName() : configuredClassName;
 
-        //System.type t = Type.forName(configuredClassName) == null ? defaultImplementation : Type.forName(configuredClassName);
         System.type t = Type.forName(configuredClassName);
 
         if(t == null) {
@@ -58,25 +57,9 @@ public without sharing class NebulaFactory {
             throw new ImplementationException(formattedError);
         }
 
-        //TODO fix this
-        // if(!t.equals(interfaceType)) {
-        //     List<String> fillers = new List<String>{configuredClassName, interfaceName, String.valueOf(t)};
-        //     String formattedError = String.format(invalidClassForInterfaceError, fillers);
-        //
-        //     throw new ImplementationException(formattedError);
-        // }
-        // another option to try to validate the implementation (not working though)
-        // try {
-        //     String str = JSON.serialize(t.newInstance());
-        //     JSON.deserialize(str, interfaceType);
-        // }
-        // catch (System.JSONException je) {
-        //     return false;
-        // }
-
-        Object impl = t.newInstance();
-        impl = activateNebulaSharingSettings(impl);
-        return impl;
+        Object instance = t.newInstance();
+        instance = activateNebulaSharingSettings(instance);
+        return instance;
     }
 
     private static void getInterfaceConfigs() {
@@ -89,19 +72,19 @@ public without sharing class NebulaFactory {
         }
     }
 
-    private static Object activateNebulaSharingSettings(Object impl) {
-        Boolean isInstanceOfNebulaCore = impl instanceof NebulaCore;
-        if(!isInstanceOfNebulaCore) return impl;
+    private static Object activateNebulaSharingSettings(Object instance) {
+        Boolean isInstanceOfNebulaCore = instance instanceof NebulaCore;
+        if(!isInstanceOfNebulaCore) return instance;
 
         //If the implementation also extends NebulaCore, then run additional steps
         String toDo = 'Inherit'; //TODO move to custom metadata or custom setting (picklist: inherit, with, without)
 
-        INebulaCore core = (INebulaCore)impl;
-        if(toDo == 'Inherit') return core;
+        INebulaCore nebulaClassInstance = (INebulaCore)instance;
+        if(toDo == 'Inherit') return nebulaClassInstance;
         // TODO: finish implementing
-        //else if(toDo == 'With') return core.withSharing();
-        //else if(toDo == 'Without') return core.withoutSharing();
-        else return core;
+        //else if(toDo == 'With') return nebulaClassInstance.withSharing();
+        //else if(toDo == 'Without') return nebulaClassInstance.withoutSharing();
+        else return nebulaClassInstance;
     }
 
     private class ImplementationException extends Exception {}
