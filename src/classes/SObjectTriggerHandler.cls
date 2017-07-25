@@ -21,11 +21,10 @@ public abstract class SObjectTriggerHandler extends NebulaCore implements ISObje
 
     public SObjectTriggerHandler() {
         this(false);
+        this.currentModule = NebulaCore.Module.TRIGGER_HANDLER;
     }
 
     protected SObjectTriggerHandler(Boolean isTestMode) {
-        this.currentModule = NebulaCore.Module.TRIGGER_HANDLER;
-
         this.isTestMode         = isTestMode;
         this.isTriggerExecuting = Trigger.isExecuting;
 
@@ -60,7 +59,7 @@ public abstract class SObjectTriggerHandler extends NebulaCore implements ISObje
         else sobjectType = Trigger.new == null ? String.valueOf(Trigger.old.getSObjectType()) : String.valueOf(Trigger.new.getSObjectType());
 
         Logger.addEntry(this, 'Starting execute method for: ' + sobjectType);
-        Logger.addEntry(this, 'Hash codes already processed: ' + SObjectTriggerHandler.hashCodesForProcessedRecords);
+        Logger.addEntry(this, 'Hash codes already processed: ' + hashCodesForProcessedRecords);
         Logger.addEntry(this, 'Hash code for current records: ' + this.hashCode);
         Logger.addEntry(this, 'Trigger context for current records: ' + this.currentTriggerContext);
         Logger.addEntry(this, 'Number of current records: ' + Trigger.size);
@@ -166,11 +165,11 @@ public abstract class SObjectTriggerHandler extends NebulaCore implements ISObje
             // BEFORE_INSERT doesn't have record IDs yet, so the hash here will never match the other hashes
             // Since Salesforce makes it impossible to recursively run "insert record", we can let the platform handle it
             return false;
-        } else if(!SObjectTriggerHandler.hashCodesForProcessedRecords.containsKey(this.hashCode)) {
-            SObjectTriggerHandler.hashCodesForProcessedRecords.put(this.hashCode, new Set<TriggerContext>{this.currentTriggerContext});
+        } else if(!hashCodesForProcessedRecords.containsKey(this.hashCode)) {
+            hashCodesForProcessedRecords.put(this.hashCode, new Set<TriggerContext>{this.currentTriggerContext});
             return false;
-        } else if(!SObjectTriggerHandler.hashCodesForProcessedRecords.get(this.hashCode).contains(this.currentTriggerContext)) {
-            SObjectTriggerHandler.hashCodesForProcessedRecords.get(this.hashCode).add(this.currentTriggerContext);
+        } else if(!hashCodesForProcessedRecords.get(this.hashCode).contains(this.currentTriggerContext)) {
+            hashCodesForProcessedRecords.get(this.hashCode).add(this.currentTriggerContext);
             return false;
         } else {
             return true;

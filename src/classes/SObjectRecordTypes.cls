@@ -11,19 +11,16 @@ public abstract class SObjectRecordTypes extends NebulaCore implements ISObjectR
 
     public SObjectRecordTypes() {
         this.currentModule = NebulaCore.Module.RECORD_TYPES;
-    }
 
-    // TODO: finalize method
-    public ISObjectRecordTypes setSObjectType(Schema.SObjectType sobjectType) {
-        this.sobjectType = sobjectType;
+        this.sobjectType = getSObjectType();
         this.sobjectName = this.sobjectType.getDescribe().getName();
 
         Logger.addEntry(this, 'Getting record types for ' + this.sobjectName);
 
         this.populateCache();
-
-        return this;
     }
+
+    public abstract Schema.SObjectType getSObjectType();
 
     public Map<Id, RecordType> getAllById() {
         return new Map<Id, RecordType>(cachedRecordTypesBySObjectMap.get(this.sobjectName));

@@ -19,8 +19,9 @@ public without sharing class NebulaFactory {
         return (IQueryArgumentFormatter)createInterfaceImplementation(IQueryArgumentFormatter.class, DEFAULT_QUERY_ARGUMENT_FORMATTER_IMPLEMENTATION);
     }
 
-    public static IQueryBuilder getQueryBuilder() {
-        return (IQueryBuilder)createInterfaceImplementation(IQueryBuilder.class, DEFAULT_QUERY_BUILDER_IMPLEMENTATION);
+    public static IQueryBuilder getQueryBuilder(Schema.SObjectType sobjectType) {
+        IQueryBuilder queryBuilder = (IQueryBuilder)createInterfaceImplementation(IQueryBuilder.class, DEFAULT_QUERY_BUILDER_IMPLEMENTATION);
+        return queryBuilder.setSObjectType(sobjectType);
     }
 
     public static IQueryFilter getQueryFilter() {
@@ -28,8 +29,7 @@ public without sharing class NebulaFactory {
     }
 
     public static ISObjectRecordTypes getSObjectRecordTypes(Schema.SObjectType sobjectType) {
-        ISObjectRecordTypes sobjectRecordTypes = (ISObjectRecordTypes)createInterfaceImplementation(ISObjectRecordTypes.class, DEFAULT_SOBJECT_RECORD_TYPES_IMPLEMENTATION);
-        return sobjectRecordTypes.setSObjectType(sobjectType);
+        return (ISObjectRecordTypes)createInterfaceImplementation(ISObjectRecordTypes.class, DEFAULT_SOBJECT_RECORD_TYPES_IMPLEMENTATION);
     }
 
     public static ISObjectRepository getSObjectRepository() {
@@ -39,7 +39,7 @@ public without sharing class NebulaFactory {
     public static ISObjectTriggerHandler getSObjectTriggerHandler() {
         return (ISObjectTriggerHandler)createInterfaceImplementation(ISObjectTriggerHandler.class, DEFAULT_SOBJECT_TRIGGER_HANDLER_IMPLEMENTATION);
     }
-    
+
     private static Object createInterfaceImplementation(System.Type interfaceType, System.Type defaultImplementation) {
         getInterfaceConfigs();
 
@@ -87,14 +87,14 @@ public without sharing class NebulaFactory {
             interfaceConfigs.put(interfaceConfig.DeveloperName, interfaceConfig);
         }
     }
-    
+
     private static Object activateNebulaSharingSettings(Object impl) {
         Boolean isInstanceOfNebulaCore = impl instanceof NebulaCore;
         if(!isInstanceOfNebulaCore) return impl;
-        
+
         //If the implementation also extends NebulaCore, then run additional steps
         String toDo = 'Inherit'; //TODO move to custom metadata or custom setting (picklist: inherit, with, without)
-        
+
         INebulaCore core = (INebulaCore)impl;
         if(toDo == 'Inherit') return core;
         // TODO: finish implementing

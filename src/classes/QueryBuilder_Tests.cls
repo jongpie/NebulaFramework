@@ -11,7 +11,7 @@ public class QueryBuilder_Tests {
         List<SObjectField> fields = new List<SObjectField>{Contact.CreatedDate};
 
         Test.startTest();
-        QueryBuilder query = new QueryBuilder(objType, null, fields);
+        QueryBuilder query = (QueryBuilder)new QueryBuilder().setSObjectType(objType).addFields(fields);
         query.orderBy(Contact.CreatedDate,QuerySortOrder.ASCENDING);
         Test.stopTest();
 
@@ -24,7 +24,7 @@ public class QueryBuilder_Tests {
         List<SObjectField> fields = new List<SObjectField>{Contact.CreatedDate};
 
         Test.startTest();
-        QueryBuilder query = new QueryBuilder(objType, null, fields);
+        QueryBuilder query = (QueryBuilder)new QueryBuilder().setSObjectType(objType).addFields(fields);
         query.orderBy(Contact.CreatedDate,QuerySortOrder.DESCENDING);
         Test.stopTest();
 
@@ -37,7 +37,7 @@ public class QueryBuilder_Tests {
         List<SObjectField> fields = new List<SObjectField>{Contact.CreatedDate};
 
         Test.startTest();
-        QueryBuilder query = new QueryBuilder(objType, null, fields);
+        QueryBuilder query = (QueryBuilder)new QueryBuilder().setSObjectType(objType).addFields(fields);
         query.setAsUpdate();
         Test.stopTest();
 

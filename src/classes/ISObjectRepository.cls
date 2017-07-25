@@ -4,6 +4,9 @@
 *************************************************************************************************/
 public interface ISObjectRepository {
 
+    // Setup methods
+    Schema.SObjectType getSObjectType();
+
     // SOQL
     SObject getById(Id recordId);
     List<SObject> getById(List<Id> recordIdList);

@@ -5,49 +5,34 @@
 public abstract class SObjectRepository extends DML implements ISObjectRepository, IDML {
 
     protected IQueryBuilder Query {
-        get { return new QueryBuilder(this.sobjectType, this.fieldSet, this.sobjectFieldList); }
+        //TODO
+        get { return new QueryBuilder().setSObjectType(this.getSObjectType()); }
     }
 
-    private final Schema.SObjectType sobjectType;
-    private final Schema.FieldSet fieldSet;
-    private final List<Schema.SObjectField> sobjectFieldList;
-    private final Map<String, Schema.SObjectField> sobjectFieldMap;
-    private final Schema.SObjectField idField;
+    private Schema.FieldSet fieldSet;
+    private List<Schema.SObjectField> sobjectFieldList;
+    private Map<String, Schema.SObjectField> sobjectFieldMap;
+    private Schema.SObjectField idField;
 
-    public SObjectRepository(Schema.SObjectType sobjectType) {
-        this(sobjectType, null, null);
-    }
-
-    public SObjectRepository(Schema.SObjectType sobjectType, Schema.FieldSet fieldSet) {
-        this(sobjectType, fieldSet, null);
-    }
-
-    public SObjectRepository(Schema.SObjectType sobjectType, List<Schema.SObjectField> sobjectFieldList) {
-        this(sobjectType, null, sobjectFieldList);
-    }
-
-    private SObjectRepository(Schema.SObjectType sobjectType, Schema.FieldSet fieldSet, List<Schema.SObjectField> sobjectFieldList) {
-        super(sobjectType);
-
+    public SObjectRepository() {
         this.currentModule = NebulaCore.Module.REPOSITORY;
 
-        this.sobjectType      = sobjectType;
-        this.fieldSet         = fieldSet;
-        this.sobjectFieldList = sobjectFieldList;
-        this.sobjectFieldMap  = sobjectType.getDescribe().fields.getMap();
-        this.idField          = this.getField('Id');
+        this.sobjectFieldMap = this.getSObjectType().getDescribe().fields.getMap();
+        this.idField         = this.getField('Id');
     }
+
+    public abstract Schema.SObjectType getSObjectType();
 
     // SOQL
     public virtual SObject getById(Id recordId) {
         return this.Query
-            .filterBy(new QueryFilter(this.idField, QueryOperator.EQUALS, recordId))
+            .filterBy(NebulaFactory.getQueryFilter().initialize(this.idField, QueryOperator.EQUALS, recordId))
             .getFirstQueryResult();
     }
 
     public virtual List<SObject> getById(List<Id> recordIds) {
         return this.Query
-            .filterBy(new QueryFilter(this.idField, QueryOperator.IS_IN, recordIds))
+            .filterBy(NebulaFactory.getQueryFilter().initialize(this.idField, QueryOperator.IS_IN, recordIds))
             .getQueryResults();
     }
 
@@ -67,7 +52,7 @@ public abstract class SObjectRepository extends DML implements ISObjectRepositor
 
     public virtual List<SObject> getByIdAndQueryFilters(List<Id> idList, List<IQueryFilter> queryFilters) {
         return this.Query
-            .filterBy(new QueryFilter(this.idField, QueryOperator.IS_IN, idList))
+            .filterBy(NebulaFactory.getQueryFilter().initialize(this.idField, QueryOperator.IS_IN, idList))
             .filterBy(queryFilters)
             .getQueryResults();
     }

@@ -4,6 +4,6 @@
 *************************************************************************************************/
 public interface IQueryArgumentFormatter {
 
-    String getValue();
+    String getValue(Object argumentValue);
 
 }

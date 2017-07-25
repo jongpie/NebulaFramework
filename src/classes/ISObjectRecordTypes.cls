@@ -1,7 +1,9 @@
 public interface ISObjectRecordTypes {
 
-    ISObjectRecordTypes setSObjectType(Schema.SObjectType sobjectType);
+    // Setup methods
+    Schema.SObjectType getSObjectType();
 
+    // Getter methods
     Map<Id, RecordType> getAllById();
     Map<String, RecordType> getAllByDeveloperName();
 

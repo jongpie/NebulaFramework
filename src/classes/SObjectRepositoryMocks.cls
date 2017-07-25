@@ -19,6 +19,11 @@ public class SObjectRepositoryMocks {
             this.records = records;
         }
 
+        public Schema.SObjectType getSObjectType() {
+            // TODO fix this
+            return Schema.User.SObjectType;
+        }
+
         public Base with(List<SObject> records) {
             this.records = records;
             return this;
@@ -96,7 +101,7 @@ public class SObjectRepositoryMocks {
         }
 
         public virtual IQueryBuilder getQueryBuilder() {
-            return new QueryBuilder(this.records.getSObjectType(), null, null);
+            return new QueryBuilder().setSObjectType(this.records.getSObjectType());
         }
 
         private void createMockObjects() {

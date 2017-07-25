@@ -13,34 +13,75 @@ public class QueryBuilder extends NebulaCore implements IQueryBuilder {
     @testVisible private Boolean forUpdate;
     private Integer limitCount;
 
-    private final Schema.FieldSet fieldSet;
-    private final List<Schema.SObjectField> sobjectFieldList;
-    private final SObjectType sobjectType;
-    private final Map<String, Schema.SObjectField> sobjectTypeFieldMap;
+    private Boolean addAllFields;
+    // TODO remove maybe
+    //private Schema.FieldSet fieldSet;
+    //private List<Schema.SObjectField> sobjectFieldList;
+    private SObjectType sobjectType;
+    private Map<String, Schema.SObjectField> sobjectTypeFieldMap;
 
-    public QueryBuilder(Schema.SObjectType sobjectType) {
-        this(sobjectType, null, null);
-    }
-
-    public QueryBuilder(Schema.SObjectType sobjectType, Schema.FieldSet fieldSet, List<Schema.SObjectField> sobjectFieldList) {
+    public QueryBuilder() {
         this.currentModule = NebulaCore.Module.REPOSITORY;
-
-        this.sobjectType         = sobjectType;
-        this.sobjectFieldList    = sobjectFieldList;
-        this.fieldSet            = fieldSet;
-        this.sobjectTypeFieldMap = this.sobjectType.getDescribe().fields.getMap();
 
         this.queryFields              = new Set<String>();
         this.childRelationshipQueries = new List<String>();
         this.whereClauseList          = new List<String>();
         this.orderByList              = new List<String>();
         this.forUpdate                = false;
+        this.addAllFields             = false;
 
         this.addCommonQueryFields();
-        this.addFieldSetMembers();
-        this.addSObjectFields();
-        this.addSObjectTypeFields();
     }
+
+    public IQueryBuilder setSObjectType(Schema.SObjectType sobjectType) {
+        this.sobjectType         = sobjectType;
+        this.sobjectTypeFieldMap = sobjectType.getDescribe().fields.getMap();
+        return this;
+    }
+
+    public IQueryBuilder addFields(Schema.FieldSet fieldSet) {
+        for(Schema.FieldSetMember field : fieldSet.getFields()) this.queryFields.add(field.getFieldPath().toLowerCase());
+        return this;
+    }
+
+    public IQueryBuilder addFields(List<Schema.SObjectField> fields) {
+        for(Schema.SObjectField field : fields) this.queryFields.add(field.getDescribe().getName().toLowerCase());
+        return this;
+    }
+
+    public IQueryBuilder addAllFields() {
+        // TODO
+        this.addAllFields = true;
+        for(Schema.SObjectField field : this.sobjectTypeFieldMap.values()) {
+            Schema.DescribeFieldResult fieldDescribe = field.getDescribe();
+
+            this.queryFields.add(fieldDescribe.getName());
+        }
+        return this;
+    }
+
+    public IQueryBuilder addAllStandardFields() {
+        for(Schema.SObjectField field : this.sobjectTypeFieldMap.values()) {
+            Schema.DescribeFieldResult fieldDescribe = field.getDescribe();
+            // If it's not a standard field, skip it
+            if(fieldDescribe.isCustom()) continue;
+
+            this.queryFields.add(fieldDescribe.getName());
+        }
+        return this;
+    }
+
+    public IQueryBuilder addAllCustomFields() {
+        for(Schema.SObjectField field : this.sobjectTypeFieldMap.values()) {
+            Schema.DescribeFieldResult fieldDescribe = field.getDescribe();
+            // If it's not a custom field, skip it
+            if(!fieldDescribe.isCustom()) continue;
+
+            this.queryFields.add(field.getDescribe().getName());
+        }
+        return this;
+    }
+
 
     public IQueryBuilder filterBy(IQueryFilter queryFilter) {
         return this.filterBy(new List<IQueryFilter>{queryFilter});
@@ -149,7 +190,7 @@ public class QueryBuilder extends NebulaCore implements IQueryBuilder {
     }
 
     private String getSearchQuery(String searchTerm, QuerySearchGroup searchGroup) {
-        this.query = 'FIND ' + new QueryArgumentFormatter(searchTerm.toLowerCase()).getValue()
+        this.query = 'FIND ' + NebulaFactory.getQueryArgumentFormatter().getValue(searchTerm.toLowerCase())
             + '\nIN ' + searchGroup.name().replace('_', ' ')
             + '\nRETURNING ' + this.sobjectType + '('
                 + this.getQueryFieldString()
@@ -165,6 +206,11 @@ public class QueryBuilder extends NebulaCore implements IQueryBuilder {
     }
 
     private String getQueryFieldString() {
+        Set<String> cleanedQueryField = new Set<String>();
+        for(String queryField : new List<String>(this.queryFields)) {
+            cleanedQueryField.add(queryField.toLowerCase());
+        }
+        this.queryFields = cleanedQueryField;
         List<String> queryFieldList = new List<String>(this.queryFields);
         queryFieldList.sort();
         return String.join(queryFieldList, ', ');
@@ -204,26 +250,6 @@ public class QueryBuilder extends NebulaCore implements IQueryBuilder {
 
             this.queryFields.add(commonFieldName.toLowerCase());
         }
-    }
-
-    private void addFieldSetMembers() {
-        if(this.fieldSet == null) return;
-
-        for(Schema.FieldSetMember field : this.fieldSet.getFields()) this.queryFields.add(field.getFieldPath().toLowerCase());
-    }
-
-    private void addSObjectFields() {
-        if(this.sobjectFieldList == null) return;
-
-        for(Schema.SObjectField field : this.sobjectFieldList) this.queryFields.add(field.getDescribe().getName().toLowerCase());
-    }
-
-    private void addSObjectTypeFields() {
-        if(this.fieldSet != null || this.sobjectFieldList != null) return;
-
-        // If no field set or list of fields is provided, we enter 'lazy mode' and all fields for the SObject Type are added
-        // This is effectively 'select * from <sobject>'. Performance issues can occur with large objects, so use carefully.
-        for(Schema.SObjectField field : this.sobjectTypeFieldMap.values()) this.queryFields.add(field.getDescribe().getName().toLowerCase());
     }
 
     private void logEntry(List<Object> results) {

@@ -7,12 +7,8 @@ private class SObjectRepository_Tests {
 
     private class AccountRepository extends SObjectRepository {
         // Test subclass that extends SObjectRepository
-        public AccountRepository() {
-            super(Schema.Account.SObjectType, new List<Schema.SObjectField>{Schema.Account.Id, Schema.Account.Name});
-        }
-
-        public AccountRepository(Schema.FieldSet fieldSet) {
-            super(Schema.Account.SObjectType, fieldSet);
+        public override Schema.SObjectType getSObjectType() {
+            return Schema.Account.SObjectType;
         }
 
         public List<Account> getMyRecentAccounts(Integer limitCount) {
@@ -35,14 +31,14 @@ private class SObjectRepository_Tests {
     }
 
     private class ContactRepository extends SObjectRepository {
-        public ContactRepository() {
-            super(Schema.Contact.SObjectType, new List<Schema.SObjectField>{Schema.Contact.Id, Schema.Contact.AccountId, Schema.Contact.Email, Schema.Contact.LastName});
+        public override Schema.SObjectType getSObjectType() {
+            return Schema.Contact.SObjectType;
         }
     }
 
     private class UserRepository extends SObjectRepository {
-        public UserRepository() {
-            super(Schema.User.SObjectType);
+        public override Schema.SObjectType getSObjectType() {
+            return Schema.User.SObjectType;
         }
 
         public override void upsertRecords(SObject record, Schema.SObjectField externalIdField) {
@@ -81,7 +77,7 @@ private class SObjectRepository_Tests {
         Schema.FieldSet fieldSet;
 
         Test.startTest();
-        SObjectRepository_Tests.AccountRepository accountRepo = new SObjectRepository_Tests.AccountRepository(fieldSet);
+        SObjectRepository_Tests.AccountRepository accountRepo = new SObjectRepository_Tests.AccountRepository();
         System.assertNotEquals(null, accountRepo);
         Test.stopTest();
     }
@@ -331,7 +327,7 @@ private class SObjectRepository_Tests {
         new SObjectRepository_Tests.UserRepository().upsertRecords(existingUser, Schema.User.Username);
         Test.stopTest();
 
-        existingUser = [SELECT Id, LastModifiedDate FROM User WHERE Id = :existingUser.Id];
+        existingUser = [SELECT Id, LastModifiedDate FROM User LIMIT 1];
         System.assert(existingUser.LastModifiedDate > originalLastModifiedDate, existingUser);
     }
 

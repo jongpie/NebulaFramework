@@ -7,8 +7,8 @@ private class SObjectRecordTypes_Tests {
 
     private class UserRecordTypes extends SObjectRecordTypes {
         // Test subclass that extends SObjectRecordTypes
-        public UserRecordTypes() {
-            this.setSObjectType(Schema.User.SObjectType);
+        public override Schema.SObjectType getSObjectType() {
+            return Schema.User.SObjectType;
         }
     }
 

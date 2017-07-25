@@ -19,7 +19,7 @@ private class SObjectRepositoryMocks_Tests {
         Id testId = getTestId();
         SObjectField field = getField();
 
-        List<QueryFilter> queryFilters = new List<QueryFilter>{new QueryFilter(field, QueryOperator.EQUALS, getFieldValue())};
+        List<IQueryFilter> queryFilters = new List<IQueryFilter>{NebulaFactory.getQueryFilter().initialize(field, QueryOperator.EQUALS, getFieldValue())};
         SObject returnedObj = new SObjectRepositoryMocks.Base(null).getByIdAndQueryFilters(new Set<Id>{testId}, queryFilters)[0];
 
         System.assertEquals(getFieldValue(), returnedObj.get(String.valueOf(field)));
@@ -27,7 +27,7 @@ private class SObjectRepositoryMocks_Tests {
 
     @isTest
     static void it_should_return_list_of_sobjects_when_mocking_sosl_search() {
-        System.assert(new SObjectRepositoryMocks.Base().getSearchResults(getFieldValue(),QuerySearchGroup.ALL_FIELDS) instanceof List<SObject>);
+        System.assert(new SObjectRepositoryMocks.Base().getSearchResults(getFieldValue(), QuerySearchGroup.ALL_FIELDS) instanceof List<SObject>);
     }
 
     @isTest
