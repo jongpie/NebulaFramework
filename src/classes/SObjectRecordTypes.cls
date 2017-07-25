@@ -48,13 +48,13 @@ public abstract class SObjectRecordTypes extends NebulaCore implements ISObjectR
         IQueryBuilder query = (IQueryBuilder)NebulaFactory.getQueryBuilder(this.sobjectType);
 
         if(NebulaSettings.RecordTypesSettings.LazyLoad__c) {
-            query.filterBy(NebulaFactory.getQueryFilter().initialize(Schema.RecordType.SObjectType, QueryOperator.EQUALS, this.sobjectName));
+            query.filterBy(NebulaFactory.getQueryFilter(Schema.RecordType.SObjectType, QueryOperator.EQUALS, this.sobjectName));
             Logger.addEntry(this, 'NebulaSettings.RecordTypesSettings.LazyLoad__c=' + NebulaSettings.RecordTypesSettings.LazyLoad__c);
             Logger.addEntry(this, 'this.sobjectName=' + this.sobjectName);
         }
 
         if(!NebulaSettings.RecordTypesSettings.IncludeManagedRecordTypes__c) {
-            query.filterBy(NebulaFactory.getQueryFilter().initialize(Schema.RecordType.NamespacePrefix, QueryOperator.EQUALS, null));
+            query.filterBy(NebulaFactory.getQueryFilter(Schema.RecordType.NamespacePrefix, QueryOperator.EQUALS, null));
         }
 
         query.orderBy(Schema.RecordType.DeveloperName);
