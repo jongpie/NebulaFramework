@@ -29,13 +29,12 @@ public class QueryBuilder extends NebulaCore implements IQueryBuilder {
         this.orderByList              = new List<String>();
         this.forUpdate                = false;
         this.addAllFields             = false;
-
-        this.addCommonQueryFields();
     }
 
     public IQueryBuilder setSObjectType(Schema.SObjectType sobjectType) {
         this.sobjectType         = sobjectType;
         this.sobjectTypeFieldMap = sobjectType.getDescribe().fields.getMap();
+        this.addCommonQueryFields();
         return this;
     }
 
