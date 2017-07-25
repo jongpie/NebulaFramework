@@ -4,6 +4,10 @@
 *************************************************************************************************/
 public interface IQueryFilter {
 
+    //TODO
+    //IQueryFilter initialize(Schema.SObjectType sobjectType);
+    IQueryFilter initialize(Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue);
+
     Object getProvidedValue();
     Schema.SObjectField getSObjectField();
     String getValue();

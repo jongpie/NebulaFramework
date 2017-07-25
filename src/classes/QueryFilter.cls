@@ -11,6 +11,10 @@ public class QueryFilter implements IQueryFilter {
     private Object providedValue;
     @testVisible private String queryFieldName;
 
+    public QueryFilter() {
+            //TODO
+    }
+
     public QueryFilter(Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue) {
         this(new List<Schema.SObjectField>(), fieldToFilter, operator, providedValue);
     }
@@ -19,14 +23,25 @@ public class QueryFilter implements IQueryFilter {
         this(new List<Schema.SObjectField>{parentRelationshipField}, fieldToFilter, operator, providedValue);
     }
 
-    public QueryFilter(List<Schema.SObjectField> sortedParentRelationshipFields, Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue) {
-        this.parentRelationshipFields = sortedParentRelationshipFields;
+    public QueryFilter(List<Schema.SObjectField> parentRelationshipFieldChain, Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue) {
+        this.parentRelationshipFields = parentRelationshipFieldChain;
         this.sobjectField             = fieldToFilter;
         this.sobjectType              = new SObjectFieldDescriber(fieldToFilter).SObjectType;
         this.operator                 = operator;
         this.providedValue            = providedValue;
 
         this.setQueryFieldName();
+    }
+
+    public IQueryFilter initialize(Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue) {
+        this.sobjectField             = fieldToFilter;
+        this.sobjectType              = new SObjectFieldDescriber(fieldToFilter).SObjectType;
+        this.operator                 = operator;
+        this.providedValue            = providedValue;
+
+        this.setQueryFieldName();
+
+        return this;
     }
 
     public Object getProvidedValue() {
@@ -38,7 +53,10 @@ public class QueryFilter implements IQueryFilter {
     }
 
     public String getValue() {
-        return this.queryFieldName + ' ' + this.operator.getValue() + ' ' + new QueryArgumentFormatter(this.providedValue).getValue();
+        //return this.queryFieldName + ' ' + this.operator.getValue() + ' ' + new QueryArgumentFormatter(this.providedValue).getValue();
+        //IQueryArgumentFormatter argumentFormatter = (IQueryArgumentFormatter)NebulaImplementation1.QUERY_ARGUMENT_FORMATTER_IMPLEMENTATION.newInstance();
+        IQueryArgumentFormatter argumentFormatter = NebulaFactory.getQueryArgumentFormatter();
+        return this.queryFieldName + ' ' + this.operator.getValue() + ' ' + argumentFormatter.getValue(this.providedValue);
     }
 
     private void setQueryFieldName() {
