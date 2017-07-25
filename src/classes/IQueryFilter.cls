@@ -5,11 +5,10 @@
 public interface IQueryFilter {
 
     //TODO
-    //IQueryFilter initialize(Schema.SObjectType sobjectType);
+    // Setup methods
     IQueryFilter initialize(Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue);
 
-    Object getProvidedValue();
-    Schema.SObjectField getSObjectField();
+    // Getter methods
     String getValue();
 
 }
