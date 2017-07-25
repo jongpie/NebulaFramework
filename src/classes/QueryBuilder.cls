@@ -246,6 +246,8 @@ public class QueryBuilder extends NebulaCore implements IQueryBuilder {
             'Name', 'OwnerId', 'ParentId', 'Subject', 'RecordTypeId', 'SystemModStamp'
         };
         for(String commonFieldName : commonFieldNameList) {
+            // TODO this is duplicated from the constructor, need to consolidate
+            this.sobjectTypeFieldMap = this.sobjectType.getDescribe().fields.getMap();
             if(!this.sobjectTypeFieldMap.containsKey(commonFieldName)) continue;
 
             this.queryFields.add(commonFieldName.toLowerCase());
