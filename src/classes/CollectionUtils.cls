@@ -4,6 +4,22 @@
 *************************************************************************************************/
 public without sharing class CollectionUtils {
 
+    public static Object getLastItem(List<Object> listOfItems) {
+        // TODO verify if all 3 new methods should be kept, then add unit tests for any that are kept
+        Integer indexOfItem = listOfItems.size() - 1;
+        return listOfItems[indexOfItem];
+    }
+
+    public static Object pop(List<Object> listToSplice) {
+        return splice(listToSplice, listToSplice.size() - 1);
+    }
+
+    public static Object splice(List<Object> listToSplice, Integer indexOfItem) {
+        Object itemToRemove = listToSplice[indexOfItem];
+        listToSplice.remove(indexOfItem);
+        return itemToRemove;
+    }
+
     public static Boolean isCollection(Object input) {
         return isList(input) || isSet(input) || isMap(input);
     }
