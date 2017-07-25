@@ -52,7 +52,7 @@ public abstract class SObjectRepository extends DML implements ISObjectRepositor
 
     public virtual List<SObject> getByIdAndQueryFilters(List<Id> idList, List<IQueryFilter> queryFilters) {
         return this.Query
-            .filterBy(NebulaFactory.getQueryFilter().initialize(this.idField, QueryOperator.IS_IN, idList))
+            .filterBy(NebulaFactory.getQueryFilter(this.idField, QueryOperator.IS_IN, idList))
             .filterBy(queryFilters)
             .getQueryResults();
     }
