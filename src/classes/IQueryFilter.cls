@@ -9,6 +9,8 @@ public interface IQueryFilter {
     IQueryFilter initialize(Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue);
 
     // Getter methods
+    Object getProvidedValue();
+    Schema.SObjectField getSObjectField();
     String getValue();
 
 }

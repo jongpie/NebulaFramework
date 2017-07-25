@@ -44,6 +44,14 @@ public class QueryFilter implements IQueryFilter {
         return this;
     }
 
+    public Object getProvidedValue() {
+        return this.providedValue;
+    }
+
+    public Schema.SObjectField getSObjectField() {
+        return this.sobjectField;
+    }
+
     public String getValue() {
         // TODO cleanup
         //return this.queryFieldName + ' ' + this.operator.getValue() + ' ' + new QueryArgumentFormatter(this.providedValue).getValue();
