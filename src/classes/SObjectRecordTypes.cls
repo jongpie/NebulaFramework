@@ -42,8 +42,8 @@ public abstract class SObjectRecordTypes extends NebulaCore implements ISObjectR
     private void populateCache() {
         if(cachedRecordTypesBySObjectMap.containsKey(this.sobjectName)) return;
 
-        // Trying to call Schema.RecordType.SObjectType confuses Apex, so we have to get it dynamically
-        Schema.SObjectType recordTypeSObjectType = Schema.getGlobalDescribe().get('RecordType');
+        // Trying to call Schema.RecordType.SObjectType confuses Apex, so we have to get it do an extra describe call
+        Schema.SObjectType recordTypeSObjectType = Schema.SObjectType.RecordType.getSObjectType();
         IQueryBuilder query = (IQueryBuilder)NebulaFactory.getQueryBuilder(recordTypeSObjectType);
 
         // If we don't have the SObject cached, then we need to query
