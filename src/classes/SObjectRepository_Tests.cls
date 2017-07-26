@@ -21,7 +21,7 @@ private class SObjectRepository_Tests {
 
         public Account getAccountAndContactsWithEmails(Id accountId) {
             return (Account)this.Query
-                .filterBy(NebulaFactory.getQueryFilter(Schema.Account.Id, QueryOperator.EQUALS, accountId))
+                .filterBy(NebulaFactory.getQueryFilter().setValue(Schema.Account.Id, QueryOperator.EQUALS, accountId))
                 .includeChildrenRecords(
                     Schema.Contact.AccountId,
                     new ContactRepository()
@@ -96,7 +96,7 @@ private class SObjectRepository_Tests {
     @isTest
     static void it_should_get_by_id_using_query_filter() {
         Account expectedAccount = [SELECT Id FROM Account LIMIT 1];
-        IQueryFilter queryFilter = NebulaFactory.getQueryFilter(Schema.Account.Id, QueryOperator.EQUALS, expectedAccount.Id);
+        IQueryFilter queryFilter = NebulaFactory.getQueryFilter().setValue(Schema.Account.Id, QueryOperator.EQUALS, expectedAccount.Id);
 
         Test.startTest();
         Account returnedAccount = ((List<Account>)new SObjectRepository_Tests.AccountRepository().get(queryFilter))[0];
@@ -108,7 +108,7 @@ private class SObjectRepository_Tests {
     @isTest
     static void it_should_get_by_id_using_list_of_query_filters() {
         Account expectedAccount = [SELECT Id FROM Account LIMIT 1];
-        IQueryFilter queryFilter = NebulaFactory.getQueryFilter(Schema.Account.Id, QueryOperator.EQUALS, expectedAccount.Id);
+        IQueryFilter queryFilter = NebulaFactory.getQueryFilter().setValue(Schema.Account.Id, QueryOperator.EQUALS, expectedAccount.Id);
 
         Test.startTest();
         Account returnedAccount = ((List<Account>)new SObjectRepository_Tests.AccountRepository().get(new List<IQueryFilter>{queryFilter}))[0];
@@ -149,7 +149,7 @@ private class SObjectRepository_Tests {
         ISObjectRepository repo = new SObjectRepository_Tests.AccountRepository();
 
         Test.startTest();
-        IQueryFilter queryFilter = NebulaFactory.getQueryFilter(Schema.Account.Name, QueryOperator.EQUALS, 'My Test Company');
+        IQueryFilter queryFilter = NebulaFactory.getQueryFilter().setValue(Schema.Account.Name, QueryOperator.EQUALS, 'My Test Company');
         List<IQueryFilter> queryFilters = new List<IQueryFilter>{queryFilter};
         List<Account> returnedAccountList = (List<Account>)repo.getByIdAndQueryFilters(expectedAccountMap.keyset(), queryFilters);
         Test.stopTest();
@@ -166,7 +166,7 @@ private class SObjectRepository_Tests {
         ISObjectRepository repo = new SObjectRepository_Tests.AccountRepository();
 
         Test.startTest();
-        IQueryFilter queryFilter = NebulaFactory.getQueryFilter(Schema.Account.Name, QueryOperator.EQUALS, 'My Test Company');
+        IQueryFilter queryFilter = NebulaFactory.getQueryFilter().setValue(Schema.Account.Name, QueryOperator.EQUALS, 'My Test Company');
         List<IQueryFilter> queryFilters = new List<IQueryFilter>{queryFilter};
         List<Account> returnedAccountList = (List<Account>)repo.getByIdAndQueryFilters(new List<Id>(expectedAccountMap.keyset()), queryFilters);
         Test.stopTest();
@@ -253,7 +253,7 @@ private class SObjectRepository_Tests {
         System.assertNotEquals(0, expectedAccountList.size());
 
         Test.startTest();
-        IQueryFilter queryFilter = NebulaFactory.getQueryFilter(Schema.Account.CreatedDate, QueryOperator.EQUALS, QueryDateLiteral.TODAY);
+        IQueryFilter queryFilter = NebulaFactory.getQueryFilter().setValue(Schema.Account.CreatedDate, QueryOperator.EQUALS, QueryDateLiteral.TODAY);
         List<IQueryFilter> queryFilters = new List<IQueryFilter>{queryFilter};
         List<Account> returnedAccountList = (List<Account>)new SObjectRepository_Tests.AccountRepository().getSearchResults(searchTerm, QuerySearchGroup.NAME_FIELDS, queryFilters);
         Test.stopTest();

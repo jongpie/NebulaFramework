@@ -44,17 +44,17 @@ public abstract class SObjectRecordTypes extends NebulaCore implements ISObjectR
 
         // Trying to call Schema.RecordType.SObjectType confuses Apex, so we have to get it do an extra describe call
         Schema.SObjectType recordTypeSObjectType = Schema.SObjectType.RecordType.getSObjectType();
-        IQueryBuilder query = (IQueryBuilder)NebulaFactory.getQueryBuilder(recordTypeSObjectType);
+        IQueryBuilder query = (IQueryBuilder)NebulaFactory.getQueryBuilder().setSObjectType(recordTypeSObjectType);
 
         // If we don't have the SObject cached, then we need to query
         if(NebulaSettings.RecordTypesSettings.LazyLoad__c) {
-            query.filterBy(NebulaFactory.getQueryFilter(Schema.RecordType.SObjectType, QueryOperator.EQUALS, this.sobjectName));
+            query.filterBy(NebulaFactory.getQueryFilter().setValue(Schema.RecordType.SObjectType, QueryOperator.EQUALS, this.sobjectName));
             Logger.addEntry(this, 'NebulaSettings.RecordTypesSettings.LazyLoad__c=' + NebulaSettings.RecordTypesSettings.LazyLoad__c);
             Logger.addEntry(this, 'this.sobjectName=' + this.sobjectName);
         }
 
         if(!NebulaSettings.RecordTypesSettings.IncludeManagedRecordTypes__c) {
-            query.filterBy(NebulaFactory.getQueryFilter(Schema.RecordType.NamespacePrefix, QueryOperator.EQUALS, null));
+            query.filterBy(NebulaFactory.getQueryFilter().setValue(Schema.RecordType.NamespacePrefix, QueryOperator.EQUALS, null));
         }
 
         query.orderBy(Schema.RecordType.DeveloperName);
