@@ -246,7 +246,7 @@ public class QueryBuilder extends NebulaCore implements IQueryBuilder {
     }
 
     private void logEntry(List<Object> results) {
-        String logEntry = 'Query:\n' + this.query + '\n\nResults:\n' + JSON.serialize(results);
+        String logEntry = 'Query:\n' + this.query + '\n\nResults:\n' + JSON.serializePretty(results);
         Logger.addEntry(this, logEntry);
     }
 
