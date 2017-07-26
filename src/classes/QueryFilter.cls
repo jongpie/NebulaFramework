@@ -66,7 +66,7 @@ public class QueryFilter implements IQueryFilter {
         }
 
         // Set the fully qualified field name
-        this.queryFieldName =  parsedFieldChain + lastField.getDescribe().getName();
+        this.queryFieldName = parsedFieldChain + lastField.getDescribe().getName();
     }
 
 }
