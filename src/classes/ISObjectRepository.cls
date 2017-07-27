@@ -21,6 +21,6 @@ public interface ISObjectRepository {
     List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup, List<IQueryFilter> queryFilters);
 
     // Additional methods
-    IQueryBuilder getQueryBuilder();
+    ISObjectQueryBuilder getQueryBuilder();
 
 }

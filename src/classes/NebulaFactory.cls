@@ -1,9 +1,10 @@
 public without sharing class NebulaFactory {
 
-    private static final System.Type DEFAULT_QUERY_ARGUMENT_FORMATTER_IMPLEMENTATION = QueryArgumentFormatter.class;
-    private static final System.Type DEFAULT_QUERY_BUILDER_IMPLEMENTATION            = QueryBuilder.class;
-    private static final System.Type DEFAULT_QUERY_FILTER_IMPLEMENTATION             = QueryFilter.class;
-    private static final System.Type DEFAULT_SOBJECT_REPOSITORY_IMPLEMENTATION       = SObjectRepository.class;
+    private static final System.Type DEFAULT_AGGREGATE_RESULT_QUERY_BUILDER_IMPLEMENTATION = AggregateResultQueryBuilder.class;
+    private static final System.Type DEFAULT_QUERY_ARGUMENT_FORMATTER_IMPLEMENTATION       = QueryArgumentFormatter.class;
+    private static final System.Type DEFAULT_SOBJECT_QUERY_BUILDER_IMPLEMENTATION          = SObjectQueryBuilder.class;
+    private static final System.Type DEFAULT_QUERY_FILTER_IMPLEMENTATION                   = QueryFilter.class;
+    private static final System.Type DEFAULT_SOBJECT_REPOSITORY_IMPLEMENTATION             = SObjectRepository.class;
 
     private static Map<String, NebulaInterfaceImplementation__mdt> interfaceConfigs;
     private static String invalidClassForInterfaceError = 'The configured class "{0}" does not implement the Nebula interface "{1}". Actual type: {2}';
@@ -12,8 +13,12 @@ public without sharing class NebulaFactory {
         return (IQueryArgumentFormatter)createInterfaceImplementation(IQueryArgumentFormatter.class, DEFAULT_QUERY_ARGUMENT_FORMATTER_IMPLEMENTATION);
     }
 
-    public static IQueryBuilder getQueryBuilder() {
-        return (IQueryBuilder)createInterfaceImplementation(IQueryBuilder.class, DEFAULT_QUERY_BUILDER_IMPLEMENTATION);
+    public static ISObjectQueryBuilder getSObjectQueryBuilder() {
+        return (ISObjectQueryBuilder)createInterfaceImplementation(ISObjectQueryBuilder.class, DEFAULT_SOBJECT_QUERY_BUILDER_IMPLEMENTATION);
+    }
+
+    public static IAggregateResultQueryBuilder getAggregateQueryBuilder() {
+        return (IAggregateResultQueryBuilder)createInterfaceImplementation(IAggregateResultQueryBuilder.class, DEFAULT_AGGREGATE_RESULT_QUERY_BUILDER_IMPLEMENTATION);
     }
 
     public static IQueryFilter getQueryFilter() {

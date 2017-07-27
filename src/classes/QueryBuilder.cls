@@ -2,19 +2,19 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
-public class QueryBuilder extends NebulaCore implements IQueryBuilder {
+public virtual class QueryBuilder extends NebulaCore implements IQueryBuilder {
 
-    private String query;
-    private Set<String> queryFields;
-    private List<String> childRelationshipQueries;
-    private List<String> whereClauseList;
-    @testVisible private List<String> orderByList;
-    private QueryFilterScope filterScope;
-    @testVisible private Boolean forUpdate;
-    private Integer limitCount;
+    protected String query;
+    protected Set<String> queryFields; //TODO SObjectQueryBuilder because aggregates need to be a sorted list (impacts group by), not an unsorted set
+    protected List<String> childRelationshipQueries;
+    protected List<String> whereClauseList;
+    @testVisible protected List<String> orderByList;
+    protected QueryFilterScope filterScope;
+    @testVisible protected Boolean forUpdate;
+    protected Integer limitCount;
 
-    private SObjectType sobjectType;
-    private Map<String, Schema.SObjectField> sobjectTypeFieldMap;
+    protected SObjectType sobjectType;
+    protected Map<String, Schema.SObjectField> sobjectTypeFieldMap;
 
     public QueryBuilder() {
         this.currentModule = NebulaCore.Module.REPOSITORY;
@@ -34,6 +34,12 @@ public class QueryBuilder extends NebulaCore implements IQueryBuilder {
         return this;
     }
 
+    protected void setSObjectTypeDependencies() {
+        this.sobjectType         = sobjectType;
+        this.sobjectTypeFieldMap = sobjectType.getDescribe().fields.getMap();
+        this.addCommonQueryFields();
+    }
+
     public IQueryBuilder addFields(Schema.FieldSet fieldSet) {
         for(Schema.FieldSetMember field : fieldSet.getFields()) this.queryFields.add(field.getFieldPath().toLowerCase());
         return this;
@@ -44,14 +50,14 @@ public class QueryBuilder extends NebulaCore implements IQueryBuilder {
         return this;
     }
 
-    public IQueryBuilder addAllFields() {
+    public IQueryBuilder addAllFields() { // TODO - SObjectQueryBuilder
         for(Schema.SObjectField field : this.sobjectTypeFieldMap.values()) {
             this.queryFields.add(field.getDescribe().getName());
         }
         return this;
     }
 
-    public IQueryBuilder addAllStandardFields() {
+    public IQueryBuilder addAllStandardFields() { // TODO - SObjectQueryBuilder
         for(Schema.SObjectField field : this.sobjectTypeFieldMap.values()) {
             Schema.DescribeFieldResult fieldDescribe = field.getDescribe();
             // If it's not a standard field, skip it
@@ -62,7 +68,7 @@ public class QueryBuilder extends NebulaCore implements IQueryBuilder {
         return this;
     }
 
-    public IQueryBuilder addAllCustomFields() {
+    public IQueryBuilder addAllCustomFields() { // TODO - SObjectQueryBuilder
         for(Schema.SObjectField field : this.sobjectTypeFieldMap.values()) {
             Schema.DescribeFieldResult fieldDescribe = field.getDescribe();
             // If it's not a custom field, skip it
@@ -73,7 +79,7 @@ public class QueryBuilder extends NebulaCore implements IQueryBuilder {
         return this;
     }
 
-
+//TODO deprecate and instead use only OR & AND methods? Might still be needed though
     public IQueryBuilder filterBy(IQueryFilter queryFilter) {
         return this.filterBy(new List<IQueryFilter>{queryFilter});
     }
@@ -85,16 +91,40 @@ public class QueryBuilder extends NebulaCore implements IQueryBuilder {
         return this;
     }
 
+    public IQueryBuilder andFilterBy(List<IQueryFilter> queryFilters) {
+        // TODO finish implementing!
+        return this.filterByWithSeparator(queryFilters, 'AND');
+    }
+
+    public IQueryBuilder orFilterBy(List<IQueryFilter> queryFilters) {
+// TODO finish implementing!
+        return this.filterByWithSeparator(queryFilters, 'OR');
+    }
+
+    private IQueryBuilder filterByWithSeparator(List<IQueryFilter> queryFilters, String separator) {
+// TODO finish implementing!
+        if(queryFilters == null) return this;
+
+        List<String> queryFilterValues = new List<String>();
+        for(IQueryFilter queryFilter : queryFilters) queryFilterValues.add(queryFilter.getValue());
+
+        String orStatement = '(' + String.join(queryFilterValues, ' ' + separator + ' ') + ')';
+        this.whereClauseList.add(orStatement);
+        return this;
+    }
+
     public IQueryBuilder includeChildrenRecords(Schema.SObjectField childToParentRelationshipField, ISObjectRepository childSObjectRepository) {
+        // TODO SObjectQueryBuilder??
         return this.includeChildrenRecords(new Map<Schema.SObjectField, ISObjectRepository>{childToParentRelationshipField => childSObjectRepository});
     }
 
     public IQueryBuilder includeChildrenRecords(Map<Schema.SObjectField, ISObjectRepository> childFieldToChildSObjectRepositoryMap) {
-        for(Schema.SObjectField sobjectField : childFieldToChildSObjectRepositoryMap.keySet()) {
-            IQueryBuilder childQueryBuilder = childFieldToChildSObjectRepositoryMap.get(sobjectField).getQueryBuilder();
-
-            this.childRelationshipQueries.add(childQueryBuilder.getQuery(sobjectField));
-        }
+        // TODO SObjectQueryBuilder??
+        // for(Schema.SObjectField sobjectField : childFieldToChildSObjectRepositoryMap.keySet()) {
+        //     IQueryBuilder childQueryBuilder = childFieldToChildSObjectRepositoryMap.get(sobjectField).getQueryBuilder();
+        //
+        //     this.childRelationshipQueries.add(childQueryBuilder.getQuery(sobjectField));
+        // }
         return this;
     }
 
@@ -123,7 +153,7 @@ public class QueryBuilder extends NebulaCore implements IQueryBuilder {
         return this;
     }
 
-    public IQueryBuilder setAsUpdate() {
+    public IQueryBuilder setAsUpdate() {// TODO - SObjectQueryBuilder??
         this.forUpdate = true;
         return this;
     }
@@ -134,11 +164,11 @@ public class QueryBuilder extends NebulaCore implements IQueryBuilder {
     }
 
     // Query execution methods
-    public SObject getFirstQueryResult() {
+    public SObject getFirstQueryResult() {// TODO - SObjectQueryBuilder??
         return this.getQueryResults()[0];
     }
 
-    public List<SObject> getQueryResults() {
+    public List<SObject> getQueryResults() {// TODO - SObjectQueryBuilder??
         List<SObject> results = Database.query(this.getQuery());
 
         this.logEntry(results);
@@ -146,7 +176,8 @@ public class QueryBuilder extends NebulaCore implements IQueryBuilder {
         return results;
     }
 
-    public virtual List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup) {
+    public virtual List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup) {// TODO - SObjectQueryBuilder??
+        // TODO SObjectQueryBuilder??
         List<SObject> results = Search.query(this.getSearchQuery(searchTerm, searchGroup))[0];
 
         this.logEntry(results);
@@ -158,14 +189,14 @@ public class QueryBuilder extends NebulaCore implements IQueryBuilder {
     public String getQuery() {
         return this.getQuery(String.valueOf(this.sobjectType));
     }
-
+//TODO i hate this
     public String getQuery(Schema.SObjectField childRelationshipSObjectField) {
         Schema.SObjectType parentSObjectType = new SObjectFieldDescriber(childRelationshipSObjectField).getParentSObjectType();
         String childRelationshipName = new SObjectTypeDescriber(parentSObjectType).getChildRelationshipName(childRelationshipSObjectField);
         return this.getQuery(childRelationshipName);
     }
 
-    private String getQuery(String sobjectQueryName) {
+    private String getQuery(String sobjectQueryName) {// TODO - SObjectQueryBuilder?? Aggregate query needs to be built differently
         this.query = 'SELECT ' + this.getQueryFieldString();
 
         // Only 1 level of child relationships is allowed, so don't include them if the SObject name isn't the current SObject Type
@@ -180,7 +211,7 @@ public class QueryBuilder extends NebulaCore implements IQueryBuilder {
         return this.query;
     }
 
-    private String getSearchQuery(String searchTerm, QuerySearchGroup searchGroup) {
+    private String getSearchQuery(String searchTerm, QuerySearchGroup searchGroup) {// TODO - SObjectQueryBuilder??
         this.query = 'FIND ' + NebulaFactory.getQueryArgumentFormatter().getValue(searchTerm.toLowerCase())
             + '\nIN ' + searchGroup.name().replace('_', ' ')
             + '\nRETURNING ' + this.sobjectType + '('
@@ -196,7 +227,7 @@ public class QueryBuilder extends NebulaCore implements IQueryBuilder {
         return this.query;
     }
 
-    private String getQueryFieldString() {
+    private String getQueryFieldString() {// TODO - SObjectQueryBuilder?? Aggregate needs to include aggregate functions (avg, sum, etc) in the query field string
         Set<String> cleanedQueryField = new Set<String>();
         for(String queryField : new List<String>(this.queryFields)) {
             cleanedQueryField.add(queryField.toLowerCase());
@@ -207,29 +238,29 @@ public class QueryBuilder extends NebulaCore implements IQueryBuilder {
         return String.join(queryFieldList, ', ');
     }
 
-    private String getChildRelationshipsQueryString() {
+    private String getChildRelationshipsQueryString() {// TODO - SObjectQueryBuilder?? but i hate this
         if(this.childRelationshipQueries.isEmpty()) return '';
 
         return ',\n(' + String.join(childRelationshipQueries, '), (') + ')';
     }
 
-    private String getWhereClauseString() {
-        return !this.whereClauseList.isEmpty() ? '\nWHERE ' + String.join(this.whereClauseList, '\nAND ') : '';
+    protected String getWhereClauseString() {
+        return this.whereClauseList.isEmpty() ? '' : '\nWHERE ' + String.join(this.whereClauseList, '\nAND ');
     }
 
-    private String getOrderByString() {
-        return !this.orderByList.isEmpty() ? '\nORDER BY ' + String.join(new List<String>(orderByList), ', ') : '';
+    protected String getOrderByString() {
+        return this.orderByList.isEmpty() ? '' : '\nORDER BY ' + String.join(new List<String>(orderByList), ', ');
     }
 
-    private String getLimitCountString() {
+    protected String getLimitCountString() {
         return this.limitCount != null ? '\nLIMIT '+ this.limitCount : '';
     }
 
-    private String getForUpdateString() {
+    private String getForUpdateString() {// TODO - SObjectQueryBuilder??
         return this.orderByList.isEmpty() && this.forUpdate ? '\nFOR UPDATE' : '';
     }
 
-    private void addCommonQueryFields() {
+    protected void addCommonQueryFields() {
         if(!NebulaSettings.RepositorySettings.IncludeCommonFields__c) return;
         // Auto-add the common fields that are available for the SObject Type
         List<String> commonFieldNameList = new List<String>{
@@ -245,7 +276,7 @@ public class QueryBuilder extends NebulaCore implements IQueryBuilder {
         }
     }
 
-    private void logEntry(List<Object> results) {
+    protected void logEntry(List<Object> results) {
         String logEntry = 'Query:\n' + this.query + '\n\nResults:\n' + JSON.serializePretty(results);
         Logger.addEntry(this, logEntry);
     }
