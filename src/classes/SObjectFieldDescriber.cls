@@ -11,6 +11,7 @@ public without sharing class SObjectFieldDescriber {
     private static Map<Integer, Schema.SObjectType> sobjectFieldHashCodeToSObjectTypeMap;
 
     public Schema.SObjectField SObjectField {get; private set;}
+    // TODO switch this to a getSObjectType() method maybe?
     public Schema.SObjectType SObjectType {get; private set;}
 
     public SObjectFieldDescriber(Schema.SObjectField sobjectField) {

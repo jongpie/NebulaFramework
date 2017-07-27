@@ -13,6 +13,14 @@ public with sharing class SObjectQueryBuilder extends NebulaCore implements ISOb
     private Map<String, Schema.SObjectField> sobjectTypeFieldMap;
 
 
+    public SObjectQueryBuilder() {
+        this.queryFields              = new Set<String>();
+        this.childRelationshipQueries = new List<String>();
+        this.whereClauseList          = new List<String>();
+        this.orderByList              = new List<String>();
+        this.forUpdate                = false;
+    }
+
     public ISObjectQueryBuilder setSObjectType(Schema.SObjectType sobjectType) {
         // TODO verify/refactor so that this method doesnt have to be called as the first method
         this.sobjectType         = sobjectType;
@@ -93,6 +101,26 @@ public with sharing class SObjectQueryBuilder extends NebulaCore implements ISOb
            return this;
        }
 
+
+// TODO finish implementing subselects!, come up with better method name that uses verb for name (get, set, etc)
+    public ISObjectQueryBuilder inSubquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject) {
+        return this.addSubquery(sobjectFieldToFilter, lookupFieldOnRelatedSObject, 'IN');
+    }
+
+    public ISObjectQueryBuilder notInSubquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject) {
+        return this.addSubquery(sobjectFieldToFilter, lookupFieldOnRelatedSObject, 'NOT IN');
+    }
+
+    private ISObjectQueryBuilder addSubquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject, String inOrOut) {
+        String sobjectFieldToFilterName = sobjectFieldToFilter.getDescribe().getName();
+        String relatedSObjectTypeName = new SObjectFieldDescriber(lookupFieldOnRelatedSObject).SObjectType.getDescribe().getName();
+        String lookupFieldOnRelatedSObjectName = lookupFieldOnRelatedSObject.getDescribe().getName();
+
+        String subselectString = sobjectFieldToFilterName + ' ' + inOrOut + ' (SELECT ' + lookupFieldOnRelatedSObjectName + ' FROM ' + relatedSObjectTypeName + ')';
+        this.whereClauseList.add(subselectString);
+        return this;
+    }
+
    public ISObjectQueryBuilder includeChildrenRecords(Schema.SObjectField childToParentRelationshipField, ISObjectRepository childSObjectRepository) {
        // TODO SObjectQueryBuilder??
        return this.includeChildrenRecords(new Map<Schema.SObjectField, ISObjectRepository>{childToParentRelationshipField => childSObjectRepository});
@@ -166,7 +194,7 @@ public with sharing class SObjectQueryBuilder extends NebulaCore implements ISOb
    }
 
    // Query string methods
-   public String getQuery() {
+   public String getQuery() { //TODO rename to getQueryString plz
        return this.getQuery(String.valueOf(this.sobjectType));
    }
 //TODO i hate this

@@ -23,6 +23,10 @@ public interface ISObjectQueryBuilder {
     ISObjectQueryBuilder andFilterBy(List<IQueryFilter> queryFilters);
     ISObjectQueryBuilder orFilterBy(List<IQueryFilter> queryFilters);
 
+    ISObjectQueryBuilder inSubquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject);
+    ISObjectQueryBuilder notInSubquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject);
+
+// TODO stop using ISObjectRepository as a parameter
     ISObjectQueryBuilder includeChildrenRecords(Schema.SObjectField childToParentRelationshipField, ISObjectRepository childSObjectRepository);
     ISObjectQueryBuilder includeChildrenRecords(Map<Schema.SObjectField, ISObjectRepository> childFieldToChildSObjectRepositoryrMap);
 
