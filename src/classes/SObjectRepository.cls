@@ -4,10 +4,17 @@
 *************************************************************************************************/
 public abstract class SObjectRepository extends DML implements ISObjectRepository, IDML {
 
-    protected IQueryBuilder Query {
-        get { return new QueryBuilder().setSObjectType(this.getSObjectType()); }
+    protected ISObjectQueryBuilder Query {
+        //TODO use NebulaFactory
+        get { return (ISObjectQueryBuilder)new SObjectQueryBuilder();}//NebulaFactory.getSObjectQueryBuilder();}//}.setSObjectType(this.getSObjectType()); }
         private set;
     }
+
+    // protected IAggregateResultQueryBuilder AggregateQuery {
+    //     //TODO use NebulaFactory
+    //     get { return new AggregateResultQueryBuilder().setSObjectType(this.getSObjectType()); }
+    //     private set;
+    // }
 
     private List<Schema.SObjectField> sobjectFieldList;
     private Map<String, Schema.SObjectField> sobjectFieldMap;
@@ -70,8 +77,8 @@ public abstract class SObjectRepository extends DML implements ISObjectRepositor
             .filterBy(queryFilters)
             .getSearchResults(searchTerm, searchGroup);
     }
-
-    public virtual IQueryBuilder getQueryBuilder() {
+// TODO can this be removed? Each method will have different instances of QueryBuilder, this might be a stupid thing that should be removed
+    public virtual ISObjectQueryBuilder getQueryBuilder() {
         return this.Query;
     }
 

@@ -101,9 +101,9 @@ public class SObjectRepositoryMocks {
         public virtual List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup, List<IQueryFilter> queryFilters) {
             return this.returnListOfSObjects();
         }
-
-        public virtual IQueryBuilder getQueryBuilder() {
-            return new QueryBuilder().setSObjectType(this.records.getSObjectType());
+//TODO this should be deleted?
+        public virtual ISObjectQueryBuilder getQueryBuilder() {
+            return new SObjectQueryBuilder().setSObjectType(this.records.getSObjectType());
         }
 
         private void createMockObjects() {
