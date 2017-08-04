@@ -97,9 +97,28 @@ private String getParentSObjectNameField(Schema.SObjectField field) {
 
     public IQueryBuilder addAllCustomFields() { // TODO - SObjectQueryBuilder
         for(Schema.SObjectField field : this.sobjectTypeFieldMap.values()) {
-            Schema.DescribeFieldResult fieldDescribe = field.getDescribe();
             // If it's not a custom field, skip it
-            if(!fieldDescribe.isCustom()) continue;
+            if(!field.getDescribe().isCustom()) continue;
+
+            this.queryFields.add(field.getDescribe().getName());
+        }
+        return this;
+    }
+
+    public IQueryBuilder addAllReadableFields() { // TODO - SObjectQueryBuilder
+        for(Schema.SObjectField field : this.sobjectTypeFieldMap.values()) {
+            // If it's not a readable field, skip it
+            if(!field.getDescribe().isAccessible()) continue;
+
+            this.queryFields.add(field.getDescribe().getName());
+        }
+        return this;
+    }
+
+    public IQueryBuilder addAllEditableFields() { // TODO - SObjectQueryBuilder
+        for(Schema.SObjectField field : this.sobjectTypeFieldMap.values()) {
+            // If it's not an editable field, skip it
+            if(!field.getDescribe().isUpdateable()) continue;
 
             this.queryFields.add(field.getDescribe().getName());
         }
