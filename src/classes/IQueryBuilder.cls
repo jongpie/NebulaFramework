@@ -4,6 +4,17 @@
 *************************************************************************************************/
 public interface IQueryBuilder {
 
+    // TODO create diagram to show the pieces needed for using query Builder
+    //      1. set sobject Type
+    //      2. add some fields
+    //      3. Optional: filters
+    //      4. Optional: order by
+    //      5. Optional: limitCount, setAsUpdate & usingScope methods
+    //      6. Get results: getQueryResults, getFirstQueryResult, getSearchResults
+    //      7. Optional: getQuery to get the dynamically generated query string
+
+
+
     // Setter methods
     IQueryBuilder setSObjectType(Schema.SObjectType sobjectType); //IQueryBuilder
 
@@ -11,19 +22,21 @@ public interface IQueryBuilder {
     IQueryBuilder addAllFields(); //ISObjectQueryBuilder
     IQueryBuilder addAllStandardFields(); //ISObjectQueryBuilder
     IQueryBuilder addAllCustomFields(); //ISObjectQueryBuilder
+    IQueryBuilder addAllReadableFields(); //ISObjectQueryBuilder
+    IQueryBuilder addAllEditableFields(); //ISObjectQueryBuilder
     IQueryBuilder addFields(Schema.FieldSet fieldSet); //IQueryBuilder
     IQueryBuilder addFields(List<Schema.SObjectField> fields); //IQueryBuilder
+
+    // Children query methods
+    // TODO I think I hate these - change them since I'm breaking everything anuyway
+    IQueryBuilder includeChildrenRecords(Schema.SObjectField childToParentRelationshipField, ISObjectRepository childSObjectRepository); //ISObjectQueryBuilder
+    IQueryBuilder includeChildrenRecords(Map<Schema.SObjectField, ISObjectRepository> childFieldToChildSObjectRepositoryrMap); //ISObjectQueryBuilder
 
     // Filter methods
     IQueryBuilder filterBy(IQueryFilter queryFilter); //IQueryBuilder
     IQueryBuilder filterBy(List<IQueryFilter> queryFilters); //IQueryBuilder
     IQueryBuilder andFilterBy(List<IQueryFilter> queryFilters); //IQueryBuilder
     IQueryBuilder orFilterBy(List<IQueryFilter> queryFilters); //IQueryBuilder
-
-    // Children query methods
-    // TODO I think I hate these - change them since I'm breaking everything anuyway
-    IQueryBuilder includeChildrenRecords(Schema.SObjectField childToParentRelationshipField, ISObjectRepository childSObjectRepository); //ISObjectQueryBuilder
-    IQueryBuilder includeChildrenRecords(Map<Schema.SObjectField, ISObjectRepository> childFieldToChildSObjectRepositoryrMap); //ISObjectQueryBuilder
 
     // Order By methods
     IQueryBuilder orderBy(Schema.SObjectField orderByField); //IQueryBuilder
