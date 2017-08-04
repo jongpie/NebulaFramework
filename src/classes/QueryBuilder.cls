@@ -2,6 +2,13 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
+
+/**
+*
+* @group Query Builder
+*
+* @description TODO
+*/
 public virtual class QueryBuilder extends NebulaCore implements IQueryBuilder {
 
     protected String query;
@@ -40,90 +47,8 @@ public virtual class QueryBuilder extends NebulaCore implements IQueryBuilder {
         this.addCommonQueryFields();
     }
 
-    public IQueryBuilder addFields(Schema.FieldSet fieldSet) {
-        for(Schema.FieldSetMember field : fieldSet.getFields()) {
-            this.addField(this.sobjectTypeFieldMap.get(field.getFieldPath()));
-        }
-        return this;
-    }
 
-    public IQueryBuilder addFields(List<Schema.SObjectField> fields) {
-        for(Schema.SObjectField field : fields) this.addField(field);
-        return this;
-    }
 
-private void addField(Schema.SObjectField field) {
-    // TODO move this method to be with the rest of the private methods
-    this.queryFields.add(field.getDescribe().getName().toLowerCase());
-
-    // If the field is a lookup, then we need to get the name field from the parent object
-    if(field.getDescribe().getType().name() == 'Reference') {
-        this.queryFields.add(this.getParentSObjectNameField(field));
-    }
-}
-
-private String getParentSObjectNameField(Schema.SObjectField field) {
-// TODO any cleanup needed?
-// TODO move lower with other private methods
-        String relationshipName = field.getDescribe().getRelationshipName();
-        Schema.SObjectType parentSObjectType = field.getDescribe().getReferenceTo()[0];
-        String nameField;
-        for(Schema.SObjectField parentField : parentSObjectType.getDescribe().fields.getMap().values()) {
-            if(parentField.getDescribe().isNameField()) {
-                nameField = parentField.getDescribe().getName();
-                break;
-            }
-        }
-        return relationshipName + '.' + nameField;
-    }
-
-    public IQueryBuilder addAllFields() { // TODO - SObjectQueryBuilder
-        for(Schema.SObjectField field : this.sobjectTypeFieldMap.values()) {
-            this.queryFields.add(field.getDescribe().getName());
-        }
-        return this;
-    }
-
-    public IQueryBuilder addAllStandardFields() { // TODO - SObjectQueryBuilder
-        for(Schema.SObjectField field : this.sobjectTypeFieldMap.values()) {
-            Schema.DescribeFieldResult fieldDescribe = field.getDescribe();
-            // If it's not a standard field, skip it
-            if(fieldDescribe.isCustom()) continue;
-
-            this.queryFields.add(fieldDescribe.getName());
-        }
-        return this;
-    }
-
-    public IQueryBuilder addAllCustomFields() { // TODO - SObjectQueryBuilder
-        for(Schema.SObjectField field : this.sobjectTypeFieldMap.values()) {
-            // If it's not a custom field, skip it
-            if(!field.getDescribe().isCustom()) continue;
-
-            this.queryFields.add(field.getDescribe().getName());
-        }
-        return this;
-    }
-
-    public IQueryBuilder addAllReadableFields() { // TODO - SObjectQueryBuilder
-        for(Schema.SObjectField field : this.sobjectTypeFieldMap.values()) {
-            // If it's not a readable field, skip it
-            if(!field.getDescribe().isAccessible()) continue;
-
-            this.queryFields.add(field.getDescribe().getName());
-        }
-        return this;
-    }
-
-    public IQueryBuilder addAllEditableFields() { // TODO - SObjectQueryBuilder
-        for(Schema.SObjectField field : this.sobjectTypeFieldMap.values()) {
-            // If it's not an editable field, skip it
-            if(!field.getDescribe().isUpdateable()) continue;
-
-            this.queryFields.add(field.getDescribe().getName());
-        }
-        return this;
-    }
 
 //TODO deprecate and instead use only OR & AND methods? Might still be needed though
     public IQueryBuilder filterBy(IQueryFilter queryFilter) {
@@ -147,17 +72,17 @@ private String getParentSObjectNameField(Schema.SObjectField field) {
         return this.filterByWithSeparator(queryFilters, 'OR');
     }
 
-    private IQueryBuilder filterByWithSeparator(List<IQueryFilter> queryFilters, String separator) {
+private IQueryBuilder filterByWithSeparator(List<IQueryFilter> queryFilters, String separator) {
 // TODO finish implementing!
-        if(queryFilters == null) return this;
+    if(queryFilters == null) return this;
 
-        List<String> queryFilterValues = new List<String>();
-        for(IQueryFilter queryFilter : queryFilters) queryFilterValues.add(queryFilter.getValue());
+    List<String> queryFilterValues = new List<String>();
+    for(IQueryFilter queryFilter : queryFilters) queryFilterValues.add(queryFilter.getValue());
 
-        String orStatement = '(' + String.join(queryFilterValues, ' ' + separator + ' ') + ')';
-        this.whereClauseList.add(orStatement);
-        return this;
-    }
+    String orStatement = '(' + String.join(queryFilterValues, ' ' + separator + ' ') + ')';
+    this.whereClauseList.add(orStatement);
+    return this;
+}
 
     public IQueryBuilder includeChildrenRecords(Schema.SObjectField childToParentRelationshipField, ISObjectRepository childSObjectRepository) {
         // TODO SObjectQueryBuilder??
@@ -183,6 +108,7 @@ private String getParentSObjectNameField(Schema.SObjectField field) {
     }
 
     public IQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder, QueryNullSortOrder nullsSortOrder) {
+        // TODO give better name? I dont like it containing 'soql' in it if it can be used for SOSL too?
         String sortOrderSoql = '';
         if(sortOrder == QuerySortOrder.ASCENDING) sortOrderSoql = ' ASC';
         else if(sortOrder == QuerySortOrder.DESCENDING) sortOrderSoql = ' DESC';
@@ -235,7 +161,7 @@ private String getParentSObjectNameField(Schema.SObjectField field) {
     public String getQuery() {
         return this.getQuery(String.valueOf(this.sobjectType));
     }
-//TODO i hate this
+    //TODO i hate this
     public String getQuery(Schema.SObjectField childRelationshipSObjectField) {
         Schema.SObjectType parentSObjectType = new SObjectFieldDescriber(childRelationshipSObjectField).getParentSObjectType();
         String childRelationshipName = new SObjectTypeDescriber(parentSObjectType).getChildRelationshipName(childRelationshipSObjectField);
@@ -307,6 +233,7 @@ private String getParentSObjectNameField(Schema.SObjectField field) {
     }
 
     protected void addCommonQueryFields() {
+        // TODO decide if this should be public/work similar to the other addFields methods
         if(!NebulaSettings.RepositorySettings.IncludeCommonFields__c) return;
         // Auto-add the common fields that are available for the SObject Type
         List<String> commonFieldNameList = new List<String>{
@@ -323,6 +250,7 @@ private String getParentSObjectNameField(Schema.SObjectField field) {
     }
 
     protected void logEntry(List<Object> results) {
+        // TODO give this method a better name - addLogEntry maybe?
         String logEntry = 'Query:\n' + this.query + '\n\nResults:\n' + JSON.serializePretty(results);
         Logger.addEntry(this, logEntry);
     }

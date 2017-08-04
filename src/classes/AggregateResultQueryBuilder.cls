@@ -1,3 +1,12 @@
+
+/**
+*
+* @group Query Builder
+* @group-content /ApexDocContent/QueryBuilder.html
+*
+* @description TODO A builder class that generates dynamic queries & returns a list of AggregateResult
+*/
+
 //TODO add header
 public class AggregateResultQueryBuilder implements IAggregateResultQueryBuilder {//{} //extends QueryBuilder implements IAggregateResultQueryBuilder {
 
@@ -18,8 +27,8 @@ public class AggregateResultQueryBuilder implements IAggregateResultQueryBuilder
         return this;
     }
 
-    public IAggregateResultQueryBuilder avg(Schema.SObjectField sobjectField) {
-        return buildAggregateFunction('AVG', sobjectField);
+    public IAggregateResultQueryBuilder avg(Schema.SObjectField numericSObjectField) {
+        return buildAggregateFunction('AVG', numericSObjectField);
     }
 
     public IAggregateResultQueryBuilder count_distinct(Schema.SObjectField sobjectField) {
@@ -46,8 +55,8 @@ public class AggregateResultQueryBuilder implements IAggregateResultQueryBuilder
         return buildAggregateFunction('MIN', sobjectField);
     }
 
-    public IAggregateResultQueryBuilder sum(Schema.SObjectField sobjectField) {
-        return buildAggregateFunction('SUM', sobjectField);
+    public IAggregateResultQueryBuilder sum(Schema.SObjectField numericSObjectField) {
+        return buildAggregateFunction('SUM', numericSObjectField);
     }
 
     public IAggregateResultQueryBuilder groupBy(Schema.FieldSet fieldSet) {

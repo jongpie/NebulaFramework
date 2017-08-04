@@ -2,30 +2,27 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
+
+/**
+*
+* @group Query Builder
+*
+* @description TODO
+*
+*/
 public interface IQueryBuilder {
-
-    // TODO create diagram to show the pieces needed for using query Builder
-    //      1. set sobject Type
-    //      2. add some fields
-    //      3. Optional: filters
-    //      4. Optional: order by
-    //      5. Optional: limitCount, setAsUpdate & usingScope methods
-    //      6. Get results: getQueryResults, getFirstQueryResult, getSearchResults
-    //      7. Optional: getQuery to get the dynamically generated query string
-
-
 
     // Setter methods
     IQueryBuilder setSObjectType(Schema.SObjectType sobjectType); //IQueryBuilder
 
     // Field methods
-    IQueryBuilder addAllFields(); //ISObjectQueryBuilder
-    IQueryBuilder addAllStandardFields(); //ISObjectQueryBuilder
-    IQueryBuilder addAllCustomFields(); //ISObjectQueryBuilder
-    IQueryBuilder addAllReadableFields(); //ISObjectQueryBuilder
-    IQueryBuilder addAllEditableFields(); //ISObjectQueryBuilder
-    IQueryBuilder addFields(Schema.FieldSet fieldSet); //IQueryBuilder
-    IQueryBuilder addFields(List<Schema.SObjectField> fields); //IQueryBuilder
+    // IQueryBuilder addAllFields(); //ISObjectQueryBuilder
+    // IQueryBuilder addAllStandardFields(); //ISObjectQueryBuilder
+    // IQueryBuilder addAllCustomFields(); //ISObjectQueryBuilder
+    // IQueryBuilder addAllReadableFields(); //ISObjectQueryBuilder
+    // IQueryBuilder addAllEditableFields(); //ISObjectQueryBuilder
+    // IQueryBuilder addFields(Schema.FieldSet fieldSet); //IQueryBuilder
+    // IQueryBuilder addFields(List<Schema.SObjectField> fields); //IQueryBuilder
 
     // Children query methods
     // TODO I think I hate these - change them since I'm breaking everything anuyway

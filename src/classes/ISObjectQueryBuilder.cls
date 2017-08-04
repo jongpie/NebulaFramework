@@ -1,4 +1,22 @@
+/**
+*
+* @group Query Builder
+* @group-content /ApexDocContent/QueryBuilder.html
+*
+* @description TODO
+*
+*/
 public interface ISObjectQueryBuilder {
+
+
+        // TODO create diagram to show the pieces needed for using query Builder
+        //      1. set sobject Type
+        //      2. add some fields
+        //      3. Optional: filters
+        //      4. Optional: order by
+        //      5. Optional: limitCount, setAsUpdate & usingScope methods
+        //      6. Get results: getQueryResults, getFirstQueryResult, getSearchResults
+        //      7. Optional: getQuery to get the dynamically generated query string
 
 
 //TODO new should be inhertied from QueryBuilder problably maybe idk
@@ -14,6 +32,8 @@ public interface ISObjectQueryBuilder {
     ISObjectQueryBuilder addAllFields();
     ISObjectQueryBuilder addAllStandardFields();
     ISObjectQueryBuilder addAllCustomFields();
+    ISObjectQueryBuilder addAllReadableFields();
+    ISObjectQueryBuilder addAllEditableFields();
     ISObjectQueryBuilder addFields(Schema.FieldSet fieldSet);
     ISObjectQueryBuilder addFields(List<Schema.SObjectField> fields);
 

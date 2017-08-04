@@ -1,4 +1,10 @@
-public with sharing class SObjectQueryBuilder extends NebulaCore implements ISObjectQueryBuilder {
+/**
+*
+* @group Query Builder
+* @group-content /ApexDocContent/QueryBuilder.html
+*
+* @description A builder class that generates dynamic SOQL & SOSL queries & returns an SObject or list of SObjects
+*/
 public with sharing class SObjectQueryBuilder extends NebulaCore implements ISObjectQueryBuilder { // TODO extend QueryBuilder
 
     private String query;
@@ -31,12 +37,14 @@ public with sharing class SObjectQueryBuilder extends NebulaCore implements ISOb
     }
 
     public ISObjectQueryBuilder addFields(Schema.FieldSet fieldSet) {
-        for(Schema.FieldSetMember field : fieldSet.getFields()) this.queryFields.add(field.getFieldPath().toLowerCase());
+        for(Schema.FieldSetMember field : fieldSet.getFields()) {
+            this.addField(this.sobjectTypeFieldMap.get(field.getFieldPath()));
+        }
         return this;
     }
 
     public ISObjectQueryBuilder addFields(List<Schema.SObjectField> fields) {
-        for(Schema.SObjectField field : fields) this.queryFields.add(field.getDescribe().getName().toLowerCase());
+        for(Schema.SObjectField field : fields) this.addField(field);
         return this;
     }
 
@@ -59,49 +67,55 @@ public with sharing class SObjectQueryBuilder extends NebulaCore implements ISOb
     }
 
     public ISObjectQueryBuilder addAllCustomFields() { // TODO - SObjectQueryBuilder
-       for(Schema.SObjectField field : this.sobjectTypeFieldMap.values()) {
-           Schema.DescribeFieldResult fieldDescribe = field.getDescribe();
-           // If it's not a custom field, skip it
-           if(!fieldDescribe.isCustom()) continue;
+        for(Schema.SObjectField field : this.sobjectTypeFieldMap.values()) {
+            // If it's not a custom field, skip it
+            if(!field.getDescribe().isCustom()) continue;
 
-           this.queryFields.add(field.getDescribe().getName());
-       }
-       return this;
-   }
+            this.queryFields.add(field.getDescribe().getName());
+        }
+        return this;
+    }
 
-   public ISObjectQueryBuilder filterBy(IQueryFilter queryFilter) {
-      return this.filterBy(new List<IQueryFilter>{queryFilter});
-  }
+    public ISObjectQueryBuilder addAllReadableFields() { // TODO - SObjectQueryBuilder
+        for(Schema.SObjectField field : this.sobjectTypeFieldMap.values()) {
+            // If it's not a readable field, skip it
+            if(!field.getDescribe().isAccessible()) continue;
 
-  public ISObjectQueryBuilder filterBy(List<IQueryFilter> queryFilters) {
-      if(queryFilters == null) return this;
+            this.queryFields.add(field.getDescribe().getName());
+        }
+        return this;
+    }
 
-      for(IQueryFilter queryFilter : queryFilters) this.whereClauseList.add(queryFilter.getValue());
-      return this;
-  }
+    public ISObjectQueryBuilder addAllEditableFields() { // TODO - SObjectQueryBuilder
+        for(Schema.SObjectField field : this.sobjectTypeFieldMap.values()) {
+            // If it's not an editable field, skip it
+            if(!field.getDescribe().isUpdateable()) continue;
 
-       public ISObjectQueryBuilder andFilterBy(List<IQueryFilter> queryFilters) {
-           // TODO finish implementing!
-           return this.filterByWithSeparator(queryFilters, 'AND');
-       }
+            this.queryFields.add(field.getDescribe().getName());
+        }
+        return this;
+    }
 
-       public ISObjectQueryBuilder orFilterBy(List<IQueryFilter> queryFilters) {
-   // TODO finish implementing!
-           return this.filterByWithSeparator(queryFilters, 'OR');
-       }
+    public ISObjectQueryBuilder filterBy(IQueryFilter queryFilter) {
+        return this.filterBy(new List<IQueryFilter>{queryFilter});
+    }
 
-       private ISObjectQueryBuilder filterByWithSeparator(List<IQueryFilter> queryFilters, String separator) {
-   // TODO finish implementing!
-           if(queryFilters == null) return this;
+    public ISObjectQueryBuilder filterBy(List<IQueryFilter> queryFilters) {
+        if(queryFilters == null) return this;
 
-           List<String> queryFilterValues = new List<String>();
-           for(IQueryFilter queryFilter : queryFilters) queryFilterValues.add(queryFilter.getValue());
+        for(IQueryFilter queryFilter : queryFilters) this.whereClauseList.add(queryFilter.getValue());
+        return this;
+    }
 
-           String orStatement = '(' + String.join(queryFilterValues, ' ' + separator + ' ') + ')';
-           this.whereClauseList.add(orStatement);
-           return this;
-       }
+    public ISObjectQueryBuilder andFilterBy(List<IQueryFilter> queryFilters) {
+       // TODO finish implementing!
+       return this.filterByWithSeparator(queryFilters, 'AND');
+    }
 
+    public ISObjectQueryBuilder orFilterBy(List<IQueryFilter> queryFilters) {
+        // TODO finish implementing!
+       return this.filterByWithSeparator(queryFilters, 'OR');
+    }
 
 // TODO finish implementing subselects!, come up with better method name that uses verb for name (get, set, etc)
     public ISObjectQueryBuilder inSubquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject) {
@@ -110,16 +124,6 @@ public with sharing class SObjectQueryBuilder extends NebulaCore implements ISOb
 
     public ISObjectQueryBuilder notInSubquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject) {
         return this.addSubquery(sobjectFieldToFilter, lookupFieldOnRelatedSObject, 'NOT IN');
-    }
-
-    private ISObjectQueryBuilder addSubquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject, String inOrOut) {
-        String sobjectFieldToFilterName = sobjectFieldToFilter.getDescribe().getName();
-        String relatedSObjectTypeName = new SObjectFieldDescriber(lookupFieldOnRelatedSObject).SObjectType.getDescribe().getName();
-        String lookupFieldOnRelatedSObjectName = lookupFieldOnRelatedSObject.getDescribe().getName();
-
-        String subselectString = sobjectFieldToFilterName + ' ' + inOrOut + ' (SELECT ' + lookupFieldOnRelatedSObjectName + ' FROM ' + relatedSObjectTypeName + ')';
-        this.whereClauseList.add(subselectString);
-        return this;
     }
 
    public ISObjectQueryBuilder includeChildrenRecords(Schema.SObjectField childToParentRelationshipField, ISObjectRepository childSObjectRepository) {
@@ -205,89 +209,137 @@ public with sharing class SObjectQueryBuilder extends NebulaCore implements ISOb
        return this.getQuery(childRelationshipName);
    }
 
-   private String getQuery(String sobjectQueryName) {// TODO - SObjectQueryBuilder?? Aggregate query needs to be built differently
-       this.query = 'SELECT ' + this.getQueryFieldString();
 
-       // Only 1 level of child relationships is allowed, so don't include them if the SObject name isn't the current SObject Type
-       if(sobjectQueryName == String.valueOf(this.sobjectType)) this.query += this.getChildRelationshipsQueryString();
+    private void addField(Schema.SObjectField field) {
+        // TODO move this method to be with the rest of the private methods
+        this.queryFields.add(field.getDescribe().getName().toLowerCase());
 
-       this.query +='\nFROM ' + sobjectQueryName
-           + this.getWhereClauseString()
-           + this.getOrderByString()
-           + this.getLimitCountString()
-           + this.getForUpdateString();
+        // If the field is a lookup, then we need to get the name field from the parent object
+        if(field.getDescribe().getType().name() == 'Reference') {
+            this.queryFields.add(this.getParentSObjectNameField(field));
+        }
+    }
 
-       return this.query;
-   }
+    private String getParentSObjectNameField(Schema.SObjectField field) {
+        // TODO any cleanup needed?
+        // TODO move lower with other private methods
+        String relationshipName = field.getDescribe().getRelationshipName();
+        Schema.SObjectType parentSObjectType = field.getDescribe().getReferenceTo()[0];
+        String nameField;
+        for(Schema.SObjectField parentField : parentSObjectType.getDescribe().fields.getMap().values()) {
+            if(parentField.getDescribe().isNameField()) {
+                nameField = parentField.getDescribe().getName();
+                break;
+            }
+        }
+        return relationshipName + '.' + nameField;
+    }
 
-   private String getSearchQuery(String searchTerm, QuerySearchGroup searchGroup) {// TODO - SObjectQueryBuilder??
-       this.query = 'FIND ' + NebulaFactory.getQueryArgumentFormatter().getValue(searchTerm.toLowerCase())
-           + '\nIN ' + searchGroup.name().replace('_', ' ')
-           + '\nRETURNING ' + this.sobjectType + '('
-               + this.getQueryFieldString()
-               + this.getWhereClauseString()
-               + this.getOrderByString()
-               + this.getLimitCountString()
-           + ')';
+    private ISObjectQueryBuilder filterByWithSeparator(List<IQueryFilter> queryFilters, String separator) {
+ // TODO finish implementing!
+        if(queryFilters == null) return this;
 
-       if(this.forUpdate) Logger.addEntry(this, 'SOSL Search Query method flagged as FOR UPDATE. SOSL cannot use FOR UPDATE, ignoring');
-       if(this.filterScope != null) Logger.addEntry(this, 'SOSL Search Query method flagged as USING SCOPE ' + this.filterScope + '. SOSL cannot use USING SCOPE, ignoring');
+        List<String> queryFilterValues = new List<String>();
+        for(IQueryFilter queryFilter : queryFilters) queryFilterValues.add(queryFilter.getValue());
 
-       return this.query;
-   }
+        String orStatement = '(' + String.join(queryFilterValues, ' ' + separator + ' ') + ')';
+        this.whereClauseList.add(orStatement);
+        return this;
+    }
 
-   private String getQueryFieldString() {// TODO - SObjectQueryBuilder?? Aggregate needs to include aggregate functions (avg, sum, etc) in the query field string
-       Set<String> cleanedQueryField = new Set<String>();
-       for(String queryField : new List<String>(this.queryFields)) {
-           cleanedQueryField.add(queryField.toLowerCase());
-       }
-       this.queryFields = cleanedQueryField;
-       List<String> queryFieldList = new List<String>(this.queryFields);
-       queryFieldList.sort();
-       return String.join(queryFieldList, ', ');
-   }
+    private ISObjectQueryBuilder addSubquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject, String inOrOut) {
+        String sobjectFieldToFilterName = sobjectFieldToFilter.getDescribe().getName();
+        String relatedSObjectTypeName = new SObjectFieldDescriber(lookupFieldOnRelatedSObject).SObjectType.getDescribe().getName();
+        String lookupFieldOnRelatedSObjectName = lookupFieldOnRelatedSObject.getDescribe().getName();
 
-   private String getChildRelationshipsQueryString() {// TODO - SObjectQueryBuilder?? but i hate this
-       if(this.childRelationshipQueries.isEmpty()) return '';
+        String subselectString = sobjectFieldToFilterName + ' ' + inOrOut + ' (SELECT ' + lookupFieldOnRelatedSObjectName + ' FROM ' + relatedSObjectTypeName + ')';
+        this.whereClauseList.add(subselectString);
+        return this;
+    }
 
-       return ',\n(' + String.join(childRelationshipQueries, '), (') + ')';
-   }
+    private String getQuery(String sobjectQueryName) {// TODO - SObjectQueryBuilder?? Aggregate query needs to be built differently
+        this.query = 'SELECT ' + this.getQueryFieldString();
 
-   private String getWhereClauseString() {
-       return !this.whereClauseList.isEmpty() ? '\nWHERE ' + String.join(this.whereClauseList, '\nAND ') : '';
-   }
+        // Only 1 level of child relationships is allowed, so don't include them if the SObject name isn't the current SObject Type
+        if(sobjectQueryName == String.valueOf(this.sobjectType)) this.query += this.getChildRelationshipsQueryString();
 
-   private String getOrderByString() {
-       return !this.orderByList.isEmpty() ? '\nORDER BY ' + String.join(new List<String>(orderByList), ', ') : '';
-   }
+        this.query +='\nFROM ' + sobjectQueryName
+            + this.getWhereClauseString()
+            + this.getOrderByString()
+            + this.getLimitCountString()
+            + this.getForUpdateString();
 
-   private String getLimitCountString() {
-       return this.limitCount != null ? '\nLIMIT '+ this.limitCount : '';
-   }
+        return this.query;
+    }
 
-   private String getForUpdateString() {// TODO - SObjectQueryBuilder??
-       return this.orderByList.isEmpty() && this.forUpdate ? '\nFOR UPDATE' : '';
-   }
+    private String getSearchQuery(String searchTerm, QuerySearchGroup searchGroup) {// TODO - SObjectQueryBuilder??
+        this.query = 'FIND ' + NebulaFactory.getQueryArgumentFormatter().getValue(searchTerm.toLowerCase())
+            + '\nIN ' + searchGroup.name().replace('_', ' ')
+            + '\nRETURNING ' + this.sobjectType + '('
+                + this.getQueryFieldString()
+                + this.getWhereClauseString()
+                + this.getOrderByString()
+                + this.getLimitCountString()
+            + ')';
 
-   private void addCommonQueryFields() {
-       if(!NebulaSettings.RepositorySettings.IncludeCommonFields__c) return;
-       // Auto-add the common fields that are available for the SObject Type
-       List<String> commonFieldNameList = new List<String>{
-           'Id', 'CaseNumber', 'CreatedById', 'CreatedDate', 'IsClosed', 'LastModifiedById', 'LastModifiedDate',
-           'Name', 'OwnerId', 'ParentId', 'Subject', 'RecordTypeId', 'SystemModStamp'
-       };
-       for(String commonFieldName : commonFieldNameList) {
-           // TODO this is duplicated from the constructor, need to consolidate
-           this.sobjectTypeFieldMap = this.sobjectType.getDescribe().fields.getMap();
-           if(!this.sobjectTypeFieldMap.containsKey(commonFieldName)) continue;
+        if(this.forUpdate) Logger.addEntry(this, 'SOSL Search Query method flagged as FOR UPDATE. SOSL cannot use FOR UPDATE, ignoring');
+        if(this.filterScope != null) Logger.addEntry(this, 'SOSL Search Query method flagged as USING SCOPE ' + this.filterScope + '. SOSL cannot use USING SCOPE, ignoring');
 
-           this.queryFields.add(commonFieldName.toLowerCase());
-       }
-   }
+        return this.query;
+    }
 
-   private void logEntry(List<Object> results) {
-       String logEntry = 'Query:\n' + this.query + '\n\nResults:\n' + JSON.serializePretty(results);
-       Logger.addEntry(this, logEntry);
-   }
+    private String getQueryFieldString() {// TODO - SObjectQueryBuilder?? Aggregate needs to include aggregate functions (avg, sum, etc) in the query field string
+        Set<String> cleanedQueryField = new Set<String>();
+        for(String queryField : new List<String>(this.queryFields)) {
+            cleanedQueryField.add(queryField.toLowerCase());
+        }
+        this.queryFields = cleanedQueryField;
+        List<String> queryFieldList = new List<String>(this.queryFields);
+        queryFieldList.sort();
+        return String.join(queryFieldList, ', ');
+    }
+
+    private String getChildRelationshipsQueryString() {// TODO - SObjectQueryBuilder?? but i hate this
+        if(this.childRelationshipQueries.isEmpty()) return '';
+
+        return ',\n(' + String.join(childRelationshipQueries, '), (') + ')';
+    }
+
+    private String getWhereClauseString() {
+        return !this.whereClauseList.isEmpty() ? '\nWHERE ' + String.join(this.whereClauseList, '\nAND ') : '';
+    }
+
+    private String getOrderByString() {
+        return !this.orderByList.isEmpty() ? '\nORDER BY ' + String.join(new List<String>(orderByList), ', ') : '';
+    }
+
+    private String getLimitCountString() {
+        return this.limitCount != null ? '\nLIMIT '+ this.limitCount : '';
+    }
+
+    private String getForUpdateString() {// TODO - SObjectQueryBuilder??
+        return this.orderByList.isEmpty() && this.forUpdate ? '\nFOR UPDATE' : '';
+    }
+
+    private void addCommonQueryFields() {
+        if(!NebulaSettings.RepositorySettings.IncludeCommonFields__c) return;
+        // Auto-add the common fields that are available for the SObject Type
+        List<String> commonFieldNameList = new List<String>{
+            'Id', 'CaseNumber', 'CreatedById', 'CreatedDate', 'IsClosed', 'LastModifiedById', 'LastModifiedDate',
+            'Name', 'OwnerId', 'ParentId', 'Subject', 'RecordTypeId', 'SystemModStamp'
+        };
+        for(String commonFieldName : commonFieldNameList) {
+            // TODO this is duplicated from the constructor, need to consolidate
+            this.sobjectTypeFieldMap = this.sobjectType.getDescribe().fields.getMap();
+            if(!this.sobjectTypeFieldMap.containsKey(commonFieldName)) continue;
+
+            this.queryFields.add(commonFieldName.toLowerCase());
+        }
+    }
+
+    private void logEntry(List<Object> results) {
+        String logEntry = 'Query:\n' + this.query + '\n\nResults:\n' + JSON.serializePretty(results);
+        Logger.addEntry(this, logEntry);
+    }
 
 }
