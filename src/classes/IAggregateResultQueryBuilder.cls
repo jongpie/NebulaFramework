@@ -1,3 +1,11 @@
+
+/**
+*
+* @group Query Builder
+* @group-content /ApexDocContent/QueryBuilder.html
+*
+* @description TODO
+*/
 public interface IAggregateResultQueryBuilder {
 
     // Getter methods

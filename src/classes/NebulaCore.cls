@@ -2,6 +2,13 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
+
+/**
+*
+* @group Configuration
+*
+* @description TODO
+*/
 public abstract class NebulaCore implements INebulaCore {
 
     public enum Module { QUERY_BUILDER, RECORD_TYPES, REPOSITORY, SETTINGS, TRIGGER_HANDLER }

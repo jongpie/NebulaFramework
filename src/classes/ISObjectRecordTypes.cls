@@ -1,3 +1,11 @@
+
+
+/**
+*
+* @group Record Types
+*
+* @description TODO
+*/
 public interface ISObjectRecordTypes {
 
     // Setup methods

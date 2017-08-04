@@ -2,6 +2,13 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
+
+/**
+*
+* @group Metadata Describers
+*
+* @description TODO
+*/
 public without sharing class SObjectFieldDescriber {
     // We would love for Schema.SObjectField to have a way to return the SObject Type
     // Sadly, it doesn't, so we have this class to fill the void.

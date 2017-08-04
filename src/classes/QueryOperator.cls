@@ -2,6 +2,13 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
+
+/**
+*
+* @group Query Builder
+*
+* @description Provides all of the operators needed for SOQL/SOSL queries and minimizes the use of strings within the framework
+*/
 public without sharing class QueryOperator {
 
     private String value;

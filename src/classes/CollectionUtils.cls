@@ -2,24 +2,71 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
-public without sharing class CollectionUtils {
 
+/**
+*
+* @group Utils
+*
+* @description A utils class to help with dealing with collections (lists, sets & maps)
+*/
+public without sharing class CollectionUtils { //TODO would just 'Collection' be a better name?
+
+    /*******************************************************************************************************
+   * @description Returns the last item in a list
+   * @param listOfItems the list to check
+   * @return The last Object in the provided list
+   * @example
+   * List<String> myList = new List<String>{'A', B', 'C'};
+   * String lastItem = CollectionUtils.getLastItem(myList);
+   * System.assertEquals('C', lastItem);
+   */
     public static Object getLastItem(List<Object> listOfItems) {
         // TODO verify if all 3 new methods should be kept, then add unit tests for any that are kept
         Integer indexOfItem = listOfItems.size() - 1;
         return listOfItems[indexOfItem];
     }
 
+    /*******************************************************************************************************
+   * @description Removes the last item in the provided list & returns the item
+   * @param listOfItems the list to check
+   * @return The last Object in the provided list
+   * @example
+   * List<String> myList = new List<String>{'A', B', 'C'};
+   * System.assertEquals(3, myList.size());
+   * String lastItem = CollectionUtils.getLastItem(myList);
+   * System.assertEquals('C', lastItem);
+   * System.assertEquals(2, myList.size());
+   */
     public static Object pop(List<Object> listToSplice) {
         return splice(listToSplice, listToSplice.size() - 1);
     }
 
+    /*******************************************************************************************************
+   * @description Removes the item in the specified index from the provided list & returns the item
+   * @param listOfItems The list to check
+   * @param indexOfItem The index of the item to remove
+   * @return The Object at the specified index
+   * @example
+   * List<String> myList = new List<String>{'A', B', 'C'};
+   * System.assertEquals(3, myList.size());
+   * String itemToRemove = CollectionUtils.splice(myList, 1);
+   * System.assertEquals('B', itemToRemove);
+   * System.assertEquals(2, myList.size());
+   */
     public static Object splice(List<Object> listToSplice, Integer indexOfItem) {
         Object itemToRemove = listToSplice[indexOfItem];
         listToSplice.remove(indexOfItem);
         return itemToRemove;
     }
 
+    /*******************************************************************************************************
+   * @description Determines if the provided input is a type of collection (list, set or map)
+   * @param input The Object to check
+   * @return true if the item is a type of collection, otherwise returns false
+   * @example
+   * List<String> myList = new List<String>{'A', B', 'C'};
+   * System.assert(CollectionUtils.isCollection(myList));
+   */
     public static Boolean isCollection(Object input) {
         return isList(input) || isSet(input) || isMap(input);
     }

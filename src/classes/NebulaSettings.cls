@@ -2,8 +2,19 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
+
+/**
+*
+* @group Configuration
+*
+* @description TODO
+*/
 public without sharing class NebulaSettings {
 
+    /*******************************************************************************************************
+    * @description TODO
+    * returns true if it's a sandbox
+    */
     public static NebulaLoggerSettings__c LoggerSettings {get; private set;}
     public static NebulaRecordTypesSettings__c RecordTypesSettings {get; private set;}
     public static NebulaRepositorySettings__c RepositorySettings {get; private set;}

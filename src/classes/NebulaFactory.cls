@@ -1,3 +1,10 @@
+
+/**
+*
+* @group Configuration
+*
+* @description TODO
+*/
 public without sharing class NebulaFactory {
 
     private static final System.Type DEFAULT_AGGREGATE_RESULT_QUERY_BUILDER_IMPLEMENTATION = AggregateResultQueryBuilder.class;
