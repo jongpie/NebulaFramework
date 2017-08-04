@@ -41,13 +41,40 @@ public virtual class QueryBuilder extends NebulaCore implements IQueryBuilder {
     }
 
     public IQueryBuilder addFields(Schema.FieldSet fieldSet) {
-        for(Schema.FieldSetMember field : fieldSet.getFields()) this.queryFields.add(field.getFieldPath().toLowerCase());
+        for(Schema.FieldSetMember field : fieldSet.getFields()) {
+            this.addField(this.sobjectTypeFieldMap.get(field.getFieldPath()));
+        }
         return this;
     }
 
     public IQueryBuilder addFields(List<Schema.SObjectField> fields) {
-        for(Schema.SObjectField field : fields) this.queryFields.add(field.getDescribe().getName().toLowerCase());
+        for(Schema.SObjectField field : fields) this.addField(field);
         return this;
+    }
+
+private void addField(Schema.SObjectField field) {
+    // TODO move this method to be with the rest of the private methods
+    this.queryFields.add(field.getDescribe().getName().toLowerCase());
+
+    // If the field is a lookup, then we need to get the name field from the parent object
+    if(field.getDescribe().getType().name() == 'Reference') {
+        this.queryFields.add(this.getParentSObjectNameField(field));
+    }
+}
+
+private String getParentSObjectNameField(Schema.SObjectField field) {
+// TODO any cleanup needed?
+// TODO move lower with other private methods
+        String relationshipName = field.getDescribe().getRelationshipName();
+        Schema.SObjectType parentSObjectType = field.getDescribe().getReferenceTo()[0];
+        String nameField;
+        for(Schema.SObjectField parentField : parentSObjectType.getDescribe().fields.getMap().values()) {
+            if(parentField.getDescribe().isNameField()) {
+                nameField = parentField.getDescribe().getName();
+                break;
+            }
+        }
+        return relationshipName + '.' + nameField;
     }
 
     public IQueryBuilder addAllFields() { // TODO - SObjectQueryBuilder
