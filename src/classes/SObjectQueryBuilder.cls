@@ -1,4 +1,5 @@
 public with sharing class SObjectQueryBuilder extends NebulaCore implements ISObjectQueryBuilder {
+public with sharing class SObjectQueryBuilder extends NebulaCore implements ISObjectQueryBuilder { // TODO extend QueryBuilder
 
     private String query;
     private Set<String> queryFields; //TODO SObjectQueryBuilder because aggregates need to be a sorted list (impacts group by), not an unsorted set
