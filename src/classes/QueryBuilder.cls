@@ -17,7 +17,7 @@ public virtual class QueryBuilder extends NebulaCore implements IQueryBuilder {
     protected Map<String, Schema.SObjectField> sobjectTypeFieldMap;
 
     public QueryBuilder() {
-        this.currentModule = NebulaCore.Module.REPOSITORY;
+        this.currentModule = NebulaCore.Module.QUERY_BUILDER;
 
         this.queryFields              = new Set<String>();
         this.childRelationshipQueries = new List<String>();

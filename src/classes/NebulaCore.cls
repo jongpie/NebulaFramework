@@ -4,7 +4,7 @@
 *************************************************************************************************/
 public abstract class NebulaCore implements INebulaCore {
 
-    public enum Module { RECORD_TYPES, REPOSITORY, SETTINGS, TRIGGER_HANDLER }
+    public enum Module { QUERY_BUILDER, RECORD_TYPES, REPOSITORY, SETTINGS, TRIGGER_HANDLER }
 
     public static final String TRANSACTION_ID;
     public static String INITIAL_CLASS {get; private set;}
