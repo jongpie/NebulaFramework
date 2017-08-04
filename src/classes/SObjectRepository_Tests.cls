@@ -4,8 +4,8 @@
 *************************************************************************************************/
 @isTest
 private class SObjectRepository_Tests {
-
-    private class AccountRepository extends SObjectRepository {
+// TODO finish tests
+    /*private class AccountRepository extends SObjectRepository {
         // Test subclass that extends SObjectRepository
         public override Schema.SObjectType getSObjectType() {
             return Schema.Account.SObjectType;
@@ -373,6 +373,6 @@ private class SObjectRepository_Tests {
 
         existingAccount = [SELECT Id, IsDeleted FROM Account WHERE Id = :existingAccount.Id ALL ROWS];
         System.assertEquals(false, existingAccount.IsDeleted);
-    }
+    }*/
 
 }
