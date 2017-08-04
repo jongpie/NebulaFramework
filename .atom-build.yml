@@ -1,2 +1,2 @@
 cwd: '{PROJECT_PATH}'
-cmd: java -jar .\tools\apexdoc\apexdoc.jar -s .\src\classes -t . -p public;protected -g https://github.com/jongpie/NebulaFramework -a header.html
+cmd: java -jar .\tools\apexdoc\apexdoc.jar -s .\src\classes -t . -p public;protected -g https://github.com/jongpie/NebulaFramework/blob/master/src/classes/ -a header.html
