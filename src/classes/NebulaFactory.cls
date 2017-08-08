@@ -40,8 +40,11 @@ public without sharing class NebulaFactory {
         getInterfaceConfigs();
 
         String interfaceName       = interfaceType.getName().replace('Nebula.', ''); //TODO figure out a better solution than replace()
-        String configuredClassName = interfaceConfigs.get(interfaceName).ApexClass__c;
-        configuredClassName = configuredClassName == null ? defaultImplementation.getName() : configuredClassName;
+
+        NebulaInterfaceImplementation__mdt config = interfaceConfigs.get(interfaceName);
+        String configuredClassName;
+        if(config == null || config.ApexClass__c == null) configuredClassName = defaultImplementation.getName();
+        else configuredClassName = config.ApexClass__c;
 
         System.type t = Type.forName(configuredClassName);
 
