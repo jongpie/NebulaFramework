@@ -42,7 +42,13 @@ public virtual class QueryArgumentFormatter extends NebulaCore implements IQuery
             Schema.SObjectType sobjectType = (Schema.SObjectType)valueToFormat;
             return wrapInSingleQuotes(sobjectType.getDescribe().getName());
         }
-        else if(valueToFormat instanceof String) return wrapInSingleQuotes((String)valueToFormat);
+        else if(valueToFormat instanceof String) {
+            // TODO https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_quotedstringescapes.htm
+            // TODO https://developer.salesforce.com/page/Secure_Coding_SQL_Injection
+            // Escape single quotes to prevent SOQL/SOSL injection
+            String stringArgument = String.escapeSingleQuotes((String)valueToFormat);
+            return wrapInSingleQuotes(stringArgument);
+        }
         else return String.valueOf(valueToFormat);
     }
 
