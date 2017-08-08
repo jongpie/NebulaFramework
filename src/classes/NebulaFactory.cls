@@ -52,9 +52,7 @@ public without sharing class NebulaFactory {
             throw new ImplementationException(formattedError);
         }
 
-        Object instance = t.newInstance();
-        instance = activateNebulaSharingSettings(instance);
-        return instance;
+        return t.newInstance();
     }
 
     private static void getInterfaceConfigs() {
@@ -65,21 +63,6 @@ public without sharing class NebulaFactory {
         for(NebulaInterfaceImplementation__mdt interfaceConfig : [SELECT Id, Label, DeveloperName, ApexClass__c FROM NebulaInterfaceImplementation__mdt]) {
             interfaceConfigs.put(interfaceConfig.DeveloperName, interfaceConfig);
         }
-    }
-
-    private static Object activateNebulaSharingSettings(Object instance) {
-        Boolean isInstanceOfNebulaCore = instance instanceof NebulaCore;
-        if(!isInstanceOfNebulaCore) return instance;
-
-        //If the implementation also extends NebulaCore, then run additional steps
-        String toDo = 'Inherit'; //TODO move to custom metadata or custom setting (picklist: inherit, with, without)
-
-        INebulaCore nebulaClassInstance = (INebulaCore)instance;
-        if(toDo == 'Inherit') return nebulaClassInstance;
-        // TODO: finish implementing
-        //else if(toDo == 'With') return nebulaClassInstance.withSharing();
-        //else if(toDo == 'Without') return nebulaClassInstance.withoutSharing();
-        else return nebulaClassInstance;
     }
 
     private class ImplementationException extends Exception {}
