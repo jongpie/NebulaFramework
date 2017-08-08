@@ -3,7 +3,7 @@
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
 @isTest
-public class QueryBuilder_Tests {
+private class QueryBuilder_Tests {
 
     // @isTest
     // static void it_should_call_sort_order_properly_ascending() {
