@@ -42,19 +42,18 @@ public interface ISObjectQueryBuilder {
     ISObjectQueryBuilder addFields(Schema.FieldSet fieldSet);
     ISObjectQueryBuilder addFields(List<Schema.SObjectField> fields);
 
+    // Parent-to-child relationship query methods
+    ISObjectQueryBuilder includeChildrenRecords(Schema.SObjectField childToParentRelationshipField, List<Schema.SObjectField> fields, List<IQueryFilter> filters);
+
     // Filter methods
     ISObjectQueryBuilder filterBy(IQueryFilter queryFilter);
     ISObjectQueryBuilder filterBy(List<IQueryFilter> queryFilters);
     ISObjectQueryBuilder andFilterBy(List<IQueryFilter> queryFilters);
     ISObjectQueryBuilder orFilterBy(List<IQueryFilter> queryFilters);
 
+    // Subquery filter methods
     ISObjectQueryBuilder inSubquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject);
     ISObjectQueryBuilder notInSubquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject);
-
-// TODO stop using ISObjectRepository as a parameter
-    ISObjectQueryBuilder includeChildrenRecords(Schema.SObjectField childToParentRelationshipField, List<Schema.SObjectField> fields, List<IQueryFilter> filters);
-    // ISObjectQueryBuilder includeChildrenRecords(Schema.SObjectField childToParentRelationshipField, ISObjectRepository childSObjectRepository);
-    // ISObjectQueryBuilder includeChildrenRecords(Map<Schema.SObjectField, ISObjectRepository> childFieldToChildSObjectRepositoryrMap);
 
     // Order By methods
     ISObjectQueryBuilder orderBy(Schema.SObjectField orderByField);
@@ -71,9 +70,7 @@ public interface ISObjectQueryBuilder {
     List<SObject> getQueryResults();
     List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup);
 
-    // Get the dyanmic query strings
+    // Get the dyanmic query string
     String getQuery();
-    // TODO I think I now hate this method
-    //String getQuery(Schema.SObjectField sobjectField);
 
 }
