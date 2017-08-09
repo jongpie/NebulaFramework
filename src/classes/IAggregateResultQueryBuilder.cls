@@ -9,7 +9,7 @@
 public interface IAggregateResultQueryBuilder {
 
     // Getter methods
-    String getQueryString();
+    String getQuery();
 
     // Setter methods
     IAggregateResultQueryBuilder setSObjectType(Schema.SObjectType sobjectType);

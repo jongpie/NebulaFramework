@@ -114,22 +114,20 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
         return new List<AggregateResult>();
     }
 
-    public String getQueryString() { // TODO make it inherit & override from IQueryBuilder
+    public String getQuery() { // TODO make it inherit & override from IQueryBuilder
         String queryString = 'SELECT ' + this.getGroupByFieldString() + this.getAggregateFunctionString()
             + '\nFROM ' + this.sobjectType.getDescribe().getName()
             + this.getWhereClauseString()
-            + '\nGROUP BY ' + getGroupByFieldString();
-            //+ this.getOrderByString()
-            //+ this.getLimitCountString()
-            //+ this.getForUpdateString();
+            + this.getGroupByFieldString()
+            + this.getOrderByString()
+            + this.getLimitCountString();
 
         return queryString;
     }
 
-    private String getGroupByFieldString() {// TODO - SObjectQueryBuilder?? Aggregate needs to include aggregate functions (avg, sum, etc) in the query field string
-
+    private String getGroupByFieldString() {
         this.groupByList.sort();
-        return String.join(this.groupByList, ', ');
+        return '\nGROUP BY ' + String.join(this.groupByList, ', ');
     }
 
     private String getAggregateFunctionString() {
