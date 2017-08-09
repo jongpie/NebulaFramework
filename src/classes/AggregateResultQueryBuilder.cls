@@ -126,7 +126,7 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
     }
 
     private String getGroupByFieldString() {
-        this.groupByList.sort();
+        //this.groupByList.sort(); TODO dont sort because that could change the results
         return '\nGROUP BY ' + String.join(this.groupByList, ', ');
     }
 

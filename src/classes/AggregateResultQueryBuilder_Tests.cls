@@ -9,13 +9,13 @@ private class AggregateResultQueryBuilder_Tests {
 
         String returnedQueryString = new AggregateResultQueryBuilder()
             // TODO the order of the method chaining shouldn't matter - the fields & aggregate functions should be sorted so its consistent
-            .max(Schema.Case.CreatedDate)
             .groupBy(Schema.Case.Type)
+            .max(Schema.Case.CreatedDate)
             .count_distinct(Schema.Case.OwnerId)
             .min(Schema.Case.CreatedDate)
             .count()
             .setSObjectType(Schema.Case.SObjectType)
-            .getQueryString();
+            .getQuery();
 
         System.assertEquals(expectedString, returnedQueryString);
     }
