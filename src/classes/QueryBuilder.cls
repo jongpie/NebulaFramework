@@ -8,6 +8,7 @@
 * @group Query Builder
 *
 * @description TODO
+*
 */
 public abstract class QueryBuilder extends NebulaCore implements IQueryBuilder {
 

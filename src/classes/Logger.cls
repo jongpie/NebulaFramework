@@ -8,6 +8,7 @@
 * @group Logging
 *
 * @description TODO
+*
 */
 public without sharing class Logger {
 

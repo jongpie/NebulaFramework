@@ -9,7 +9,7 @@
 * @group-content /ApexDocContent/QueryBuilder.html
 *
 * @description A builder class that generates dynamic SOQL & SOSL queries & returns an SObject or list of SObjects
-* *
+*
 */
 public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBuilder { // TODO extend
 

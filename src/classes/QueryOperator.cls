@@ -8,6 +8,7 @@
 * @group Query Builder
 *
 * @description Provides all of the operators needed for SOQL/SOSL queries and minimizes the use of strings within the framework
+*
 */
 public without sharing class QueryOperator {
 

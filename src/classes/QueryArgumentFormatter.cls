@@ -8,6 +8,7 @@
 * @group Query Builder
 *
 * @description TODO
+*
 */
 public virtual class QueryArgumentFormatter extends NebulaCore implements IQueryArgumentFormatter {
 

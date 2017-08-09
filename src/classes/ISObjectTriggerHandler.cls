@@ -3,12 +3,12 @@
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
 
-
 /**
 *
 * @group Trigger Handler
 *
 * @description TODO
+*
 */
 public interface ISObjectTriggerHandler {
 

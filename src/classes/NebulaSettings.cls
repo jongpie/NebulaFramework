@@ -8,6 +8,7 @@
 * @group Configuration
 *
 * @description TODO
+*
 */
 public without sharing class NebulaSettings {
 

@@ -8,6 +8,7 @@
 * @group Query Builder
 *
 * @description TODO
+*
 */
 public without sharing class QueryDateLiteral {
 
