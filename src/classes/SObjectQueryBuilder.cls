@@ -132,8 +132,29 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
         return this.addSubquery(sobjectFieldToFilter, lookupFieldOnRelatedSObject, 'NOT IN');
     }
 
-    public ISObjectQueryBuilder includeChildrenRecords(Schema.SObjectField childToParentRelationshipField, List<Schema.SObjectField> fields, List<IQueryFilter> filters) {
+    public ISObjectQueryBuilder includeChildrenRecords(Schema.SObjectField childToParentRelationshipField, List<Schema.SObjectField> childFields, List<IQueryFilter> childFilters) {
+        // Get the relationship name
+        String childRelationshipName;
+        for(Schema.ChildRelationship childRelationship : this.sobjectType.getDescribe().getChildRelationships()) {
+            if(childRelationship.getField() != childToParentRelationshipField) continue;
 
+            childRelationshipName = childRelationship.getRelationshipName();
+        }
+
+        // Build the child filters
+        String childFieldsString = '';
+        for(Schema.SObjectField childField : childFields) childFieldsString += childField.getDescribe().getName();
+
+        // Build the child filters
+        List<String> childWhereClauseList = new List<String>();
+        for(IQueryFilter childFilter : childFilters) childWhereClauseList.add(childFilter.getValue());
+        String childWhereClauseString = childWhereClauseList.isEmpty() ? '' : '\nWHERE ' + String.join(childWhereClauseList, '\nAND ');
+
+        // Build the child query
+        String childQuery = 'SELECT ' + childFieldsString
+            + '\nFROM ' + childRelationshipName
+            + childWhereClauseString;
+        childRelationshipQueries.add(childQuery);
         return this;
     }
 
