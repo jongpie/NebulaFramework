@@ -126,8 +126,16 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
     }
 
 // TODO finish implementing subselects!, come up with better method name that uses verb for name (get, set, etc)
+    public ISObjectQueryBuilder inSubquery(Schema.SObjectField lookupFieldOnRelatedSObject) {
+        return this.inSubquery(this.sobjectType.getDescribe().fields.getMap().get('Id'), lookupFieldOnRelatedSObject);
+    }
+
     public ISObjectQueryBuilder inSubquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject) {
         return this.addSubquery(sobjectFieldToFilter, lookupFieldOnRelatedSObject, 'IN');
+    }
+
+    public ISObjectQueryBuilder notInSubquery(Schema.SObjectField lookupFieldOnRelatedSObject) {
+        return this.notInSubquery(this.sobjectType.getDescribe().fields.getMap().get('Id'), lookupFieldOnRelatedSObject);
     }
 
     public ISObjectQueryBuilder notInSubquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject) {
