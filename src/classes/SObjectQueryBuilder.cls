@@ -115,12 +115,14 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
 
     public ISObjectQueryBuilder andFilterBy(List<IQueryFilter> queryFilters) {
        // TODO finish implementing!
-       return this.filterByWithSeparator(queryFilters, 'AND');
+       this.filterByWithSeparator(queryFilters, 'AND');
+       return this;
     }
 
     public ISObjectQueryBuilder orFilterBy(List<IQueryFilter> queryFilters) {
         // TODO finish implementing!
-       return this.filterByWithSeparator(queryFilters, 'OR');
+       this.filterByWithSeparator(queryFilters, 'OR');
+       return this;
     }
 
 // TODO finish implementing subselects!, come up with better method name that uses verb for name (get, set, etc)
@@ -257,18 +259,6 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
             }
         }
         return relationshipName + '.' + nameField;
-    }
-
-    private ISObjectQueryBuilder filterByWithSeparator(List<IQueryFilter> queryFilters, String separator) {
- // TODO finish implementing!
-        if(queryFilters == null) return this;
-
-        List<String> queryFilterValues = new List<String>();
-        for(IQueryFilter queryFilter : queryFilters) queryFilterValues.add(queryFilter.getValue());
-
-        String orStatement = '(' + String.join(queryFilterValues, ' ' + separator + ' ') + ')';
-        this.whereClauseList.add(orStatement);
-        return this;
     }
 
     private ISObjectQueryBuilder addSubquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject, String inOrOut) {

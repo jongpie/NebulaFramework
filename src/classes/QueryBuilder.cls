@@ -136,6 +136,17 @@ private IQueryBuilder add_filterByWithSeparator(List<IQueryFilter> queryFilters,
         return this;
     }
 
+    protected void filterByWithSeparator(List<IQueryFilter> queryFilters, String separator) {
+ // TODO finish implementing!
+        if(queryFilters == null) return;
+
+        List<String> queryFilterValues = new List<String>();
+        for(IQueryFilter queryFilter : queryFilters) queryFilterValues.add(queryFilter.getValue());
+
+        String orStatement = '(' + String.join(queryFilterValues, ' ' + separator + ' ') + ')';
+        this.whereClauseList.add(orStatement);
+    }
+
     // Query execution methods
     // public SObject getFirstQueryResult() {// TODO - SObjectQueryBuilder??
     //     return this.getQueryResults()[0];
