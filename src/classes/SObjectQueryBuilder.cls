@@ -144,8 +144,9 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
         }
 
         // Build the child filters
-        String childFieldsString = '';
-        for(Schema.SObjectField childField : childFields) childFieldsString += childField.getDescribe().getName();
+        List<String> childFieldNames = new List<String>();
+        for(Schema.SObjectField childField : childFields) childFieldNames.add(childField.getDescribe().getName());
+        childFieldNames.sort();
 
         // Build the child filters
         List<String> childWhereClauseList = new List<String>();
@@ -153,25 +154,10 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
         String childWhereClauseString = childWhereClauseList.isEmpty() ? '' : '\nWHERE ' + String.join(childWhereClauseList, '\nAND ');
 
         // Build the child query
-        String childQuery = 'SELECT ' + childFieldsString
+        String childQuery = 'SELECT ' + String.join(childFieldNames, ', ')
             + '\nFROM ' + childRelationshipName
             + childWhereClauseString;
         childRelationshipQueries.add(childQuery);
-        return this;
-    }
-
-    public ISObjectQueryBuilder includeChildrenRecords(Schema.SObjectField childToParentRelationshipField, ISObjectRepository childSObjectRepository) {
-        // TODO SObjectQueryBuilder??
-        return this.includeChildrenRecords(new Map<Schema.SObjectField, ISObjectRepository>{childToParentRelationshipField => childSObjectRepository});
-    }
-
-    public ISObjectQueryBuilder includeChildrenRecords(Map<Schema.SObjectField, ISObjectRepository> childFieldToChildSObjectRepositoryMap) {
-       // TODO SObjectQueryBuilder??
-    //    for(Schema.SObjectField sobjectField : childFieldToChildSObjectRepositoryMap.keySet()) {
-    //        ISObjectQueryBuilder childQueryBuilder = childFieldToChildSObjectRepositoryMap.get(sobjectField).getQueryBuilder();
-       //
-    //        this.childRelationshipQueries.add(childQueryBuilder.getQuery(sobjectField));
-    //    }
         return this;
     }
 
