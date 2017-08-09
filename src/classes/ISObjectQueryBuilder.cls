@@ -47,8 +47,9 @@ public interface ISObjectQueryBuilder {
     ISObjectQueryBuilder notInSubquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject);
 
 // TODO stop using ISObjectRepository as a parameter
-    ISObjectQueryBuilder includeChildrenRecords(Schema.SObjectField childToParentRelationshipField, ISObjectRepository childSObjectRepository);
-    ISObjectQueryBuilder includeChildrenRecords(Map<Schema.SObjectField, ISObjectRepository> childFieldToChildSObjectRepositoryrMap);
+    ISObjectQueryBuilder includeChildrenRecords(Schema.SObjectField childToParentRelationshipField, List<Schema.SObjectField> fields, List<IQueryFilter> filters);
+    // ISObjectQueryBuilder includeChildrenRecords(Schema.SObjectField childToParentRelationshipField, ISObjectRepository childSObjectRepository);
+    // ISObjectQueryBuilder includeChildrenRecords(Map<Schema.SObjectField, ISObjectRepository> childFieldToChildSObjectRepositoryrMap);
 
     // Order By methods
     ISObjectQueryBuilder orderBy(Schema.SObjectField orderByField);
@@ -68,6 +69,6 @@ public interface ISObjectQueryBuilder {
     // Get the dyanmic query strings
     String getQuery();
     // TODO I think I now hate this method
-    String getQuery(Schema.SObjectField sobjectField);
+    //String getQuery(Schema.SObjectField sobjectField);
 
 }

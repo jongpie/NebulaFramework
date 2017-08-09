@@ -8,7 +8,7 @@
 */
 
 //TODO add header
-public class AggregateResultQueryBuilder implements IAggregateResultQueryBuilder {//{} //extends QueryBuilder implements IAggregateResultQueryBuilder {
+public class AggregateResultQueryBuilder extends QueryBuilder implements IAggregateResultQueryBuilder {//{} //extends QueryBuilder implements IAggregateResultQueryBuilder {
 
     private Schema.SObjectType sobjectType;
     private List<String> queryFields;
@@ -139,10 +139,10 @@ public class AggregateResultQueryBuilder implements IAggregateResultQueryBuilder
         return extraDelimiter + String.join(this.aggregateFunctionList, ', ');
     }
 
-    private String getWhereClauseString() {
-        //return this.whereClauseList.isEmpty() ? '' : '\nWHERE ' + String.join(this.whereClauseList, '\nAND ');
-        return '';
-    }
+    // private String getWhereClauseString() {
+    //     //return this.whereClauseList.isEmpty() ? '' : '\nWHERE ' + String.join(this.whereClauseList, '\nAND ');
+    //     return '';
+    // }
 
 /**
  * [fieldName description]

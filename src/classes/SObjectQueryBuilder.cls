@@ -1,20 +1,26 @@
+/*************************************************************************************************
+* This file is part of the Nebula Framework project, released under the MIT License.             *
+* See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
+*************************************************************************************************/
+
 /**
 *
 * @group Query Builder
 * @group-content /ApexDocContent/QueryBuilder.html
 *
 * @description A builder class that generates dynamic SOQL & SOSL queries & returns an SObject or list of SObjects
+* *
 */
-public with sharing class SObjectQueryBuilder extends NebulaCore implements ISObjectQueryBuilder { // TODO extend QueryBuilder
+public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBuilder { // TODO extend
 
-    private String query;
+    //private String query;
     private Set<String> queryFields; //TODO SObjectQueryBuilder because aggregates need to be a sorted list (impacts group by), not an unsorted set
     private List<String> childRelationshipQueries;
-    private List<String> whereClauseList;
-    @testVisible private List<String> orderByList;
+    //private List<String> whereClauseList;
+    //@testVisible private List<String> orderByList;
     private QueryFilterScope filterScope;
     @testVisible private Boolean forUpdate;
-    private Integer limitCount;
+    //private Integer limitCount;
 
     private SObjectType sobjectType;
     private Map<String, Schema.SObjectField> sobjectTypeFieldMap;
@@ -23,8 +29,8 @@ public with sharing class SObjectQueryBuilder extends NebulaCore implements ISOb
     public SObjectQueryBuilder() {
         this.queryFields              = new Set<String>();
         this.childRelationshipQueries = new List<String>();
-        this.whereClauseList          = new List<String>();
-        this.orderByList              = new List<String>();
+        //this.whereClauseList          = new List<String>();
+        //this.orderByList              = new List<String>();
         this.forUpdate                = false;
     }
 
@@ -126,20 +132,25 @@ public with sharing class SObjectQueryBuilder extends NebulaCore implements ISOb
         return this.addSubquery(sobjectFieldToFilter, lookupFieldOnRelatedSObject, 'NOT IN');
     }
 
-   public ISObjectQueryBuilder includeChildrenRecords(Schema.SObjectField childToParentRelationshipField, ISObjectRepository childSObjectRepository) {
-       // TODO SObjectQueryBuilder??
-       return this.includeChildrenRecords(new Map<Schema.SObjectField, ISObjectRepository>{childToParentRelationshipField => childSObjectRepository});
-   }
+    public ISObjectQueryBuilder includeChildrenRecords(Schema.SObjectField childToParentRelationshipField, List<Schema.SObjectField> fields, List<IQueryFilter> filters) {
 
-   public ISObjectQueryBuilder includeChildrenRecords(Map<Schema.SObjectField, ISObjectRepository> childFieldToChildSObjectRepositoryMap) {
+        return this;
+    }
+
+    public ISObjectQueryBuilder includeChildrenRecords(Schema.SObjectField childToParentRelationshipField, ISObjectRepository childSObjectRepository) {
+        // TODO SObjectQueryBuilder??
+        return this.includeChildrenRecords(new Map<Schema.SObjectField, ISObjectRepository>{childToParentRelationshipField => childSObjectRepository});
+    }
+
+    public ISObjectQueryBuilder includeChildrenRecords(Map<Schema.SObjectField, ISObjectRepository> childFieldToChildSObjectRepositoryMap) {
        // TODO SObjectQueryBuilder??
     //    for(Schema.SObjectField sobjectField : childFieldToChildSObjectRepositoryMap.keySet()) {
     //        ISObjectQueryBuilder childQueryBuilder = childFieldToChildSObjectRepositoryMap.get(sobjectField).getQueryBuilder();
        //
     //        this.childRelationshipQueries.add(childQueryBuilder.getQuery(sobjectField));
     //    }
-       return this;
-   }
+        return this;
+    }
 
    public ISObjectQueryBuilder orderBy(Schema.SObjectField orderByField) {
        return this.orderBy(orderByField, null, null);
@@ -184,7 +195,7 @@ public with sharing class SObjectQueryBuilder extends NebulaCore implements ISOb
    public List<SObject> getQueryResults() {// TODO - SObjectQueryBuilder??
        List<SObject> results = Database.query(this.getQuery());
 
-       this.logEntry(results);
+       this.logEntry(this.getQuery(), results);
 
        return results;
    }
@@ -193,21 +204,13 @@ public with sharing class SObjectQueryBuilder extends NebulaCore implements ISOb
        // TODO SObjectQueryBuilder??
        List<SObject> results = Search.query(this.getSearchQuery(searchTerm, searchGroup))[0];
 
-       this.logEntry(results);
+       this.logEntry(this.getSearchQuery(searchTerm, searchGroup), results);
 
        return results;
    }
 
    // Query string methods
-   public String getQuery() { //TODO rename to getQueryString plz
-       return this.getQuery(String.valueOf(this.sobjectType));
-   }
-//TODO i hate this
-   public String getQuery(Schema.SObjectField childRelationshipSObjectField) {
-       Schema.SObjectType parentSObjectType = new SObjectFieldDescriber(childRelationshipSObjectField).getParentSObjectType();
-       String childRelationshipName = new SObjectTypeDescriber(parentSObjectType).getChildRelationshipName(childRelationshipSObjectField);
-       return this.getQuery(childRelationshipName);
-   }
+
 
 
     private void addField(Schema.SObjectField field) {
@@ -249,7 +252,7 @@ public with sharing class SObjectQueryBuilder extends NebulaCore implements ISOb
 
     private ISObjectQueryBuilder addSubquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject, String inOrOut) {
         String sobjectFieldToFilterName = sobjectFieldToFilter.getDescribe().getName();
-        String relatedSObjectTypeName = new SObjectFieldDescriber(lookupFieldOnRelatedSObject).SObjectType.getDescribe().getName();
+        String relatedSObjectTypeName = new SObjectFieldDescriber(lookupFieldOnRelatedSObject).SObjectType.getDescribe().getName(); // TODO change SObjectType to getSObjectType()
         String lookupFieldOnRelatedSObjectName = lookupFieldOnRelatedSObject.getDescribe().getName();
 
         String subselectString = sobjectFieldToFilterName + ' ' + inOrOut + ' (SELECT ' + lookupFieldOnRelatedSObjectName + ' FROM ' + relatedSObjectTypeName + ')';
@@ -257,23 +260,19 @@ public with sharing class SObjectQueryBuilder extends NebulaCore implements ISOb
         return this;
     }
 
-    private String getQuery(String sobjectQueryName) {// TODO - SObjectQueryBuilder?? Aggregate query needs to be built differently
-        this.query = 'SELECT ' + this.getQueryFieldString();
-
-        // Only 1 level of child relationships is allowed, so don't include them if the SObject name isn't the current SObject Type
-        if(sobjectQueryName == String.valueOf(this.sobjectType)) this.query += this.getChildRelationshipsQueryString();
-
-        this.query +='\nFROM ' + sobjectQueryName
+    public String getQuery() {// TODO - SObjectQueryBuilder?? Aggregate query needs to be built differently
+        String query = 'SELECT ' + this.getQueryFieldString()
+            + '\nFROM ' + this.sobjectType
             + this.getWhereClauseString()
             + this.getOrderByString()
             + this.getLimitCountString()
             + this.getForUpdateString();
 
-        return this.query;
+        return query;
     }
 
     private String getSearchQuery(String searchTerm, QuerySearchGroup searchGroup) {// TODO - SObjectQueryBuilder??
-        this.query = 'FIND ' + NebulaFactory.getQueryArgumentFormatter().getValue(searchTerm.toLowerCase())
+        String query = 'FIND ' + NebulaFactory.getQueryArgumentFormatter().getValue(searchTerm.toLowerCase())
             + '\nIN ' + searchGroup.name().replace('_', ' ')
             + '\nRETURNING ' + this.sobjectType + '('
                 + this.getQueryFieldString()
@@ -285,7 +284,7 @@ public with sharing class SObjectQueryBuilder extends NebulaCore implements ISOb
         if(this.forUpdate) Logger.addEntry(this, 'SOSL Search Query method flagged as FOR UPDATE. SOSL cannot use FOR UPDATE, ignoring');
         if(this.filterScope != null) Logger.addEntry(this, 'SOSL Search Query method flagged as USING SCOPE ' + this.filterScope + '. SOSL cannot use USING SCOPE, ignoring');
 
-        return this.query;
+        return query;
     }
 
     private String getQueryFieldString() {// TODO - SObjectQueryBuilder?? Aggregate needs to include aggregate functions (avg, sum, etc) in the query field string
@@ -305,18 +304,18 @@ public with sharing class SObjectQueryBuilder extends NebulaCore implements ISOb
         return ',\n(' + String.join(childRelationshipQueries, '), (') + ')';
     }
 
-    private String getWhereClauseString() {
-        return !this.whereClauseList.isEmpty() ? '\nWHERE ' + String.join(this.whereClauseList, '\nAND ') : '';
-    }
+    // private String getWhereClauseString() {
+    //     return !this.whereClauseList.isEmpty() ? '\nWHERE ' + String.join(this.whereClauseList, '\nAND ') : '';
+    // }
+    //
+    // private String getOrderByString() {
+    //     return !this.orderByList.isEmpty() ? '\nORDER BY ' + String.join(new List<String>(orderByList), ', ') : '';
+    // }
 
-    private String getOrderByString() {
-        return !this.orderByList.isEmpty() ? '\nORDER BY ' + String.join(new List<String>(orderByList), ', ') : '';
-    }
-
-    private String getLimitCountString() {
-        return this.limitCount != null ? '\nLIMIT '+ this.limitCount : '';
-    }
-
+    // private String getLimitCountString() {
+    //     return this.limitCount != null ? '\nLIMIT '+ this.limitCount : '';
+    // }
+    //
     private String getForUpdateString() {// TODO - SObjectQueryBuilder??
         return this.orderByList.isEmpty() && this.forUpdate ? '\nFOR UPDATE' : '';
     }
@@ -337,9 +336,9 @@ public with sharing class SObjectQueryBuilder extends NebulaCore implements ISOb
         }
     }
 
-    private void logEntry(List<Object> results) {
-        String logEntry = 'Query:\n' + this.query + '\n\nResults:\n' + JSON.serializePretty(results);
-        Logger.addEntry(this, logEntry);
-    }
+    // private void logEntry(List<Object> results) {
+    //     String logEntry = 'Query:\n' + this.query + '\n\nResults:\n' + JSON.serializePretty(results);
+    //     Logger.addEntry(this, logEntry);
+    // }
 
 }
