@@ -65,7 +65,7 @@ public without sharing class CollectionUtils { //TODO would just 'Collection' be
    * @param input The Object to check
    * @return true if the item is a type of collection, otherwise returns false
    * @example
-   * List<String> myList = new List<String>{'A', B', 'C'};
+   * List<String> myList = new List<String>{'A', 'B', 'C'};
    * System.assert(CollectionUtils.isCollection(myList));
    */
     public static Boolean isCollection(Object input) {
