@@ -31,7 +31,7 @@ public class QueryFilter implements IQueryFilter {
 
     public IQueryFilter setValue(List<Schema.SObjectField> fieldToFilterChain, QueryOperator operator, Object providedValue) {
         this.fieldToFilterChain = fieldToFilterChain;
-        this.sobjectType        = new SObjectFieldDescriber(fieldToFilterChain[0]).SObjectType;
+        this.sobjectType        = new SObjectFieldDescriber(fieldToFilterChain[0]).getSObjectType();
         this.operator           = operator;
         this.providedValue      = providedValue;
 

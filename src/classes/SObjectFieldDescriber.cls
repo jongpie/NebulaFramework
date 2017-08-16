@@ -18,23 +18,26 @@ public without sharing class SObjectFieldDescriber {
 
     private static Map<Integer, Schema.SObjectType> sobjectFieldHashCodeToSObjectTypeMap;
 
-    public Schema.SObjectField SObjectField {get; private set;}
-    // TODO switch this to a getSObjectType() method maybe?
-    public Schema.SObjectType SObjectType {get; private set;}
+    private Schema.SObjectField sobjectField;
+    private Schema.SObjectType sobjectType;
 
     public SObjectFieldDescriber(Schema.SObjectField sobjectField) {
         this.cacheSObjectTypeFieldHashCodes();
 
-        this.SObjectField = sobjectField;
+        this.sobjectField = sobjectField;
         this.setSObjectType();
     }
 
     public String getFieldName() {
-        return this.SObjectField.getDescribe().getName();
+        return this.sobjectField.getDescribe().getName();
     }
 
     public String getFullFieldName() {
-        return this.SObjectType + '.' + this.getFieldName();
+        return this.sobjectType + '.' + this.getFieldName();
+    }
+
+    public Schema.SObjectType getSObjectType() {
+        return this.sobjectType;
     }
 
     public Schema.SObjectType getParentSObjectType() {

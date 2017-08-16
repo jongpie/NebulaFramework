@@ -26,7 +26,7 @@ public without sharing class QueryDate extends NebulaCore { // TODO decide if th
 
     private QueryDate setValue(Schema.SObjectField sobjectField, String value) {
         this.sobjectField = sobjectField;
-        this.sobjectType  = new SObjectFieldDescriber(sobjectField).SObjectType;
+        this.sobjectType  = new SObjectFieldDescriber(sobjectField).getSObjectType();
         this.value        = value;
         return this;
     }
