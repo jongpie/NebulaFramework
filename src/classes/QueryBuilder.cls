@@ -39,23 +39,12 @@ public abstract class QueryBuilder extends NebulaCore {
 
     protected void add_andFilterBy(List<IQueryFilter> queryFilters) {
         // TODO finish implementing!
-        this.add_filterByWithSeparator(queryFilters, 'AND');
+        this.filterByWithSeparator(queryFilters, 'AND');
     }
 
     protected void add_orFilterBy(List<IQueryFilter> queryFilters) {
 // TODO finish implementing!
-        this.add_filterByWithSeparator(queryFilters, 'OR');
-    }
-
-    private void add_filterByWithSeparator(List<IQueryFilter> queryFilters, String separator) {
-    // TODO finish implementing!
-        if(queryFilters == null) return;
-
-        List<String> queryFilterValues = new List<String>();
-        for(IQueryFilter queryFilter : queryFilters) queryFilterValues.add(queryFilter.getValue());
-
-        String orStatement = '(' + String.join(queryFilterValues, ' ' + separator + ' ') + ')';
-        this.whereClauseList.add(orStatement);
+        this.filterByWithSeparator(queryFilters, 'OR');
     }
 
     protected void add_subquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject, String inOrOut) {
