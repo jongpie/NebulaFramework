@@ -25,9 +25,9 @@ public interface IAggregateResultQueryBuilder {
 //methods for all the aggregate functions - https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_agg_functions.htm
     // Aggregate functions
     IAggregateResultQueryBuilder avg(Schema.SObjectField sbojectField);
-    IAggregateResultQueryBuilder count_distinct(Schema.SObjectField sbojectField);
-    IAggregateResultQueryBuilder count();
+    // TODO IAggregateResultQueryBuilder count();
     IAggregateResultQueryBuilder count(Schema.SObjectField sbojectField);
+    IAggregateResultQueryBuilder count_distinct(Schema.SObjectField sbojectField);
     IAggregateResultQueryBuilder max(Schema.SObjectField sbojectField);
     IAggregateResultQueryBuilder min(Schema.SObjectField sbojectField);
     IAggregateResultQueryBuilder sum(Schema.SObjectField sbojectField);

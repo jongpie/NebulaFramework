@@ -60,20 +60,22 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
    * @example
    * TODO
    */
-    public IAggregateResultQueryBuilder count_distinct(Schema.SObjectField sobjectField) {
-        return buildAggregateFunction('COUNT_DISTINCT', sobjectField);
-    }
 
-    public IAggregateResultQueryBuilder count() {
-        // COUNT() works differently from the other functions
-        // It doesn't use a field as a parameter, so it builds its own string here
-        // instead of using the buildAggregateFunction method
-        this.aggregateFunctionList.add('COUNT() COUNT');
-        return this;
-    }
+
+    // public IAggregateResultQueryBuilder count() {
+    //     // TODO remove or finish implementing COUNT() works differently from the other functions
+    //     // It doesn't use a field as a parameter, so it builds its own string here
+    //     // instead of using the buildAggregateFunction method
+    //     this.aggregateFunctionList.add('COUNT() COUNT');
+    //     return this;
+    // }
 
     public IAggregateResultQueryBuilder count(Schema.SObjectField sobjectField) {
         return buildAggregateFunction('COUNT', sobjectField);
+    }
+
+    public IAggregateResultQueryBuilder count_distinct(Schema.SObjectField sobjectField) {
+        return buildAggregateFunction('COUNT_DISTINCT', sobjectField);
     }
 
     /*******************************************************************************************************
