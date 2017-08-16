@@ -10,7 +10,7 @@
 * @description TODO
 *
 */
-public abstract class QueryBuilder extends NebulaCore implements IQueryBuilder {
+public abstract class QueryBuilder extends NebulaCore {
 
     protected List<String> whereClauseList;
     @testVisible protected List<String> orderByList;
@@ -27,58 +27,55 @@ public abstract class QueryBuilder extends NebulaCore implements IQueryBuilder {
     }
 
 //TODO deprecate and instead use only OR & AND methods? Might still be needed though
-    protected IQueryBuilder add_filterBy(IQueryFilter queryFilter) {
-        return this.add_filterBy(new List<IQueryFilter>{queryFilter});
+    protected void add_filterBy(IQueryFilter queryFilter) {
+        this.add_filterBy(new List<IQueryFilter>{queryFilter});
     }
 
-    protected IQueryBuilder add_filterBy(List<IQueryFilter> queryFilters) {
-        if(queryFilters == null) return this;
+    protected void add_filterBy(List<IQueryFilter> queryFilters) {
+        if(queryFilters == null) return;
 
         for(IQueryFilter queryFilter : queryFilters) this.whereClauseList.add(queryFilter.getValue());
-        return this;
     }
 
-    protected IQueryBuilder add_andFilterBy(List<IQueryFilter> queryFilters) {
+    protected void add_andFilterBy(List<IQueryFilter> queryFilters) {
         // TODO finish implementing!
-        return this.add_filterByWithSeparator(queryFilters, 'AND');
+        this.add_filterByWithSeparator(queryFilters, 'AND');
     }
 
-    protected IQueryBuilder add_orFilterBy(List<IQueryFilter> queryFilters) {
+    protected void add_orFilterBy(List<IQueryFilter> queryFilters) {
 // TODO finish implementing!
-        return this.add_filterByWithSeparator(queryFilters, 'OR');
+        this.add_filterByWithSeparator(queryFilters, 'OR');
     }
 
-    private IQueryBuilder add_filterByWithSeparator(List<IQueryFilter> queryFilters, String separator) {
+    private void add_filterByWithSeparator(List<IQueryFilter> queryFilters, String separator) {
     // TODO finish implementing!
-        if(queryFilters == null) return this;
+        if(queryFilters == null) return;
 
         List<String> queryFilterValues = new List<String>();
         for(IQueryFilter queryFilter : queryFilters) queryFilterValues.add(queryFilter.getValue());
 
         String orStatement = '(' + String.join(queryFilterValues, ' ' + separator + ' ') + ')';
         this.whereClauseList.add(orStatement);
-        return this;
     }
 
-    protected IQueryBuilder add_subquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject, String inOrOut) {
+    protected void add_subquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject, String inOrOut) {
         String sobjectFieldToFilterName = sobjectFieldToFilter.getDescribe().getName();
         String relatedSObjectTypeName = new SObjectFieldDescriber(lookupFieldOnRelatedSObject).SObjectType.getDescribe().getName(); // TODO change SObjectType to getSObjectType()
         String lookupFieldOnRelatedSObjectName = lookupFieldOnRelatedSObject.getDescribe().getName();
 
         String subselectString = sobjectFieldToFilterName + ' ' + inOrOut + ' (SELECT ' + lookupFieldOnRelatedSObjectName + ' FROM ' + relatedSObjectTypeName + ')';
         this.whereClauseList.add(subselectString);
-        return this;
     }
 
-    protected IQueryBuilder add_orderBy(Schema.SObjectField orderByField) {
-        return this.add_orderBy(orderByField, null, null);
+    protected void add_orderBy(Schema.SObjectField orderByField) {
+        this.add_orderBy(orderByField, null, null);
     }
 
-    protected IQueryBuilder add_orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder) {
-        return this.add_orderBy(orderByField, sortOrder, null);
+    protected void add_orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder) {
+        this.add_orderBy(orderByField, sortOrder, null);
     }
 
-    protected IQueryBuilder add_orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder, QueryNullSortOrder nullsSortOrder) {
+    protected void add_orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder, QueryNullSortOrder nullsSortOrder) {
         // TODO give better name? I dont like it containing 'soql' in it if it can be used for SOSL too?
         String sortOrderSoql = '';
         if(sortOrder == QuerySortOrder.ASCENDING) sortOrderSoql = ' ASC';
@@ -87,8 +84,6 @@ public abstract class QueryBuilder extends NebulaCore implements IQueryBuilder {
         if(nullsSortOrder != null) sortOrderSoql += ' NULLS ' + nullsSortOrder;
 
         this.orderByList.add(orderByField.getDescribe().getName() + sortOrderSoql);
-
-        return this;
     }
 
     protected void add_limitCount(Integer limitCount) {
