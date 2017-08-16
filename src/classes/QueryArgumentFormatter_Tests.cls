@@ -192,6 +192,18 @@ private class QueryArgumentFormatter_Tests {
     }
 
     @isTest
+    static void it_should_return_query_string_for_string_containing_single_quotes() {
+        String providedValue  = 'Jon\'s test';
+        String expectedString = '\'' + String.escapeSingleQuotes(providedValue) + '\'';
+
+        Test.startTest();
+        String returnedValue = new QueryArgumentFormatter().getValue(providedValue);
+        Test.stopTest();
+
+        System.assertEquals(expectedString, returnedValue);
+    }
+
+    @isTest
     static void it_should_return_query_string_for_unsupported_type() {
         UUID providedValue  = new UUID();
         String expectedString = String.valueOf(providedValue);
