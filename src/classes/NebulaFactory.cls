@@ -21,20 +21,20 @@ public without sharing class NebulaFactory {
     private static Map<String, NebulaInterfaceImplementation__mdt> interfaceConfigs;
     private static String invalidClassForInterfaceError = 'The configured class "{0}" does not implement the Nebula interface "{1}". Actual type: {2}';
 
-    public static IQueryArgumentFormatter getQueryArgumentFormatter() {
-        return (IQueryArgumentFormatter)createInterfaceImplementation(IQueryArgumentFormatter.class, DEFAULT_QUERY_ARGUMENT_FORMATTER_IMPLEMENTATION);
-    }
-
-    public static ISObjectQueryBuilder getSObjectQueryBuilder() {
-        return (ISObjectQueryBuilder)createInterfaceImplementation(ISObjectQueryBuilder.class, DEFAULT_SOBJECT_QUERY_BUILDER_IMPLEMENTATION);
-    }
-
     public static IAggregateResultQueryBuilder getAggregateQueryBuilder() {
         return (IAggregateResultQueryBuilder)createInterfaceImplementation(IAggregateResultQueryBuilder.class, DEFAULT_AGGREGATE_RESULT_QUERY_BUILDER_IMPLEMENTATION);
     }
 
+    public static IQueryArgumentFormatter getQueryArgumentFormatter() {
+        return (IQueryArgumentFormatter)createInterfaceImplementation(IQueryArgumentFormatter.class, DEFAULT_QUERY_ARGUMENT_FORMATTER_IMPLEMENTATION);
+    }
+
     public static IQueryFilter getQueryFilter() {
         return (IQueryFilter)createInterfaceImplementation(IQueryFilter.class, DEFAULT_QUERY_FILTER_IMPLEMENTATION);
+    }
+
+    public static ISObjectQueryBuilder getSObjectQueryBuilder() {
+        return (ISObjectQueryBuilder)createInterfaceImplementation(ISObjectQueryBuilder.class, DEFAULT_SOBJECT_QUERY_BUILDER_IMPLEMENTATION);
     }
 
     public static ISObjectRepository getSObjectRepository() {
