@@ -67,7 +67,7 @@ public abstract class SObjectRecordTypes extends NebulaCore implements ISObjectR
 
         query.orderBy(Schema.RecordType.DeveloperName);
 
-        Logger.addEntry(this, 'SObjectRecordTypes query=' + query.getQuery());
+        Logger.addEntry(this, 'Loading SObjectRecordTypes for=' + this.sobjectType);
 
         if(!cachedRecordTypesBySObjectMap.containsKey(this.sobjectName)) cachedRecordTypesBySObjectMap.put(this.sobjectName, new List<RecordType>());
         List<RecordType> recordTypeList = (List<RecordType>)query.getQueryResults();
