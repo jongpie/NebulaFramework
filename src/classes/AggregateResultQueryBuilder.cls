@@ -14,10 +14,8 @@
 public class AggregateResultQueryBuilder extends QueryBuilder implements IAggregateResultQueryBuilder {//{} //extends QueryBuilder implements IAggregateResultQueryBuilder {
 
     private Schema.SObjectType sobjectType;
-    private List<String> queryFields;
-    private List<String> aggregateFunctionList;
     private List<String> groupByList;
-    private List<String> groupByRollupList;
+    private List<String> aggregateFunctionList;
 
     public AggregateResultQueryBuilder() {
         this.aggregateFunctionList = new List<String>();
@@ -31,17 +29,16 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
     }
 
     public IAggregateResultQueryBuilder groupBy(Schema.FieldSet fieldSet) {
-        for(Schema.FieldSetMember field : fieldSet.getFields()) this.groupByList.add(field.getFieldPath().toLowerCase());
+        for(Schema.FieldSetMember field : fieldSet.getFields()) this.groupByList.add(field.getFieldPath());
         return this;
     }
 
     public IAggregateResultQueryBuilder groupBy(Schema.SObjectField groupByField) {
-        this.groupByList.add(groupByField.getDescribe().getName());
-        return this;
+        return this.groupBy(new List<Schema.SObjectField>{groupByField});
     }
 
-    public IAggregateResultQueryBuilder groupBy(List<Schema.SObjectField> groupByRollupFields) {
-        for(Schema.SobjectField field : groupByRollupFields) groupByRollupList.add(field.getDescribe().getName());
+    public IAggregateResultQueryBuilder groupBy(List<Schema.SObjectField> groupByFields) {
+        for(Schema.SobjectField field : groupByFields) this.groupByList.add(field.getDescribe().getName());
         return this;
     }
 
@@ -209,7 +206,7 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
     private IAggregateResultQueryBuilder buildAggregateFunction(String functionName, Schema.SObjectField sobjectField) {
         String fieldName = sobjectField.getDescribe().getName();
         // Alias: MIN(Schema.Lead.MyField__c) is auto-aliased to MIN_MyField__c
-        this.aggregateFunctionList.add(functionName + '(' + fieldName + ') ' + functionName + '_' +fieldName);
+        this.aggregateFunctionList.add(functionName + '(' + fieldName + ') ' + functionName + '__' + fieldName);
         return this;
     }
 
