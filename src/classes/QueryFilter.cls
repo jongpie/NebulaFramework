@@ -25,17 +25,6 @@ public class QueryFilter implements IQueryFilter {
         this.fieldToFilterChain = new List<Schema.SObjectField>();
     }
 
-    public IQueryFilter setValue(QueryDate queryDateToFilter, QueryOperator operator, Object providedValue) {
-        // TODO finish implementing for QueryDate or remove
-        this.sobjectType        = queryDateToFilter.getSObjectType();
-        this.operator           = operator;
-        this.providedValue      = providedValue;
-
-        this.getQueryDateFieldName();
-
-        return this;
-    }
-
     public IQueryFilter setValue(Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue) {
         return this.setValue(new List<Schema.SObjectField>{fieldToFilter}, operator, providedValue);
     }
@@ -47,6 +36,17 @@ public class QueryFilter implements IQueryFilter {
         this.providedValue      = providedValue;
 
         this.setSObjectFieldName();
+
+        return this;
+    }
+
+    public IQueryFilter setValue(QueryDate queryDateToFilter, QueryOperator operator, Object providedValue) {
+        // TODO finish implementing for QueryDate or remove
+        this.sobjectType        = queryDateToFilter.getSObjectType();
+        this.operator           = operator;
+        this.providedValue      = providedValue;
+
+        this.getQueryDateFieldName();
 
         return this;
     }

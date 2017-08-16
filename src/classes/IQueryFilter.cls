@@ -15,6 +15,7 @@ public interface IQueryFilter {
     // Setter methods
     IQueryFilter setValue(Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue);
     IQueryFilter setValue(List<Schema.SObjectField> fieldToFilterChain, QueryOperator operator, Object providedValue);
+    IQueryFilter setValue(QueryDate queryDateToFilter, QueryOperator operator, Object providedValue);
 
     // Getter methods
     String getValue();
