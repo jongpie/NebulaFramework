@@ -12,6 +12,7 @@
 */
 public class QueryFilter implements IQueryFilter {
 
+    private QueryDate queryDate;
     private List<Schema.SObjectField> fieldToFilterChain;
     private Schema.SObjectField sobjectField;
     private Schema.SObjectType sobjectType;
@@ -24,6 +25,17 @@ public class QueryFilter implements IQueryFilter {
         this.fieldToFilterChain = new List<Schema.SObjectField>();
     }
 
+    public IQueryFilter setValue(QueryDate queryDateToFilter, QueryOperator operator, Object providedValue) {
+        // TODO finish implementing for QueryDate or remove
+        this.sobjectType        = queryDateToFilter.getSObjectType();
+        this.operator           = operator;
+        this.providedValue      = providedValue;
+
+        this.getQueryDateFieldName();
+
+        return this;
+    }
+
     public IQueryFilter setValue(Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue) {
         return this.setValue(new List<Schema.SObjectField>{fieldToFilter}, operator, providedValue);
     }
@@ -34,7 +46,7 @@ public class QueryFilter implements IQueryFilter {
         this.operator           = operator;
         this.providedValue      = providedValue;
 
-        this.setQueryFieldName();
+        this.setSObjectFieldName();
 
         return this;
     }
@@ -44,7 +56,7 @@ public class QueryFilter implements IQueryFilter {
         return this.queryFieldName + ' ' + this.operator.getValue() + ' ' + argumentFormatter.getValue(this.providedValue);
     }
 
-    public Schema.SObjectField getSObjectField() {
+    public Schema.SObjectField getSObjectField() { // TODO eliminate method??
         return this.sobjectField;
     }
 
@@ -56,7 +68,15 @@ public class QueryFilter implements IQueryFilter {
         return this.providedValue;
     }
 
-    private void setQueryFieldName() {
+    private void getQueryDateFieldName() {
+        if(this.queryDate == null) return;
+
+        this.queryFieldName = this.queryDate.getValue();
+    }
+
+    private void setSObjectFieldName() {
+        if(this.fieldToFilterChain == null) return;
+
         Schema.SObjectField lastField = (Schema.SObjectField)CollectionUtils.pop(this.fieldToFilterChain);
 
         List<String> fieldChain = new List<String>();

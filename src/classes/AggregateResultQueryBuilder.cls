@@ -28,6 +28,11 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
         return this;
     }
 
+    public IAggregateResultQueryBuilder groupBy(QueryDate queryDate) {
+        this.groupByList.add(queryDate.getValue());
+        return this;
+    }
+
     public IAggregateResultQueryBuilder groupBy(Schema.FieldSet fieldSet) {
         for(Schema.FieldSetMember field : fieldSet.getFields()) this.groupByList.add(field.getFieldPath());
         return this;

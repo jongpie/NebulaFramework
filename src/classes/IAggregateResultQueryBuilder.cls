@@ -17,10 +17,10 @@ public interface IAggregateResultQueryBuilder {
     IAggregateResultQueryBuilder setSObjectType(Schema.SObjectType sobjectType);
 
     // Group By methods
+    IAggregateResultQueryBuilder groupBy(QueryDate queryDate);
     IAggregateResultQueryBuilder groupBy(Schema.FieldSet fieldSet);
     IAggregateResultQueryBuilder groupBy(Schema.SObjectField groupByField);
     IAggregateResultQueryBuilder groupBy(List<Schema.SObjectField> groupByFields);
-
 
 //methods for all the aggregate functions - https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_agg_functions.htm
     // Aggregate functions
