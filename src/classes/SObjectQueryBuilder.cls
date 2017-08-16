@@ -11,17 +11,12 @@
 * @description A builder class that generates dynamic SOQL & SOSL queries & returns an SObject or list of SObjects
 *
 */
-public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBuilder { // TODO extend
+public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBuilder {
 
-    //private String query;
-    private Set<String> queryFields; //TODO SObjectQueryBuilder because aggregates need to be a sorted list (impacts group by), not an unsorted set
+    private Set<String> queryFields;
     private List<String> childRelationshipQueries;
-    //private List<String> whereClauseList;
-    //@testVisible private List<String> orderByList;
     private QueryFilterScope filterScope;
     @testVisible private Boolean forUpdate;
-    //private Integer limitCount;
-
     private SObjectType sobjectType;
     private Map<String, Schema.SObjectField> sobjectTypeFieldMap;
 
@@ -54,14 +49,14 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
         return this;
     }
 
-    public ISObjectQueryBuilder addAllFields() { // TODO - SObjectQueryBuilder
+    public ISObjectQueryBuilder addAllFields() {
         for(Schema.SObjectField field : this.sobjectTypeFieldMap.values()) {
             this.queryFields.add(field.getDescribe().getName());
         }
         return this;
     }
 
-    public ISObjectQueryBuilder addAllStandardFields() { // TODO - SObjectQueryBuilder
+    public ISObjectQueryBuilder addAllStandardFields() {
         for(Schema.SObjectField field : this.sobjectTypeFieldMap.values()) {
             Schema.DescribeFieldResult fieldDescribe = field.getDescribe();
             // If it's not a standard field, skip it
@@ -72,7 +67,7 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
         return this;
     }
 
-    public ISObjectQueryBuilder addAllCustomFields() { // TODO - SObjectQueryBuilder
+    public ISObjectQueryBuilder addAllCustomFields() {
         for(Schema.SObjectField field : this.sobjectTypeFieldMap.values()) {
             // If it's not a custom field, skip it
             if(!field.getDescribe().isCustom()) continue;
@@ -82,7 +77,7 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
         return this;
     }
 
-    public ISObjectQueryBuilder addAllReadableFields() { // TODO - SObjectQueryBuilder
+    public ISObjectQueryBuilder addAllReadableFields() {
         for(Schema.SObjectField field : this.sobjectTypeFieldMap.values()) {
             // If it's not a readable field, skip it
             if(!field.getDescribe().isAccessible()) continue;
@@ -92,7 +87,7 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
         return this;
     }
 
-    public ISObjectQueryBuilder addAllEditableFields() { // TODO - SObjectQueryBuilder
+    public ISObjectQueryBuilder addAllEditableFields() {
         for(Schema.SObjectField field : this.sobjectTypeFieldMap.values()) {
             // If it's not an editable field, skip it
             if(!field.getDescribe().isUpdateable()) continue;
@@ -190,11 +185,11 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
    }
 
    public ISObjectQueryBuilder limitCount(Integer limitCount) {
-       this.limitCount = limitCount;
+       super.add_limitCount(limitCount);
        return this;
    }
 
-   public ISObjectQueryBuilder setAsUpdate() {// TODO - SObjectQueryBuilder??
+   public ISObjectQueryBuilder setAsUpdate() {
        this.forUpdate = true;
        return this;
    }
@@ -205,11 +200,11 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
    }
 
    // Query execution methods
-   public SObject getFirstQueryResult() {// TODO - SObjectQueryBuilder??
+   public SObject getFirstQueryResult() {
        return this.getQueryResults()[0];
    }
 
-   public List<SObject> getQueryResults() {// TODO - SObjectQueryBuilder??
+   public List<SObject> getQueryResults() {
        List<SObject> results = Database.query(this.getQuery());
 
        this.logEntry(this.getQuery(), results);
@@ -217,7 +212,7 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
        return results;
    }
 
-   public virtual List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup) {// TODO - SObjectQueryBuilder??
+   public virtual List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup) {
        // TODO SObjectQueryBuilder??
        List<SObject> results = Search.query(this.getSearchQuery(searchTerm, searchGroup))[0];
 
@@ -226,23 +221,17 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
        return results;
    }
 
-   // Query string methods
-
-
-
     private void addField(Schema.SObjectField field) {
         // TODO move this method to be with the rest of the private methods
         this.queryFields.add(field.getDescribe().getName().toLowerCase());
 
         // If the field is a lookup, then we need to get the name field from the parent object
         if(field.getDescribe().getType().name() == 'Reference') {
-            this.queryFields.add(this.getParentSObjectNameField(field));
+            this.queryFields.add(this.getParentSObjectNameField(field).toLowerCase());
         }
     }
 
     private String getParentSObjectNameField(Schema.SObjectField field) {
-        // TODO any cleanup needed?
-        // TODO move lower with other private methods
         String relationshipName = field.getDescribe().getRelationshipName();
         Schema.SObjectType parentSObjectType = field.getDescribe().getReferenceTo()[0];
         String nameField;
@@ -265,7 +254,8 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
         return this;
     }
 
-    public String getQuery() {// TODO - SObjectQueryBuilder?? Aggregate query needs to be built differently
+    @testVisible
+    private String getQuery() {
         String query = 'SELECT ' + this.getQueryFieldString()
             + '\nFROM ' + this.sobjectType
             + this.getWhereClauseString()
@@ -276,7 +266,8 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
         return query;
     }
 
-    private String getSearchQuery(String searchTerm, QuerySearchGroup searchGroup) {// TODO - SObjectQueryBuilder??
+    @testVisible
+    private String getSearchQuery(String searchTerm, QuerySearchGroup searchGroup) {
         String query = 'FIND ' + NebulaFactory.getQueryArgumentFormatter().getValue(searchTerm.toLowerCase())
             + '\nIN ' + searchGroup.name().replace('_', ' ')
             + '\nRETURNING ' + this.sobjectType + '('
@@ -292,7 +283,7 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
         return query;
     }
 
-    private String getQueryFieldString() {// TODO - SObjectQueryBuilder?? Aggregate needs to include aggregate functions (avg, sum, etc) in the query field string
+    private String getQueryFieldString() {
         Set<String> cleanedQueryField = new Set<String>();
         for(String queryField : new List<String>(this.queryFields)) {
             cleanedQueryField.add(queryField.toLowerCase());
@@ -303,24 +294,12 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
         return String.join(queryFieldList, ', ');
     }
 
-    private String getChildRelationshipsQueryString() {// TODO - SObjectQueryBuilder?? but i hate this
+    private String getChildRelationshipsQueryString() {
         if(this.childRelationshipQueries.isEmpty()) return '';
 
         return ',\n(' + String.join(childRelationshipQueries, '), (') + ')';
     }
 
-    // private String getWhereClauseString() {
-    //     return !this.whereClauseList.isEmpty() ? '\nWHERE ' + String.join(this.whereClauseList, '\nAND ') : '';
-    // }
-    //
-    // private String getOrderByString() {
-    //     return !this.orderByList.isEmpty() ? '\nORDER BY ' + String.join(new List<String>(orderByList), ', ') : '';
-    // }
-
-    // private String getLimitCountString() {
-    //     return this.limitCount != null ? '\nLIMIT '+ this.limitCount : '';
-    // }
-    //
     private String getForUpdateString() {// TODO - SObjectQueryBuilder??
         return this.orderByList.isEmpty() && this.forUpdate ? '\nFOR UPDATE' : '';
     }
@@ -340,10 +319,5 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
             this.queryFields.add(commonFieldName.toLowerCase());
         }
     }
-
-    // private void logEntry(List<Object> results) {
-    //     String logEntry = 'Query:\n' + this.query + '\n\nResults:\n' + JSON.serializePretty(results);
-    //     Logger.addEntry(this, logEntry);
-    // }
 
 }

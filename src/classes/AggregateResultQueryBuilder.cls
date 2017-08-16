@@ -11,7 +11,6 @@
 * @description TODO A builder class that generates dynamic queries & returns a list of AggregateResult
 *
 */
-
 public class AggregateResultQueryBuilder extends QueryBuilder implements IAggregateResultQueryBuilder {//{} //extends QueryBuilder implements IAggregateResultQueryBuilder {
 
     private Schema.SObjectType sobjectType;
@@ -99,7 +98,6 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
     }
 
     public IAggregateResultQueryBuilder groupBy(Schema.FieldSet fieldSet) {
-        // TODO
         for(Schema.FieldSetMember field : fieldSet.getFields()) this.groupByList.add(field.getFieldPath().toLowerCase());
         return this;
     }
@@ -113,16 +111,24 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
         for(Schema.SobjectField field : groupByRollupFields) groupByRollupList.add(field.getDescribe().getName());
         return this;
     }
-
-    public List<AggregateResult> getQueryResults() {
-        return new List<AggregateResult>();
+    public AggregateResult getFirstQueryResult() {
+        return this.getQueryResults()[0];
     }
 
-    public String getQuery() { // TODO make it inherit & override from IQueryBuilder
+    public List<AggregateResult> getQueryResults() {
+        List<AggregateResult> results = Database.query(this.getQuery());
+
+        this.logEntry(this.getQuery(), results);
+
+        return results;
+    }
+
+    @testVisible
+    private String getQuery() {
         String queryString = 'SELECT ' + this.getGroupByFieldString() + this.getAggregateFunctionString()
             + '\nFROM ' + this.sobjectType.getDescribe().getName()
             + this.getWhereClauseString()
-            + this.getGroupByFieldString()
+            + '\nGROUP BY ' + this.getGroupByFieldString()
             + this.getOrderByString()
             + this.getLimitCountString();
 
@@ -130,26 +136,16 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
     }
 
     private String getGroupByFieldString() {
-        //this.groupByList.sort(); TODO dont sort because that could change the results
-        return '\nGROUP BY ' + String.join(this.groupByList, ', ');
+        return String.join(this.groupByList, ', ');
     }
 
     private String getAggregateFunctionString() {
         this.aggregateFunctionList.sort();
         //TODO make better - adds a comma when needed for 'Type, COUNT_DISTINCT(OwnerId)'
-        String extraDelimiter = getGroupByFieldString() == null ? '' : ', ';
+        String extraDelimiter = getGroupByFieldString() == null ? '' : ',\n';
         return extraDelimiter + String.join(this.aggregateFunctionList, ', ');
     }
 
-    // private String getWhereClauseString() {
-    //     //return this.whereClauseList.isEmpty() ? '' : '\nWHERE ' + String.join(this.whereClauseList, '\nAND ');
-    //     return '';
-    // }
-
-/**
- * [fieldName description]
- * @type {[type]}
- */
     private IAggregateResultQueryBuilder buildAggregateFunction(String functionName, Schema.SObjectField sobjectField) {
         String fieldName = sobjectField.getDescribe().getName();
         // Alias: MIN(Schema.Lead.MyField__c) is auto-aliased to MIN_MyField__c
