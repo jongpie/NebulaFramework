@@ -30,6 +30,21 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
         return this;
     }
 
+    public IAggregateResultQueryBuilder groupBy(Schema.FieldSet fieldSet) {
+        for(Schema.FieldSetMember field : fieldSet.getFields()) this.groupByList.add(field.getFieldPath().toLowerCase());
+        return this;
+    }
+
+    public IAggregateResultQueryBuilder groupBy(Schema.SObjectField groupByField) {
+        this.groupByList.add(groupByField.getDescribe().getName());
+        return this;
+    }
+
+    public IAggregateResultQueryBuilder groupBy(List<Schema.SObjectField> groupByRollupFields) {
+        for(Schema.SobjectField field : groupByRollupFields) groupByRollupList.add(field.getDescribe().getName());
+        return this;
+    }
+
     /*******************************************************************************************************
    * @description Adds the average value of the numeric field to the dynamically generated aggregate query
    * @param numericSObjectField The field to use for calculating the average
@@ -97,20 +112,65 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
         return buildAggregateFunction('SUM', numericSObjectField);
     }
 
-    public IAggregateResultQueryBuilder groupBy(Schema.FieldSet fieldSet) {
-        for(Schema.FieldSetMember field : fieldSet.getFields()) this.groupByList.add(field.getFieldPath().toLowerCase());
+    public IAggregateResultQueryBuilder filterBy(IQueryFilter queryFilter) {
+        super.add_filterBy(queryFilter);
         return this;
     }
 
-    public IAggregateResultQueryBuilder groupBy(Schema.SObjectField groupByField) {
-        this.groupByList.add(groupByField.getDescribe().getName());
+    public IAggregateResultQueryBuilder filterBy(List<IQueryFilter> queryFilters) {
+        super.add_filterBy(queryFilters);
         return this;
     }
 
-    public IAggregateResultQueryBuilder groupBy(List<Schema.SObjectField> groupByRollupFields) {
-        for(Schema.SobjectField field : groupByRollupFields) groupByRollupList.add(field.getDescribe().getName());
+    public IAggregateResultQueryBuilder andFilterBy(List<IQueryFilter> queryFilters) {
+       super.add_andFilterBy(queryFilters);
+       return this;
+    }
+
+    public IAggregateResultQueryBuilder orFilterBy(List<IQueryFilter> queryFilters) {
+       super.add_orFilterBy(queryFilters);
+       return this;
+    }
+
+    // TODO finish implementing subselects!, come up with better method name that uses verb for name (get, set, etc)
+    public IAggregateResultQueryBuilder inSubquery(Schema.SObjectField lookupFieldOnRelatedSObject) {
+        return this.inSubquery(this.sobjectType.getDescribe().fields.getMap().get('Id'), lookupFieldOnRelatedSObject);
+    }
+
+    public IAggregateResultQueryBuilder inSubquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject) {
+        super.add_subquery(sobjectFieldToFilter, lookupFieldOnRelatedSObject, 'IN');
         return this;
     }
+
+    public IAggregateResultQueryBuilder notInSubquery(Schema.SObjectField lookupFieldOnRelatedSObject) {
+        return this.notInSubquery(this.sobjectType.getDescribe().fields.getMap().get('Id'), lookupFieldOnRelatedSObject);
+    }
+
+    public IAggregateResultQueryBuilder notInSubquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject) {
+        super.add_subquery(sobjectFieldToFilter, lookupFieldOnRelatedSObject, 'NOT IN');
+        return this;
+    }
+
+    public IAggregateResultQueryBuilder orderBy(Schema.SObjectField orderByField) {
+        super.add_orderBy(orderByField);
+        return this;
+    }
+
+    public IAggregateResultQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder) {
+        super.add_orderBy(orderByField, sortOrder);
+        return this;
+    }
+
+    public IAggregateResultQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder, QueryNullSortOrder nullsSortOrder) {
+        super.add_orderBy(orderByField, sortOrder, nullsSortOrder);
+        return this;
+    }
+
+    public IAggregateResultQueryBuilder limitCount(Integer limitCount) {
+        super.add_limitCount(limitCount);
+        return this;
+    }
+
     public AggregateResult getFirstQueryResult() {
         return this.getQueryResults()[0];
     }

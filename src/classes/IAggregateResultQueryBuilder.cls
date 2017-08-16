@@ -34,6 +34,26 @@ public interface IAggregateResultQueryBuilder {
 // group by rollup, having(blah), etc support - https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_groupby.htm
 //need to research 'GROUP BY CUBE' & 'GROUPING' more https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_groupby_cube.htm
 
+    // Filter methods
+    IAggregateResultQueryBuilder filterBy(IQueryFilter queryFilter);
+    IAggregateResultQueryBuilder filterBy(List<IQueryFilter> queryFilters);
+    IAggregateResultQueryBuilder andFilterBy(List<IQueryFilter> queryFilters);
+    IAggregateResultQueryBuilder orFilterBy(List<IQueryFilter> queryFilters);
+
+    // Subquery filter methods
+    IAggregateResultQueryBuilder inSubquery(Schema.SObjectField lookupFieldOnRelatedSObject);
+    IAggregateResultQueryBuilder inSubquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject);
+    IAggregateResultQueryBuilder notInSubquery(Schema.SObjectField lookupFieldOnRelatedSObject);
+    IAggregateResultQueryBuilder notInSubquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject);
+
+    // Order By methods
+    IAggregateResultQueryBuilder orderBy(Schema.SObjectField orderByField);
+    IAggregateResultQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder);
+    IAggregateResultQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder, QueryNullSortOrder nullsSortOrder);
+
+    // Additional query option methods
+    IAggregateResultQueryBuilder limitCount(Integer limitCount);
+
     // Query execution methods
     List<AggregateResult> getQueryResults();
 

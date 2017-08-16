@@ -24,8 +24,6 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
     public SObjectQueryBuilder() {
         this.queryFields              = new Set<String>();
         this.childRelationshipQueries = new List<String>();
-        //this.whereClauseList          = new List<String>();
-        //this.orderByList              = new List<String>();
         this.forUpdate                = false;
     }
 
@@ -98,25 +96,22 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
     }
 
     public ISObjectQueryBuilder filterBy(IQueryFilter queryFilter) {
-        return this.filterBy(new List<IQueryFilter>{queryFilter});
+        super.add_filterBy(queryFilter);
+        return this;
     }
 
     public ISObjectQueryBuilder filterBy(List<IQueryFilter> queryFilters) {
-        if(queryFilters == null) return this;
-
-        for(IQueryFilter queryFilter : queryFilters) this.whereClauseList.add(queryFilter.getValue());
+        super.add_filterBy(queryFilters);
         return this;
     }
 
     public ISObjectQueryBuilder andFilterBy(List<IQueryFilter> queryFilters) {
-       // TODO finish implementing!
-       this.filterByWithSeparator(queryFilters, 'AND');
+       super.add_andFilterBy(queryFilters);
        return this;
     }
 
     public ISObjectQueryBuilder orFilterBy(List<IQueryFilter> queryFilters) {
-        // TODO finish implementing!
-       this.filterByWithSeparator(queryFilters, 'OR');
+       super.add_orFilterBy(queryFilters);
        return this;
     }
 
@@ -126,7 +121,8 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
     }
 
     public ISObjectQueryBuilder inSubquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject) {
-        return this.addSubquery(sobjectFieldToFilter, lookupFieldOnRelatedSObject, 'IN');
+        super.add_subquery(sobjectFieldToFilter, lookupFieldOnRelatedSObject, 'IN');
+        return this;
     }
 
     public ISObjectQueryBuilder notInSubquery(Schema.SObjectField lookupFieldOnRelatedSObject) {
@@ -134,10 +130,14 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
     }
 
     public ISObjectQueryBuilder notInSubquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject) {
-        return this.addSubquery(sobjectFieldToFilter, lookupFieldOnRelatedSObject, 'NOT IN');
+        super.add_subquery(sobjectFieldToFilter, lookupFieldOnRelatedSObject, 'NOT IN');
+        return this;
     }
 
     public ISObjectQueryBuilder includeChildrenRecords(Schema.SObjectField childToParentRelationshipField, List<Schema.SObjectField> childFields, List<IQueryFilter> childFilters) {
+        // TODO null handling for filters, need a better long-term solution
+        childFilters = childFilters != null ? childFilters : new List<IQueryFilter>();
+
         // Get the relationship name
         String childRelationshipName;
         for(Schema.ChildRelationship childRelationship : this.sobjectType.getDescribe().getChildRelationships()) {
@@ -154,33 +154,28 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
         // Build the child filters
         List<String> childWhereClauseList = new List<String>();
         for(IQueryFilter childFilter : childFilters) childWhereClauseList.add(childFilter.getValue());
-        String childWhereClauseString = childWhereClauseList.isEmpty() ? '' : '\nWHERE ' + String.join(childWhereClauseList, '\nAND ');
+        String childWhereClauseString = childWhereClauseList.isEmpty() ? '' : '\n\tWHERE ' + String.join(childWhereClauseList, '\n\tAND ');
 
         // Build the child query
-        String childQuery = 'SELECT ' + String.join(childFieldNames, ', ')
-            + '\nFROM ' + childRelationshipName
+        String childQuery = '\tSELECT ' + String.join(childFieldNames, ', ')
+            + '\n\tFROM ' + childRelationshipName
             + childWhereClauseString;
         childRelationshipQueries.add(childQuery);
         return this;
     }
 
    public ISObjectQueryBuilder orderBy(Schema.SObjectField orderByField) {
-       return this.orderBy(orderByField, null, null);
+       super.add_orderBy(orderByField);
+       return this;
    }
 
    public ISObjectQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder) {
-       return this.orderBy(orderByField, sortOrder, null);
+       super.add_orderBy(orderByField, sortOrder);
+       return this;
    }
 
    public ISObjectQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder, QueryNullSortOrder nullsSortOrder) {
-       String sortOrderSoql = '';
-       if(sortOrder == QuerySortOrder.ASCENDING) sortOrderSoql = ' ASC';
-       else if(sortOrder == QuerySortOrder.DESCENDING) sortOrderSoql = ' DESC';
-
-       if(nullsSortOrder != null) sortOrderSoql += ' NULLS ' + nullsSortOrder;
-
-       this.orderByList.add(orderByField.getDescribe().getName() + sortOrderSoql);
-
+       super.add_orderBy(orderByField, sortOrder, nullsSortOrder);
        return this;
    }
 
@@ -244,25 +239,15 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
         return relationshipName + '.' + nameField;
     }
 
-    private ISObjectQueryBuilder addSubquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject, String inOrOut) {
-        String sobjectFieldToFilterName = sobjectFieldToFilter.getDescribe().getName();
-        String relatedSObjectTypeName = new SObjectFieldDescriber(lookupFieldOnRelatedSObject).SObjectType.getDescribe().getName(); // TODO change SObjectType to getSObjectType()
-        String lookupFieldOnRelatedSObjectName = lookupFieldOnRelatedSObject.getDescribe().getName();
-
-        String subselectString = sobjectFieldToFilterName + ' ' + inOrOut + ' (SELECT ' + lookupFieldOnRelatedSObjectName + ' FROM ' + relatedSObjectTypeName + ')';
-        this.whereClauseList.add(subselectString);
-        return this;
-    }
-
     @testVisible
     private String getQuery() {
-        String query = 'SELECT ' + this.getQueryFieldString()
+        String query = 'SELECT ' + this.getQueryFieldString() + this.getChildRelationshipsQueryString()
             + '\nFROM ' + this.sobjectType
             + this.getWhereClauseString()
             + this.getOrderByString()
             + this.getLimitCountString()
             + this.getForUpdateString();
-
+System.debug('query=' + query);
         return query;
     }
 
@@ -300,7 +285,7 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
         return ',\n(' + String.join(childRelationshipQueries, '), (') + ')';
     }
 
-    private String getForUpdateString() {// TODO - SObjectQueryBuilder??
+    private String getForUpdateString() {
         return this.orderByList.isEmpty() && this.forUpdate ? '\nFOR UPDATE' : '';
     }
 

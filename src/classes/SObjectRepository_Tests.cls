@@ -5,7 +5,7 @@
 @isTest
 private class SObjectRepository_Tests {
 // TODO finish tests
-    /*private class AccountRepository extends SObjectRepository {
+    private class AccountRepository extends SObjectRepository {
         // Test subclass that extends SObjectRepository
         public override Schema.SObjectType getSObjectType() {
             return Schema.Account.SObjectType;
@@ -24,15 +24,10 @@ private class SObjectRepository_Tests {
                 .filterBy(NebulaFactory.getQueryFilter().setValue(Schema.Account.Id, QueryOperator.EQUALS, accountId))
                 .includeChildrenRecords(
                     Schema.Contact.AccountId,
-                    new ContactRepository()
+                    new List<Schema.SObjectField>{Schema.Contact.Id, Schema.Contact.Name},
+                    new List<IQueryFilter>{new QueryFilter().setValue(Schema.Contact.Email, QueryOperator.NOT_EQUAL_TO, null)}
                 )
                 .getFirstQueryResult();
-        }
-    }
-
-    private class ContactRepository extends SObjectRepository {
-        public override Schema.SObjectType getSObjectType() {
-            return Schema.Contact.SObjectType;
         }
     }
 
@@ -181,12 +176,13 @@ private class SObjectRepository_Tests {
         Account account = [SELECT Id FROM Account LIMIT 1];
 
         Contact contact = createContact(account.Id);
+        contact.Email = 'test@email.com';
         insert contact;
         contact = [SELECT Id, AccountId FROM Contact WHERE Id = :contact.Id];
         System.assertEquals(account.Id, contact.AccountId);
 
         Account expectedAccount = [
-            SELECT Id, (SELECT Id, AccountId FROM Contacts)
+            SELECT Id, (SELECT Id, AccountId FROM Contacts WHERE Email != null)
             FROM Account
             WHERE Id = :account.Id
         ];
@@ -373,6 +369,6 @@ private class SObjectRepository_Tests {
 
         existingAccount = [SELECT Id, IsDeleted FROM Account WHERE Id = :existingAccount.Id ALL ROWS];
         System.assertEquals(false, existingAccount.IsDeleted);
-    }*/
+    }
 
 }

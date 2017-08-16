@@ -26,18 +26,6 @@ public abstract class QueryBuilder extends NebulaCore implements IQueryBuilder {
         this.orderByList              = new List<String>();
     }
 
-    public IQueryBuilder add_setSObjectType(Schema.SObjectType sobjectType) {
-        // TODO verify/refactor so that this method doesnt have to be called as the first method
-        this.sobjectType         = sobjectType;
-        this.sobjectTypeFieldMap = sobjectType.getDescribe().fields.getMap();
-        return this;
-    }
-
-    protected void setSObjectTypeDependencies() {
-        this.sobjectType         = sobjectType;
-        this.sobjectTypeFieldMap = sobjectType.getDescribe().fields.getMap();
-    }
-
 //TODO deprecate and instead use only OR & AND methods? Might still be needed though
     protected IQueryBuilder add_filterBy(IQueryFilter queryFilter) {
         return this.add_filterBy(new List<IQueryFilter>{queryFilter});
@@ -72,6 +60,16 @@ public abstract class QueryBuilder extends NebulaCore implements IQueryBuilder {
         return this;
     }
 
+    protected IQueryBuilder add_subquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject, String inOrOut) {
+        String sobjectFieldToFilterName = sobjectFieldToFilter.getDescribe().getName();
+        String relatedSObjectTypeName = new SObjectFieldDescriber(lookupFieldOnRelatedSObject).SObjectType.getDescribe().getName(); // TODO change SObjectType to getSObjectType()
+        String lookupFieldOnRelatedSObjectName = lookupFieldOnRelatedSObject.getDescribe().getName();
+
+        String subselectString = sobjectFieldToFilterName + ' ' + inOrOut + ' (SELECT ' + lookupFieldOnRelatedSObjectName + ' FROM ' + relatedSObjectTypeName + ')';
+        this.whereClauseList.add(subselectString);
+        return this;
+    }
+
     protected IQueryBuilder add_orderBy(Schema.SObjectField orderByField) {
         return this.add_orderBy(orderByField, null, null);
     }
@@ -97,7 +95,7 @@ public abstract class QueryBuilder extends NebulaCore implements IQueryBuilder {
         this.limitCount = limitCount;
     }
 
-    protected void filterByWithSeparator(List<IQueryFilter> queryFilters, String separator) {
+    private void filterByWithSeparator(List<IQueryFilter> queryFilters, String separator) {
  // TODO finish implementing!
         if(queryFilters == null) return;
 
