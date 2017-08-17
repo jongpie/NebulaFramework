@@ -48,7 +48,8 @@ private class SObjectQueryBuilder_Tests {
     static void it_should_generate_a_query_with_a_subselect() {
         List<Lead> leads = (List<Lead>)new SObjectQueryBuilder()
             .setSObjectType(Schema.Lead.SObjectType)
-            .andFilterBy(new QueryFilter().setValue(Schema.Lead.OwnerId, QueryOperator.IS_IN, Schema.User.Id))
+            // TODO this overloaded setValue method is confusing because it's similar to a field filter (Field, opertor, Object)
+            .andFilterBy(new QueryFilter().setValue(QueryOperator.IS_IN, Schema.Lead.OwnerId, Schema.User.Id))
             .getQueryResults();
 
         // TODO finish writings tests System.assert(false, 'finish writing tests');
