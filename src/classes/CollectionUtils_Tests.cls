@@ -5,6 +5,37 @@
 @isTest
 private class CollectionUtils_Tests {
 
+    @isTest
+    static void it_should_get_the_last_item_in_a_list() {
+        List<String> collectionToCheck = new List<String>{'A', 'B', 'C'};
+        Integer originalCollectionSize = collectionToCheck.size();
+
+        System.assertEquals('C', CollectionUtils.getLastItem(collectionToCheck));
+        System.assertEquals(originalCollectionSize, collectionToCheck.size());
+    }
+
+    @isTest
+    static void it_should_pop_the_last_item_in_a_list() {
+        List<String> collectionToCheck = new List<String>{'A', 'B', 'C'};
+        Integer originalCollectionSize = collectionToCheck.size();
+
+        System.assertEquals('C', CollectionUtils.pop(collectionToCheck));
+        System.assertEquals(originalCollectionSize - 1, collectionToCheck.size());
+        // Verify that the last item has been removed
+        System.assertEquals(false, new Set<String>(collectionToCheck).contains('C'));
+    }
+
+    @isTest
+    static void it_should_splice_the_specified_item_in_a_list() {
+        List<String> collectionToCheck = new List<String>{'A', 'B', 'C'};
+        Integer originalCollectionSize = collectionToCheck.size();
+
+        System.assertEquals('B', CollectionUtils.splice(collectionToCheck, 1));
+        System.assertEquals(originalCollectionSize - 1, collectionToCheck.size());
+        // Verify that the specified item has been removed
+        System.assert(new Set<String>(collectionToCheck).contains('B'));
+    }
+
     // Tests for lists
     @isTest
     static void it_should_say_that_a_list_of_strings_is_a_list_and_a_collection() {

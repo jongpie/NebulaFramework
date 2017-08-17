@@ -22,7 +22,6 @@ public without sharing class CollectionUtils { //TODO would just 'Collection' be
    * System.assertEquals('C', lastItem);
    */
     public static Object getLastItem(List<Object> listOfItems) {
-        // TODO verify if all 3 new methods should be kept, then add unit tests for any that are kept
         Integer indexOfItem = listOfItems.size() - 1;
         return listOfItems[indexOfItem];
     }
