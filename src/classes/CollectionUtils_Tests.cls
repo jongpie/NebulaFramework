@@ -33,7 +33,7 @@ private class CollectionUtils_Tests {
         System.assertEquals('B', CollectionUtils.splice(collectionToCheck, 1));
         System.assertEquals(originalCollectionSize - 1, collectionToCheck.size());
         // Verify that the specified item has been removed
-        System.assert(new Set<String>(collectionToCheck).contains('B'));
+        System.assertEquals(false, new Set<String>(collectionToCheck).contains('B'));
     }
 
     // Tests for lists
