@@ -6,7 +6,6 @@
 /**
 *
 * @group Query Builder
-* @group-content /ApexDocContent/QueryBuilder.html
 *
 * @description A builder class that generates dynamic queries & returns a list of AggregateResult
 *
