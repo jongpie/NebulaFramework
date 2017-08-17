@@ -85,13 +85,14 @@ public class SObjectRepositoryMocks {
 
         public virtual List<SObject> getByIdAndQueryFilters(List<Id> idList, List<IQueryFilter> queryFilters) {
             List<SObject> records = this.getById(idList);
-            for(SObject record : records) {
-                for(IQueryFilter queryFilter : queryFilters) {
-                    if(queryFilter.getSObjectField() == null) continue;
-
-                    record.put(queryFilter.getSObjectField(), queryFilter.getProvidedValue());
-                }
-            }
+            // TODO need to revisit - QueryFilter no longer has the methods needed below, so need a new solution
+            // for(SObject record : records) {
+            //     for(IQueryFilter queryFilter : queryFilters) {
+            //         if(queryFilter.getSObjectField() == null) continue;
+            //
+            //         record.put(queryFilter.getSObjectField(), queryFilter.getProvidedValue());
+            //     }
+            // }
 
             return records;
         }
