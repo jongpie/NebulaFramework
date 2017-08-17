@@ -49,7 +49,7 @@ private class SObjectQueryBuilder_Tests {
         List<Lead> leads = (List<Lead>)new SObjectQueryBuilder()
             .setSObjectType(Schema.Lead.SObjectType)
             // TODO this overloaded setValue method is confusing because it's similar to a field filter (Field, opertor, Object)
-            .andFilterBy(new QueryFilter().setValue(QueryOperator.IS_IN, Schema.Lead.OwnerId, Schema.User.Id))
+            .filterBy(new QueryFilter().filterBySubquery(QueryOperator.IS_IN, Schema.Lead.OwnerId, Schema.User.Id))
             .getQueryResults();
 
         // TODO finish writings tests System.assert(false, 'finish writing tests');

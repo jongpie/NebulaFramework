@@ -39,9 +39,8 @@ public interface ISObjectQueryBuilder {
     ISObjectQueryBuilder includeChildrenRecords(Schema.SObjectField childToParentRelationshipField, List<Schema.SObjectField> fields, List<IQueryFilter> filters);
 
     // Filter methods
-    ISObjectQueryBuilder andFilterBy(IQueryFilter queryFilter);
-    ISObjectQueryBuilder andFilterBy(List<IQueryFilter> queryFilters);
-    ISObjectQueryBuilder orFilterBy(List<IQueryFilter> queryFilters);
+    ISObjectQueryBuilder filterBy(IQueryFilter queryFilter);
+    ISObjectQueryBuilder filterBy(List<IQueryFilter> queryFilters);
 
     // Order By methods
     ISObjectQueryBuilder orderBy(Schema.SObjectField orderByField);

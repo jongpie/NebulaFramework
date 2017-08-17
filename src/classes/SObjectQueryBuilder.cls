@@ -94,20 +94,6 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
         return this;
     }
 
-    public ISObjectQueryBuilder andFilterBy(IQueryFilter queryFilter) {
-       return this.andFilterBy(new List<IQueryFilter>{queryFilter});
-    }
-
-    public ISObjectQueryBuilder andFilterBy(List<IQueryFilter> queryFilters) {
-       super.doAndFilterBy(queryFilters);
-       return this;
-    }
-
-    public ISObjectQueryBuilder orFilterBy(List<IQueryFilter> queryFilters) {
-       super.doOrFilterBy(queryFilters);
-       return this;
-    }
-
     public ISObjectQueryBuilder includeChildrenRecords(Schema.SObjectField childToParentRelationshipField, List<Schema.SObjectField> childFields, List<IQueryFilter> childFilters) {
         // TODO null handling for filters, need a better long-term solution
         childFilters = childFilters != null ? childFilters : new List<IQueryFilter>();
@@ -136,6 +122,16 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
             + childWhereClauseString;
         childRelationshipQueries.add(childQuery);
         return this;
+    }
+
+    public ISObjectQueryBuilder filterBy(IQueryFilter queryFilter) {
+        super.doFilterBy(queryFilter);
+        return this;
+    }
+
+    public ISObjectQueryBuilder filterBy(List<IQueryFilter> queryFilters) {
+       super.doFilterBy(queryFilters);
+       return this;
     }
 
    public ISObjectQueryBuilder orderBy(Schema.SObjectField orderByField) {

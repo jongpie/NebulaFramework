@@ -12,7 +12,7 @@ private class QueryFilter_Tests {
         List<String> providedValues      = new List<String>{'derp', 'herp'};
 
         Test.startTest();
-        QueryFilter queryFilter = (QueryFilter)new QueryFilter().setValue(sobjectField, operator, providedValues);
+        QueryFilter queryFilter = (QueryFilter)new QueryFilter().filterByField(sobjectField, operator, providedValues);
         Test.stopTest();
 
         String expectedQueryFilter = 'CompanyName ' + operator.getValue() + ' (\'' + String.join(providedValues, '\', \'') + '\')';
@@ -28,7 +28,7 @@ private class QueryFilter_Tests {
         String providedValue   = 'derp@test.com';
 
         Test.startTest();
-        QueryFilter queryFilter = (QueryFilter)new QueryFilter().setValue(parentFieldToFilter, operator, providedValue);
+        QueryFilter queryFilter = (QueryFilter)new QueryFilter().filterByParentField(parentFieldToFilter, operator, providedValue);
         Test.stopTest();
 
         String expectedQueryFilter = 'CreatedBy.Email ' + operator.getValue() + ' \'' + providedValue + '\'';
@@ -44,7 +44,7 @@ private class QueryFilter_Tests {
         String providedValue   = 'derp';
 
         Test.startTest();
-        QueryFilter queryFilter = (QueryFilter)new QueryFilter().setValue(grandparentFieldToFilter, operator, providedValue);
+        QueryFilter queryFilter = (QueryFilter)new QueryFilter().filterByParentField(grandparentFieldToFilter, operator, providedValue);
         Test.stopTest();
 
         String expectedQueryFilter = 'Owner.Manager.Profile.Name ' + operator.getValue() + ' \'' + providedValue + '\'';
@@ -58,7 +58,7 @@ private class QueryFilter_Tests {
         Integer providedValue  = 3;
 
         Test.startTest();
-        QueryFilter queryFilter = (QueryFilter)new QueryFilter().setValue(qd, operator, providedValue);
+        QueryFilter queryFilter = (QueryFilter)new QueryFilter().filterByQueryDate(qd, operator, providedValue);
         Test.stopTest();
 
         String expectedQueryFilter = 'CALENDAR_MONTH(CreatedDate) ' + operator.getValue() + ' ' + providedValue;
@@ -71,7 +71,7 @@ private class QueryFilter_Tests {
         Schema.SObjectField lookupFieldOnRelatedSObject = Schema.Lead.ConvertedAccountId;
 
         Test.startTest();
-        QueryFilter queryFilter = (QueryFilter)new QueryFilter().setValue(operator, lookupFieldOnRelatedSObject);
+        QueryFilter queryFilter = (QueryFilter)new QueryFilter().filterBySubquery(operator, lookupFieldOnRelatedSObject);
         Test.stopTest();
 
         String expectedQueryFilter = 'Id ' + operator.getValue() + ' (SELECT ' + lookupFieldOnRelatedSObject.getDescribe().getName() + ' FROM Lead)';
@@ -85,7 +85,7 @@ private class QueryFilter_Tests {
         Schema.SObjectField lookupFieldOnRelatedSObject = Schema.User.Id;
 
         Test.startTest();
-        QueryFilter queryFilter = (QueryFilter)new QueryFilter().setValue(operator, lookupField, lookupFieldOnRelatedSObject);
+        QueryFilter queryFilter = (QueryFilter)new QueryFilter().filterBySubquery(operator, lookupField, lookupFieldOnRelatedSObject);
         Test.stopTest();
 
         String expectedQueryFilter = 'OwnerId ' + operator.getValue() + ' (SELECT ' + lookupFieldOnRelatedSObject.getDescribe().getName() + ' FROM User)';

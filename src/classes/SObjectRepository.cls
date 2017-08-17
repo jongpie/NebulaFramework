@@ -38,13 +38,13 @@ public abstract class SObjectRepository extends DML implements ISObjectRepositor
     // SOQL
     public virtual SObject getById(Id recordId) {
         return this.Query
-            .andFilterBy(NebulaFactory.getQueryFilter().setValue(this.idField, QueryOperator.EQUALS, recordId))
+            .filterBy(NebulaFactory.getQueryFilter().filterByField(this.idField, QueryOperator.EQUALS, recordId))
             .getFirstQueryResult();
     }
 
     public virtual List<SObject> getById(List<Id> recordIds) {
         return this.Query
-            .andFilterBy(NebulaFactory.getQueryFilter().setValue(this.idField, QueryOperator.IS_IN, recordIds))
+            .filterBy(NebulaFactory.getQueryFilter().filterByField(this.idField, QueryOperator.IS_IN, recordIds))
             .getQueryResults();
     }
 
@@ -54,7 +54,7 @@ public abstract class SObjectRepository extends DML implements ISObjectRepositor
 
     public virtual List<SObject> get(List<IQueryFilter> queryFilters) {
         return this.Query
-            .andFilterBy(queryFilters)
+            .filterBy(queryFilters)
             .getQueryResults();
     }
 
@@ -64,8 +64,8 @@ public abstract class SObjectRepository extends DML implements ISObjectRepositor
 
     public virtual List<SObject> getByIdAndQueryFilters(List<Id> idList, List<IQueryFilter> queryFilters) {
         return this.Query
-            .andFilterBy(NebulaFactory.getQueryFilter().setValue(this.idField, QueryOperator.IS_IN, idList))
-            .andFilterBy(queryFilters)
+            .filterBy(NebulaFactory.getQueryFilter().filterByField(this.idField, QueryOperator.IS_IN, idList))
+            .filterBy(queryFilters)
             .getQueryResults();
     }
 
@@ -80,7 +80,7 @@ public abstract class SObjectRepository extends DML implements ISObjectRepositor
 
     public virtual List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup, List<IQueryFilter> queryFilters) {
         return this.Query
-            .andFilterBy(queryFilters)
+            .filterBy(queryFilters)
             .getSearchResults(searchTerm, searchGroup);
     }
 

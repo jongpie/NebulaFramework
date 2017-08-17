@@ -36,11 +36,11 @@ public class SObjectRepositoryMocks {
             return this;
         }
 
-        public virtual ISObjectRepository andFilterBy(IQueryFilter queryFilter) {
-            return this.andFilterBy(new List<IQueryFilter>{queryFilter});
+        public virtual ISObjectRepository filterBy(IQueryFilter queryFilter) {
+            return this.filterBy(new List<IQueryFilter>{queryFilter});
         }
 
-        public virtual ISObjectRepository andFilterBy(List<IQueryFilter> queryFilters) {
+        public virtual ISObjectRepository filterBy(List<IQueryFilter> queryFilters) {
             this.queryFilters = queryFilters;
             return this;
         }

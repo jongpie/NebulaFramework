@@ -33,9 +33,8 @@ public interface IAggregateResultQueryBuilder {
 //need to research 'GROUP BY CUBE' & 'GROUPING' more https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_groupby_cube.htm
 
     // Filter methods
-    IAggregateResultQueryBuilder andFilterBy(IQueryFilter queryFilter);
-    IAggregateResultQueryBuilder andFilterBy(List<IQueryFilter> queryFilters);
-    IAggregateResultQueryBuilder orFilterBy(List<IQueryFilter> queryFilters);
+    IAggregateResultQueryBuilder filterBy(IQueryFilter queryFilter);
+    IAggregateResultQueryBuilder filterBy(List<IQueryFilter> queryFilters);
 
     // Order By methods
     IAggregateResultQueryBuilder orderBy(Schema.SObjectField orderByField);

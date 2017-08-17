@@ -25,8 +25,8 @@ public class QueryFilter implements IQueryFilter {
     * QueryFilter filter = new QueryFilter().setValue(Schema.User.Email, QueryOperator.NOT_EQUAL_TO, null);
     * System.assertEquals('Email != null', filter.getValue());
     */
-    public IQueryFilter setValue(Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue) {
-        return this.setValue(new List<Schema.SObjectField>{fieldToFilter}, operator, providedValue);
+    public IQueryFilter filterByField(Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue) {
+        return this.filterByParentField(new List<Schema.SObjectField>{fieldToFilter}, operator, providedValue);
     }
 
     /**
@@ -40,7 +40,7 @@ public class QueryFilter implements IQueryFilter {
     * QueryFilter filter = new QueryFilter().setValue(parentFieldChain, QueryOperator.NOT_EQUAL_TO, null);
     * System.assertEquals('CreatedBy.Email != null', filter.getValue());
     */
-    public IQueryFilter setValue(List<Schema.SObjectField> fieldToFilterChain, QueryOperator operator, Object providedValue) {
+    public IQueryFilter filterByParentField(List<Schema.SObjectField> fieldToFilterChain, QueryOperator operator, Object providedValue) {
         this.queryFilterString = this.parseSObjectFieldName(fieldToFilterChain)
             + ' ' + operator.getValue()
             + ' ' + NebulaFactory.getQueryArgumentFormatter().getValue(providedValue);
@@ -59,7 +59,7 @@ public class QueryFilter implements IQueryFilter {
     * QueryFilter filter = new QueryFilter().setValue(qd, QueryOperator.EQUALS, 2);
     * System.assertEquals('CALENDAR_MONTH(CreatedDate) = 2', filter.getValue());
     */
-    public IQueryFilter setValue(QueryDate queryDateToFilter, QueryOperator operator, Integer providedValue) {
+    public IQueryFilter filterByQueryDate(QueryDate queryDateToFilter, QueryOperator operator, Integer providedValue) {
         this.queryFilterString = queryDateToFilter.getValue()
             + ' ' + operator.getValue()
             + ' ' + providedValue;
@@ -76,8 +76,9 @@ public class QueryFilter implements IQueryFilter {
     * QueryFilter filter = new QueryFilter().setValue(QueryOperator.IS_IN, Schema.Lead.ConvertedAccountId);
     * System.assertEquals('Id IN (SELECT ConvertedAccountId FROM Lead)', filter.getValue());
     */
-    public IQueryFilter setValue(QueryOperator inOrNotIn, Schema.SObjectField lookupFieldOnRelatedSObject) {
-        return this.setValueForSubselect('Id', inOrNotIn, lookupFieldOnRelatedSObject);
+   // TODO figure out a better solution for inOrNotIn
+    public IQueryFilter filterBySubquery(QueryOperator inOrNotIn, Schema.SObjectField lookupFieldOnRelatedSObject) {
+        return this.setValueForSubquery('Id', inOrNotIn, lookupFieldOnRelatedSObject);
     }
 
     /**
@@ -90,8 +91,18 @@ public class QueryFilter implements IQueryFilter {
     * QueryFilter filter = new QueryFilter().setValue(Schema.Lead.OwnerId, QueryOperator.IS_IN, Schema.User.Id);
     * System.assertEquals('OwnerId IN (SELECT Id FROM User)', filter.getValue());
     */
-    public IQueryFilter setValue(QueryOperator inOrNotIn, Schema.SObjectField lookupField, Schema.SObjectField lookupFieldOnRelatedSObject) {
-        return this.setValueForSubselect(lookupField.getDescribe().getName(), inOrNotIn, lookupFieldOnRelatedSObject);
+    public IQueryFilter filterBySubquery(QueryOperator inOrNotIn, Schema.SObjectField lookupField, Schema.SObjectField lookupFieldOnRelatedSObject) {
+        return this.setValueForSubquery(lookupField.getDescribe().getName(), inOrNotIn, lookupFieldOnRelatedSObject);
+    }
+
+    // TODO add apexdoc
+    public IQueryFilter andFilterBy(List<IQueryFilter> queryFilters) {
+        return this.filterByWithSeparator(queryFilters, 'AND');
+    }
+
+    // TODO add apexdoc
+    public IQueryFilter orFilterBy(List<IQueryFilter> queryFilters) {
+        return this.filterByWithSeparator(queryFilters, 'OR');
     }
 
     /**
@@ -120,12 +131,20 @@ public class QueryFilter implements IQueryFilter {
         return parsedFieldChain + lastField.getDescribe().getName();
     }
 
-    private IQueryFilter setValueForSubselect(String idFieldName, QueryOperator inOrNotIn, Schema.SObjectField lookupFieldOnRelatedSObject) {
+    private IQueryFilter setValueForSubquery(String idFieldName, QueryOperator inOrNotIn, Schema.SObjectField lookupFieldOnRelatedSObject) {
         String relatedSObjectTypeName = new SObjectFieldDescriber(lookupFieldOnRelatedSObject).getSObjectType().getDescribe().getName();
         String lookupFieldOnRelatedSObjectName = lookupFieldOnRelatedSObject.getDescribe().getName();
 
         this.queryFilterString = idFieldName + ' ' + inOrNotIn.getValue() + ' (SELECT ' + lookupFieldOnRelatedSObjectName + ' FROM ' + relatedSObjectTypeName + ')';
 
+        return this;
+    }
+
+    private IQueryFilter filterByWithSeparator(List<IQueryFilter> queryFilters, String separator) {
+        List<String> queryFilterValues = new List<String>();
+        for(IQueryFilter queryFilter : queryFilters) queryFilterValues.add(queryFilter.getValue());
+
+        this.queryFilterString = '(' + String.join(queryFilterValues, separator + ' ') + ')';
         return this;
     }
 

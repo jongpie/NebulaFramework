@@ -13,11 +13,14 @@
 public interface IQueryFilter {
 
     // Setter methods
-    IQueryFilter setValue(Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue);
-    IQueryFilter setValue(List<Schema.SObjectField> fieldToFilterChain, QueryOperator operator, Object providedValue);
-    IQueryFilter setValue(QueryDate queryDateToFilter, QueryOperator operator, Integer providedValue);
-    IQueryFilter setValue(QueryOperator inOrNotIn, Schema.SObjectField lookupFieldOnRelatedSObject);
-    IQueryFilter setValue(QueryOperator inOrNotIn, Schema.SObjectField lookupField, Schema.SObjectField lookupFieldOnRelatedSObject);
+    IQueryFilter filterByField(Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue);
+    IQueryFilter filterByParentField(List<Schema.SObjectField> fieldToFilterChain, QueryOperator operator, Object providedValue);
+    IQueryFilter filterByQueryDate(QueryDate queryDateToFilter, QueryOperator operator, Integer providedValue);
+    IQueryFilter filterBySubquery(QueryOperator inOrNotIn, Schema.SObjectField lookupFieldOnRelatedSObject);
+    IQueryFilter filterBySubquery(QueryOperator inOrNotIn, Schema.SObjectField lookupField, Schema.SObjectField lookupFieldOnRelatedSObject);
+
+    IQueryFilter andFilterBy(List<IQueryFilter> queryFilters);
+    IQueryFilter orFilterBy(List<IQueryFilter> queryFilters);
 
     // Getter methods
     String getValue();

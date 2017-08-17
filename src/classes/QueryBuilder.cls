@@ -26,21 +26,12 @@ public abstract class QueryBuilder extends NebulaCore {
         this.orderByList              = new List<String>();
     }
 
-    protected void doAndFilterBy(List<IQueryFilter> queryFilters) {
-        this.filterByWithSeparator(queryFilters, 'AND');
+    protected void doFilterBy(IQueryFilter queryFilter) {
+        this.doFilterBy(new List<IQueryFilter>{queryFilter});
     }
 
-    protected void doOrFilterBy(List<IQueryFilter> queryFilters) {
-        this.filterByWithSeparator(queryFilters, 'OR');
-    }
-
-    protected void doSubquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject, String inOrOut) {
-        String sobjectFieldToFilterName = sobjectFieldToFilter.getDescribe().getName();
-        String relatedSObjectTypeName = new SObjectFieldDescriber(lookupFieldOnRelatedSObject).getSObjectType().getDescribe().getName();
-        String lookupFieldOnRelatedSObjectName = lookupFieldOnRelatedSObject.getDescribe().getName();
-
-        String subselectString = sobjectFieldToFilterName + ' ' + inOrOut + ' (SELECT ' + lookupFieldOnRelatedSObjectName + ' FROM ' + relatedSObjectTypeName + ')';
-        this.whereClauseList.add(subselectString);
+    protected void doFilterBy(List<IQueryFilter> queryFilters) {
+        for(IQueryFilter queryFilter : queryFilters) this.whereClauseList.add(queryFilter.getValue());
     }
 
     protected void doOrderBy(Schema.SObjectField orderByField) {

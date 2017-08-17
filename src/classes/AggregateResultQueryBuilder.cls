@@ -90,18 +90,14 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
         return buildAggregateFunction('SUM', numericSObjectField);
     }
 
-    public IAggregateResultQueryBuilder andFilterBy(IQueryFilter queryFilter) {
-       return this.andFilterBy(new List<IQueryFilter>{queryFilter});
+    public IAggregateResultQueryBuilder filterBy(IQueryFilter queryFilter) {
+        super.doFilterBy(queryFilter);
+        return this;
     }
 
-    public IAggregateResultQueryBuilder andFilterBy(List<IQueryFilter> queryFilters) {
-       super.doAndFilterBy(queryFilters);
-       return this;
-    }
-
-    public IAggregateResultQueryBuilder orFilterBy(List<IQueryFilter> queryFilters) {
-       super.doOrFilterBy(queryFilters);
-       return this;
+    public IAggregateResultQueryBuilder filterBy(List<IQueryFilter> queryFilters) {
+        super.doFilterBy(queryFilters);
+        return this;
     }
 
     public IAggregateResultQueryBuilder orderBy(Schema.SObjectField orderByField) {
