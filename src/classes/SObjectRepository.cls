@@ -38,13 +38,13 @@ public abstract class SObjectRepository extends DML implements ISObjectRepositor
     // SOQL
     public virtual SObject getById(Id recordId) {
         return this.Query
-            .filterBy(NebulaFactory.getQueryFilter().setValue(this.idField, QueryOperator.EQUALS, recordId))
+            .andFilterBy(NebulaFactory.getQueryFilter().setValue(this.idField, QueryOperator.EQUALS, recordId))
             .getFirstQueryResult();
     }
 
     public virtual List<SObject> getById(List<Id> recordIds) {
         return this.Query
-            .filterBy(NebulaFactory.getQueryFilter().setValue(this.idField, QueryOperator.IS_IN, recordIds))
+            .andFilterBy(NebulaFactory.getQueryFilter().setValue(this.idField, QueryOperator.IS_IN, recordIds))
             .getQueryResults();
     }
 
@@ -54,7 +54,7 @@ public abstract class SObjectRepository extends DML implements ISObjectRepositor
 
     public virtual List<SObject> get(List<IQueryFilter> queryFilters) {
         return this.Query
-            .filterBy(queryFilters)
+            .andFilterBy(queryFilters)
             .getQueryResults();
     }
 
@@ -64,8 +64,8 @@ public abstract class SObjectRepository extends DML implements ISObjectRepositor
 
     public virtual List<SObject> getByIdAndQueryFilters(List<Id> idList, List<IQueryFilter> queryFilters) {
         return this.Query
-            .filterBy(NebulaFactory.getQueryFilter().setValue(this.idField, QueryOperator.IS_IN, idList))
-            .filterBy(queryFilters)
+            .andFilterBy(NebulaFactory.getQueryFilter().setValue(this.idField, QueryOperator.IS_IN, idList))
+            .andFilterBy(queryFilters)
             .getQueryResults();
     }
 
@@ -80,7 +80,7 @@ public abstract class SObjectRepository extends DML implements ISObjectRepositor
 
     public virtual List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup, List<IQueryFilter> queryFilters) {
         return this.Query
-            .filterBy(queryFilters)
+            .andFilterBy(queryFilters)
             .getSearchResults(searchTerm, searchGroup);
     }
 // TODO can this be removed? Each method will have different instances of QueryBuilder, this might be a stupid thing that should be removed

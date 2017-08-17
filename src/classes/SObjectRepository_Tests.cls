@@ -21,7 +21,7 @@ private class SObjectRepository_Tests {
 
         public Account getAccountAndContactsWithEmails(Id accountId) {
             return (Account)this.Query
-                .filterBy(NebulaFactory.getQueryFilter().setValue(Schema.Account.Id, QueryOperator.EQUALS, accountId))
+                .andFilterBy(NebulaFactory.getQueryFilter().setValue(Schema.Account.Id, QueryOperator.EQUALS, accountId))
                 .includeChildrenRecords(
                     Schema.Contact.AccountId,
                     new List<Schema.SObjectField>{Schema.Contact.Id, Schema.Contact.Name},

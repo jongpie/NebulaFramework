@@ -95,23 +95,17 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
         return this;
     }
 
-    public ISObjectQueryBuilder filterBy(IQueryFilter queryFilter) {
-        super.add_filterBy(queryFilter);
-        return this;
-    }
-
-    public ISObjectQueryBuilder filterBy(List<IQueryFilter> queryFilters) {
-        super.add_filterBy(queryFilters);
-        return this;
+    public ISObjectQueryBuilder andFilterBy(IQueryFilter queryFilter) {
+       return this.andFilterBy(new List<IQueryFilter>{queryFilter});
     }
 
     public ISObjectQueryBuilder andFilterBy(List<IQueryFilter> queryFilters) {
-       super.add_andFilterBy(queryFilters);
+       super.doAndFilterBy(queryFilters);
        return this;
     }
 
     public ISObjectQueryBuilder orFilterBy(List<IQueryFilter> queryFilters) {
-       super.add_orFilterBy(queryFilters);
+       super.doOrFilterBy(queryFilters);
        return this;
     }
 
@@ -121,7 +115,7 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
     }
 
     public ISObjectQueryBuilder inSubquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject) {
-        super.add_subquery(sobjectFieldToFilter, lookupFieldOnRelatedSObject, 'IN');
+        super.doSubquery(sobjectFieldToFilter, lookupFieldOnRelatedSObject, 'IN');
         return this;
     }
 
@@ -130,7 +124,7 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
     }
 
     public ISObjectQueryBuilder notInSubquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject) {
-        super.add_subquery(sobjectFieldToFilter, lookupFieldOnRelatedSObject, 'NOT IN');
+        super.doSubquery(sobjectFieldToFilter, lookupFieldOnRelatedSObject, 'NOT IN');
         return this;
     }
 
@@ -165,22 +159,22 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
     }
 
    public ISObjectQueryBuilder orderBy(Schema.SObjectField orderByField) {
-       super.add_orderBy(orderByField);
+       super.doOrderBy(orderByField);
        return this;
    }
 
    public ISObjectQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder) {
-       super.add_orderBy(orderByField, sortOrder);
+       super.doOrderBy(orderByField, sortOrder);
        return this;
    }
 
    public ISObjectQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder, QueryNullSortOrder nullsSortOrder) {
-       super.add_orderBy(orderByField, sortOrder, nullsSortOrder);
+       super.doOrderBy(orderByField, sortOrder, nullsSortOrder);
        return this;
    }
 
    public ISObjectQueryBuilder limitCount(Integer limitCount) {
-       super.add_limitCount(limitCount);
+       super.doLimitCount(limitCount);
        return this;
    }
 
@@ -202,7 +196,7 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
    public List<SObject> getQueryResults() {
        List<SObject> results = Database.query(this.getQuery());
 
-       this.logEntry(this.getQuery(), results);
+       super.doLogEntry(this.getQuery(), results);
 
        return results;
    }
@@ -211,7 +205,7 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
        // TODO SObjectQueryBuilder??
        List<SObject> results = Search.query(this.getSearchQuery(searchTerm, searchGroup))[0];
 
-       this.logEntry(this.getSearchQuery(searchTerm, searchGroup), results);
+       super.doLogEntry(this.getSearchQuery(searchTerm, searchGroup), results);
 
        return results;
    }
@@ -243,11 +237,11 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
     private String getQuery() {
         String query = 'SELECT ' + this.getQueryFieldString() + this.getChildRelationshipsQueryString()
             + '\nFROM ' + this.sobjectType
-            + this.getWhereClauseString()
-            + this.getOrderByString()
-            + this.getLimitCountString()
+            + super.doGetWhereClauseString()
+            + super.doGetOrderByString()
+            + super.doGetLimitCountString()
             + this.getForUpdateString();
-System.debug('query=' + query);
+
         return query;
     }
 
@@ -257,9 +251,9 @@ System.debug('query=' + query);
             + '\nIN ' + searchGroup.name().replace('_', ' ')
             + '\nRETURNING ' + this.sobjectType + '('
                 + this.getQueryFieldString()
-                + this.getWhereClauseString()
-                + this.getOrderByString()
-                + this.getLimitCountString()
+                + super.doGetWhereClauseString()
+                + super.doGetOrderByString()
+                + super.doGetLimitCountString()
             + ')';
 
         if(this.forUpdate) Logger.addEntry(this, 'SOSL Search Query method flagged as FOR UPDATE. SOSL cannot use FOR UPDATE, ignoring');

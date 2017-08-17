@@ -56,13 +56,13 @@ public abstract class SObjectRecordTypes extends NebulaCore implements ISObjectR
 
         // If we don't have the SObject cached, then we need to query
         if(NebulaSettings.RecordTypesSettings.LazyLoad__c) {
-            query.filterBy(NebulaFactory.getQueryFilter().setValue(Schema.RecordType.SObjectType, QueryOperator.EQUALS, this.sobjectName));
+            query.andFilterBy(NebulaFactory.getQueryFilter().setValue(Schema.RecordType.SObjectType, QueryOperator.EQUALS, this.sobjectName));
             Logger.addEntry(this, 'NebulaSettings.RecordTypesSettings.LazyLoad__c=' + NebulaSettings.RecordTypesSettings.LazyLoad__c);
             Logger.addEntry(this, 'this.sobjectName=' + this.sobjectName);
         }
 
         if(!NebulaSettings.RecordTypesSettings.IncludeManagedRecordTypes__c) {
-            query.filterBy(NebulaFactory.getQueryFilter().setValue(Schema.RecordType.NamespacePrefix, QueryOperator.EQUALS, null));
+            query.andFilterBy(NebulaFactory.getQueryFilter().setValue(Schema.RecordType.NamespacePrefix, QueryOperator.EQUALS, null));
         }
 
         query.orderBy(Schema.RecordType.DeveloperName);

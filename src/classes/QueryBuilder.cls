@@ -26,28 +26,15 @@ public abstract class QueryBuilder extends NebulaCore {
         this.orderByList              = new List<String>();
     }
 
-//TODO deprecate and instead use only OR & AND methods? Might still be needed though
-    protected void add_filterBy(IQueryFilter queryFilter) {
-        this.add_filterBy(new List<IQueryFilter>{queryFilter});
-    }
-
-    protected void add_filterBy(List<IQueryFilter> queryFilters) {
-        if(queryFilters == null) return;
-
-        for(IQueryFilter queryFilter : queryFilters) this.whereClauseList.add(queryFilter.getValue());
-    }
-
-    protected void add_andFilterBy(List<IQueryFilter> queryFilters) {
-        // TODO finish implementing!
+    protected void doAndFilterBy(List<IQueryFilter> queryFilters) {
         this.filterByWithSeparator(queryFilters, 'AND');
     }
 
-    protected void add_orFilterBy(List<IQueryFilter> queryFilters) {
-// TODO finish implementing!
+    protected void doOrFilterBy(List<IQueryFilter> queryFilters) {
         this.filterByWithSeparator(queryFilters, 'OR');
     }
 
-    protected void add_subquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject, String inOrOut) {
+    protected void doSubquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject, String inOrOut) {
         String sobjectFieldToFilterName = sobjectFieldToFilter.getDescribe().getName();
         String relatedSObjectTypeName = new SObjectFieldDescriber(lookupFieldOnRelatedSObject).getSObjectType().getDescribe().getName();
         String lookupFieldOnRelatedSObjectName = lookupFieldOnRelatedSObject.getDescribe().getName();
@@ -56,31 +43,47 @@ public abstract class QueryBuilder extends NebulaCore {
         this.whereClauseList.add(subselectString);
     }
 
-    protected void add_orderBy(Schema.SObjectField orderByField) {
-        this.add_orderBy(orderByField, null, null);
+    protected void doOrderBy(Schema.SObjectField orderByField) {
+        this.doOrderBy(orderByField, null, null);
     }
 
-    protected void add_orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder) {
-        this.add_orderBy(orderByField, sortOrder, null);
+    protected void doOrderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder) {
+        this.doOrderBy(orderByField, sortOrder, null);
     }
 
-    protected void add_orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder, QueryNullSortOrder nullsSortOrder) {
-        // TODO give better name? I dont like it containing 'soql' in it if it can be used for SOSL too?
-        String sortOrderSoql = '';
-        if(sortOrder == QuerySortOrder.ASCENDING) sortOrderSoql = ' ASC';
-        else if(sortOrder == QuerySortOrder.DESCENDING) sortOrderSoql = ' DESC';
+    protected void doOrderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder, QueryNullSortOrder nullsSortOrder) {
+        String sortOrderString = '';
+        if(sortOrder == QuerySortOrder.ASCENDING) sortOrderString = ' ASC';
+        else if(sortOrder == QuerySortOrder.DESCENDING) sortOrderString = ' DESC';
 
-        if(nullsSortOrder != null) sortOrderSoql += ' NULLS ' + nullsSortOrder;
+        if(nullsSortOrder != null) sortOrderString += ' NULLS ' + nullsSortOrder;
 
-        this.orderByList.add(orderByField.getDescribe().getName() + sortOrderSoql);
+        this.orderByList.add(orderByField.getDescribe().getName() + sortOrderString);
     }
 
-    protected void add_limitCount(Integer limitCount) {
+    protected void doLimitCount(Integer limitCount) {
         this.limitCount = limitCount;
     }
 
+    protected String doGetWhereClauseString() {
+        return this.whereClauseList.isEmpty() ? '' : '\nWHERE ' + String.join(this.whereClauseList, '\nAND ');
+    }
+
+    protected String doGetOrderByString() {
+        return this.orderByList.isEmpty() ? '' : '\nORDER BY ' + String.join(new List<String>(orderByList), ', ');
+    }
+
+    protected String doGetLimitCountString() {
+        return this.limitCount != null ? '\nLIMIT '+ this.limitCount : '';
+    }
+
+    protected void doLogEntry(String query, List<Object> results) {
+        // TODO give this method a better name - addLogEntry maybe?
+        String logEntry = 'Query:\n' + query + '\n\nResults:\n' + JSON.serializePretty(results);
+        Logger.addEntry(this, logEntry);
+    }
+
     private void filterByWithSeparator(List<IQueryFilter> queryFilters, String separator) {
- // TODO finish implementing!
         if(queryFilters == null) return;
 
         List<String> queryFilterValues = new List<String>();
@@ -88,24 +91,6 @@ public abstract class QueryBuilder extends NebulaCore {
 
         String orStatement = '(' + String.join(queryFilterValues, ' ' + separator + ' ') + ')';
         this.whereClauseList.add(orStatement);
-    }
-
-    protected String getWhereClauseString() {
-        return this.whereClauseList.isEmpty() ? '' : '\nWHERE ' + String.join(this.whereClauseList, '\nAND ');
-    }
-
-    protected String getOrderByString() {
-        return this.orderByList.isEmpty() ? '' : '\nORDER BY ' + String.join(new List<String>(orderByList), ', ');
-    }
-
-    protected String getLimitCountString() {
-        return this.limitCount != null ? '\nLIMIT '+ this.limitCount : '';
-    }
-
-    protected void logEntry(String query, List<Object> results) {
-        // TODO give this method a better name - addLogEntry maybe?
-        String logEntry = 'Query:\n' + query + '\n\nResults:\n' + JSON.serializePretty(results);
-        Logger.addEntry(this, logEntry);
     }
 
 }

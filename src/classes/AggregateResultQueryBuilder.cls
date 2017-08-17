@@ -116,23 +116,17 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
         return buildAggregateFunction('SUM', numericSObjectField);
     }
 
-    public IAggregateResultQueryBuilder filterBy(IQueryFilter queryFilter) {
-        super.add_filterBy(queryFilter);
-        return this;
-    }
-
-    public IAggregateResultQueryBuilder filterBy(List<IQueryFilter> queryFilters) {
-        super.add_filterBy(queryFilters);
-        return this;
+    public IAggregateResultQueryBuilder andFilterBy(IQueryFilter queryFilter) {
+       return this.andFilterBy(new List<IQueryFilter>{queryFilter});
     }
 
     public IAggregateResultQueryBuilder andFilterBy(List<IQueryFilter> queryFilters) {
-       super.add_andFilterBy(queryFilters);
+       super.doAndFilterBy(queryFilters);
        return this;
     }
 
     public IAggregateResultQueryBuilder orFilterBy(List<IQueryFilter> queryFilters) {
-       super.add_orFilterBy(queryFilters);
+       super.doOrFilterBy(queryFilters);
        return this;
     }
 
@@ -142,7 +136,7 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
     }
 
     public IAggregateResultQueryBuilder inSubquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject) {
-        super.add_subquery(sobjectFieldToFilter, lookupFieldOnRelatedSObject, 'IN');
+        super.doSubquery(sobjectFieldToFilter, lookupFieldOnRelatedSObject, 'IN');
         return this;
     }
 
@@ -151,27 +145,27 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
     }
 
     public IAggregateResultQueryBuilder notInSubquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject) {
-        super.add_subquery(sobjectFieldToFilter, lookupFieldOnRelatedSObject, 'NOT IN');
+        super.doSubquery(sobjectFieldToFilter, lookupFieldOnRelatedSObject, 'NOT IN');
         return this;
     }
 
     public IAggregateResultQueryBuilder orderBy(Schema.SObjectField orderByField) {
-        super.add_orderBy(orderByField);
+        super.doOrderBy(orderByField);
         return this;
     }
 
     public IAggregateResultQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder) {
-        super.add_orderBy(orderByField, sortOrder);
+        super.doOrderBy(orderByField, sortOrder);
         return this;
     }
 
     public IAggregateResultQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder, QueryNullSortOrder nullsSortOrder) {
-        super.add_orderBy(orderByField, sortOrder, nullsSortOrder);
+        super.doOrderBy(orderByField, sortOrder, nullsSortOrder);
         return this;
     }
 
     public IAggregateResultQueryBuilder limitCount(Integer limitCount) {
-        super.add_limitCount(limitCount);
+        super.doLimitCount(limitCount);
         return this;
     }
 
@@ -182,7 +176,7 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
     public List<AggregateResult> getQueryResults() {
         List<AggregateResult> results = Database.query(this.getQuery());
 
-        this.logEntry(this.getQuery(), results);
+        this.doLogEntry(this.getQuery(), results);
 
         return results;
     }
@@ -191,10 +185,10 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
     private String getQuery() {
         String queryString = 'SELECT ' + this.getGroupByFieldString() + this.getAggregateFunctionString()
             + '\nFROM ' + this.sobjectType.getDescribe().getName()
-            + this.getWhereClauseString()
+            + super.doGetWhereClauseString()
             + '\nGROUP BY ' + this.getGroupByFieldString()
-            + this.getOrderByString()
-            + this.getLimitCountString();
+            + super.doGetOrderByString()
+            + super.doGetLimitCountString();
 
         return queryString;
     }

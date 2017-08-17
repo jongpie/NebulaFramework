@@ -4,7 +4,7 @@
 *************************************************************************************************/
 @isTest
 private class SObjectRecordTypes_Tests {
-// TODO get tests working again
+
     private class UserRecordTypes extends SObjectRecordTypes {
         // Test subclass that extends SObjectRecordTypes
         public override Schema.SObjectType getSObjectType() {
