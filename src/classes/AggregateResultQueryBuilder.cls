@@ -199,7 +199,8 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
 
     private String getAggregateFunctionString() {
         this.aggregateFunctionList.sort();
-        //TODO make better - adds a comma when needed for 'Type, COUNT_DISTINCT(OwnerId)'
+        // The extra delimiter adds a comma when needed for grouping by fields & aggregate functions
+        // Example: 'Type, COUNT_DISTINCT(OwnerId)'
         String extraDelimiter = getGroupByFieldString() == null ? '' : ',\n';
         return extraDelimiter + String.join(this.aggregateFunctionList, ', ');
     }

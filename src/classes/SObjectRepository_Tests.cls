@@ -4,7 +4,7 @@
 *************************************************************************************************/
 @isTest
 private class SObjectRepository_Tests {
-// TODO finish tests
+
     private class AccountRepository extends SObjectRepository {
         // Test subclass that extends SObjectRepository
         public override Schema.SObjectType getSObjectType() {

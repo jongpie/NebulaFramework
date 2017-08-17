@@ -211,7 +211,6 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
    }
 
     private void addField(Schema.SObjectField field) {
-        // TODO move this method to be with the rest of the private methods
         this.queryFields.add(field.getDescribe().getName().toLowerCase());
 
         // If the field is a lookup, then we need to get the name field from the parent object

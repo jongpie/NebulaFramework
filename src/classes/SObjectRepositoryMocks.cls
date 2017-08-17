@@ -109,10 +109,6 @@ public class SObjectRepositoryMocks {
         public virtual List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup, List<IQueryFilter> queryFilters) {
             return this.returnListOfSObjects();
         }
-//TODO this should be deleted?
-        public virtual ISObjectQueryBuilder getQueryBuilder() {
-            return new SObjectQueryBuilder().setSObjectType(this.records.getSObjectType());
-        }
 
         private void createMockObjects() {
             // We would expect that for the Ids passed in, there will be a corresponding number of records returned of the exact same

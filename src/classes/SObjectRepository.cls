@@ -83,10 +83,6 @@ public abstract class SObjectRepository extends DML implements ISObjectRepositor
             .andFilterBy(queryFilters)
             .getSearchResults(searchTerm, searchGroup);
     }
-// TODO can this be removed? Each method will have different instances of QueryBuilder, this might be a stupid thing that should be removed
-    public virtual ISObjectQueryBuilder getQueryBuilder() {
-        return this.Query;
-    }
 
     private Schema.SObjectField getField(String fieldName) {
         return this.sobjectFieldMap.get(fieldName);

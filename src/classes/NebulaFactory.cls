@@ -44,7 +44,7 @@ public without sharing class NebulaFactory {
     private static Object createInterfaceImplementation(System.Type interfaceType, System.Type defaultImplementation) {
         getInterfaceConfigs();
 
-        String interfaceName       = interfaceType.getName().replace('Nebula.', ''); //TODO figure out a better solution than replace()
+        String interfaceName = interfaceType.getName();
 
         NebulaInterfaceImplementation__mdt config = interfaceConfigs.get(interfaceName);
         String configuredClassName;
