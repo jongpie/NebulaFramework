@@ -95,18 +95,26 @@ public class QueryFilter implements IQueryFilter {
         return this.setValueForSubquery(lookupField.getDescribe().getName(), inOrNotIn, lookupFieldOnRelatedSObject);
     }
 
-    // TODO add apexdoc
+    /**
+    * @description Adds several filters together as a set of 'AND' filters
+    * @param queryFilters The filters to group together
+    * @return The instance of IQueryFilter, to allow chaining methods
+    */
     public IQueryFilter andFilterBy(List<IQueryFilter> queryFilters) {
         return this.filterByWithSeparator(queryFilters, 'AND');
     }
 
-    // TODO add apexdoc
+    /**
+    * @description Adds several filters together as a set of 'OR' filters
+    * @param queryFilters The filters to group together
+    * @return The instance of IQueryFilter, to allow chaining methods
+    */
     public IQueryFilter orFilterBy(List<IQueryFilter> queryFilters) {
         return this.filterByWithSeparator(queryFilters, 'OR');
     }
 
     /**
-    * @description Returns the calculated value, based on the provided parameters passed to setValue()
+    * @description Returns the calculated value, based on the method & parameters provided
     * @return The string of the query filter, ready to be used in dynamic SOQL/SOSL
     */
     public String getValue() {
