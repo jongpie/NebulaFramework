@@ -7,7 +7,7 @@
 *
 * @group Query Builder
 *
-* @description TODO
+* @description Abstract class that provides some shared properties & methods for SObjectQueryBuilder & AggregateResultQueryBuilder
 *
 */
 public abstract class QueryBuilder extends NebulaCore {
