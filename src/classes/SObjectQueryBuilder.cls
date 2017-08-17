@@ -290,7 +290,6 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
             'Name', 'OwnerId', 'ParentId', 'Subject', 'RecordTypeId', 'SystemModStamp'
         };
         for(String commonFieldName : commonFieldNameList) {
-            // TODO this is duplicated from the constructor, need to consolidate
             this.sobjectTypeFieldMap = this.sobjectType.getDescribe().fields.getMap();
             if(!this.sobjectTypeFieldMap.containsKey(commonFieldName)) continue;
 

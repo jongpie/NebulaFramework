@@ -10,7 +10,7 @@
 * @description A utils class to help with dealing with collections (lists, sets & maps)
 *
 */
-public without sharing class CollectionUtils { //TODO would just 'Collection' be a better name?
+public without sharing class CollectionUtils {
 
     /*******************************************************************************************************
    * @description Returns the last item in a list

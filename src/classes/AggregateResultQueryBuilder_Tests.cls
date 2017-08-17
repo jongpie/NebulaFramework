@@ -13,7 +13,6 @@ private class AggregateResultQueryBuilder_Tests {
             + '\nGROUP BY Type';
 
         AggregateResultQueryBuilder aggregateResultQueryBuilder = (AggregateResultQueryBuilder)new AggregateResultQueryBuilder()
-            // TODO the order of the method chaining shouldn't matter - the fields & aggregate functions should be sorted so its consistent
             .max(Schema.Opportunity.CreatedDate)
             .avg(Schema.Opportunity.Amount)
             .count_distinct(Schema.Opportunity.OwnerId)

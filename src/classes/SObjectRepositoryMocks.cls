@@ -28,7 +28,6 @@ public class SObjectRepositoryMocks {
         }
 
         public Schema.SObjectType getSObjectType() {
-            // TODO fix this
             return Schema.User.SObjectType;
         }
 

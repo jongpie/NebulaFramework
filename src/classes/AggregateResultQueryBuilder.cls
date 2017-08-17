@@ -8,7 +8,7 @@
 * @group Query Builder
 * @group-content /ApexDocContent/QueryBuilder.html
 *
-* @description TODO A builder class that generates dynamic queries & returns a list of AggregateResult
+* @description A builder class that generates dynamic queries & returns a list of AggregateResult
 *
 */
 public class AggregateResultQueryBuilder extends QueryBuilder implements IAggregateResultQueryBuilder {//{} //extends QueryBuilder implements IAggregateResultQueryBuilder {
@@ -131,6 +131,7 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
     }
 
     // TODO finish implementing subselects!, come up with better method name that uses verb for name (get, set, etc)
+    // TODO move subquery logic to QueryFilter instead?
     public IAggregateResultQueryBuilder inSubquery(Schema.SObjectField lookupFieldOnRelatedSObject) {
         return this.inSubquery(this.sobjectType.getDescribe().fields.getMap().get('Id'), lookupFieldOnRelatedSObject);
     }
