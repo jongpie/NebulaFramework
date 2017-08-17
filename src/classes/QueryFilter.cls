@@ -152,7 +152,7 @@ public class QueryFilter implements IQueryFilter {
         List<String> queryFilterValues = new List<String>();
         for(IQueryFilter queryFilter : queryFilters) queryFilterValues.add(queryFilter.getValue());
 
-        this.queryFilterString = '(' + String.join(queryFilterValues, separator + ' ') + ')';
+        this.queryFilterString = '(' + String.join(queryFilterValues, ' ' + separator + ' ') + ')';
         return this;
     }
 
