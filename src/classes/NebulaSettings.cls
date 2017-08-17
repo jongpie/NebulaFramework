@@ -12,7 +12,7 @@
 */
 public without sharing class NebulaSettings {
 
-    /*******************************************************************************************************
+    /**
     * @description TODO
     * returns true if it's a sandbox
     */

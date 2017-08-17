@@ -22,7 +22,7 @@ public without sharing class Environment {
         private set;
     }
 
-    /*******************************************************************************************************
+    /**
     * @description Specifies if the org is a production environment or sandbox
     * returns true if it's a sandbox
     */

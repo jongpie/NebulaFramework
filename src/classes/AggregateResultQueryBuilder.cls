@@ -47,10 +47,10 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
         return this;
     }
 
-    /*******************************************************************************************************
+    /**
    * @description Adds the average value of the numeric field to the dynamically generated aggregate query
    * @param numericSObjectField The field to use for calculating the average
-   * @return The instance of IAggregateResultQueryBuilder to allow chaining methods
+   * @return The instance of IAggregateResultQueryBuilder, to allow chaining methods
    * @example
    * TODO
    */
@@ -58,10 +58,10 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
         return buildAggregateFunction('AVG', numericSObjectField);
     }
 
-    /*******************************************************************************************************
+    /**
    * @description Adds the number of distinct values in the field to the dynamically generated aggregate query
    * @param sobjectField The field to use for calculating the average
-   * @return The instance of IAggregateResultQueryBuilder to allow chaining methods
+   * @return The instance of IAggregateResultQueryBuilder, to allow chaining methods
    * @example
    * TODO
    */
@@ -83,10 +83,10 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
         return buildAggregateFunction('COUNT_DISTINCT', sobjectField);
     }
 
-    /*******************************************************************************************************
+    /**
    * @description Adds the maximum value of the field to the dynamically generated aggregate query
    * @param sobjectField The field to use for calculating the maximum
-   * @return The instance of IAggregateResultQueryBuilder to allow chaining methods
+   * @return The instance of IAggregateResultQueryBuilder, to allow chaining methods
    * @example
    * TODO
    */
@@ -94,10 +94,10 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
         return buildAggregateFunction('MAX', sobjectField);
     }
 
-    /*******************************************************************************************************
+    /**
    * @description Adds the minimum value of the field to the dynamically generated aggregate query
    * @param sobjectField The field to use for calculating the minimum
-   * @return The instance of IAggregateResultQueryBuilder to allow chaining methods
+   * @return The instance of IAggregateResultQueryBuilder, to allow chaining methods
    * @example
    * TODO
    */
@@ -105,10 +105,10 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
         return buildAggregateFunction('MIN', sobjectField);
     }
 
-    /*******************************************************************************************************
+    /**
    * @description Sums the values of the supplied numeric field to the dynamically generated aggregate query
    * @param numericSObjectField The field to use for calculating the minimum
-   * @return The instance of IAggregateResultQueryBuilder to allow chaining methods
+   * @return The instance of IAggregateResultQueryBuilder, to allow chaining methods
    * @example
    * TODO
    */
@@ -128,26 +128,6 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
     public IAggregateResultQueryBuilder orFilterBy(List<IQueryFilter> queryFilters) {
        super.doOrFilterBy(queryFilters);
        return this;
-    }
-
-    // TODO finish implementing subselects!, come up with better method name that uses verb for name (get, set, etc)
-    // TODO move subquery logic to QueryFilter instead?
-    public IAggregateResultQueryBuilder inSubquery(Schema.SObjectField lookupFieldOnRelatedSObject) {
-        return this.inSubquery(this.sobjectType.getDescribe().fields.getMap().get('Id'), lookupFieldOnRelatedSObject);
-    }
-
-    public IAggregateResultQueryBuilder inSubquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject) {
-        super.doSubquery(sobjectFieldToFilter, lookupFieldOnRelatedSObject, 'IN');
-        return this;
-    }
-
-    public IAggregateResultQueryBuilder notInSubquery(Schema.SObjectField lookupFieldOnRelatedSObject) {
-        return this.notInSubquery(this.sobjectType.getDescribe().fields.getMap().get('Id'), lookupFieldOnRelatedSObject);
-    }
-
-    public IAggregateResultQueryBuilder notInSubquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject) {
-        super.doSubquery(sobjectFieldToFilter, lookupFieldOnRelatedSObject, 'NOT IN');
-        return this;
     }
 
     public IAggregateResultQueryBuilder orderBy(Schema.SObjectField orderByField) {

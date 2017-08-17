@@ -12,7 +12,7 @@
 */
 public without sharing class CollectionUtils {
 
-    /*******************************************************************************************************
+    /**
    * @description Returns the last item in a list
    * @param listOfItems the list to check
    * @return The last Object in the provided list
@@ -26,7 +26,7 @@ public without sharing class CollectionUtils {
         return listOfItems[indexOfItem];
     }
 
-    /*******************************************************************************************************
+    /**
    * @description Removes the last item in the provided list & returns the item
    * @param listOfItems the list to check
    * @return The last Object in the provided list
@@ -41,7 +41,7 @@ public without sharing class CollectionUtils {
         return splice(listToSplice, listToSplice.size() - 1);
     }
 
-    /*******************************************************************************************************
+    /**
    * @description Removes the item in the specified index from the provided list & returns the item
    * @param listOfItems The list to check
    * @param indexOfItem The index of the item to remove
@@ -59,7 +59,7 @@ public without sharing class CollectionUtils {
         return itemToRemove;
     }
 
-    /*******************************************************************************************************
+    /**
    * @description Determines if the provided input is a type of collection (list, set or map)
    * @param input The Object to check
    * @return true if the item is a type of collection, otherwise returns false

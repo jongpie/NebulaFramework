@@ -39,12 +39,6 @@ public interface IAggregateResultQueryBuilder {
     IAggregateResultQueryBuilder andFilterBy(List<IQueryFilter> queryFilters);
     IAggregateResultQueryBuilder orFilterBy(List<IQueryFilter> queryFilters);
 
-    // Subquery filter methods
-    IAggregateResultQueryBuilder inSubquery(Schema.SObjectField lookupFieldOnRelatedSObject);
-    IAggregateResultQueryBuilder inSubquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject);
-    IAggregateResultQueryBuilder notInSubquery(Schema.SObjectField lookupFieldOnRelatedSObject);
-    IAggregateResultQueryBuilder notInSubquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject);
-
     // Order By methods
     IAggregateResultQueryBuilder orderBy(Schema.SObjectField orderByField);
     IAggregateResultQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder);

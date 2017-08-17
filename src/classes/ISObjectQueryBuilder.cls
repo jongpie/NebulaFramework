@@ -44,12 +44,6 @@ public interface ISObjectQueryBuilder {
     ISObjectQueryBuilder andFilterBy(List<IQueryFilter> queryFilters);
     ISObjectQueryBuilder orFilterBy(List<IQueryFilter> queryFilters);
 
-    // Subquery filter methods
-    ISObjectQueryBuilder inSubquery(Schema.SObjectField lookupFieldOnRelatedSObject);
-    ISObjectQueryBuilder inSubquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject);
-    ISObjectQueryBuilder notInSubquery(Schema.SObjectField lookupFieldOnRelatedSObject);
-    ISObjectQueryBuilder notInSubquery(Schema.SObjectField sobjectFieldToFilter, Schema.SObjectField lookupFieldOnRelatedSObject);
-
     // Order By methods
     ISObjectQueryBuilder orderBy(Schema.SObjectField orderByField);
     ISObjectQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder);
