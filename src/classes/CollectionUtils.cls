@@ -7,7 +7,7 @@
 *
 * @group Utils
 *
-* @description A utils class to help with dealing with collections (lists, sets & maps)
+* @description A utility class to help with dealing with collections (lists, sets & maps)
 *
 */
 public without sharing class CollectionUtils {

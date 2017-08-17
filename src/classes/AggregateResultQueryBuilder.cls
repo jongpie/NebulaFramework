@@ -1,5 +1,5 @@
 /*************************************************************************************************
-* This file is part of the Nebula Framework project, released under the MIT License.             *
+* This file is part of the Nebula Framework project, released under the MIT License.              *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
 
@@ -47,32 +47,13 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
     }
 
     /**
-   * @description Adds the average value of the numeric field to the dynamically generated aggregate query
-   * @param numericSObjectField The field to use for calculating the average
-   * @return The instance of IAggregateResultQueryBuilder, to allow chaining methods
-   * @example
-   * TODO
-   */
+    * @description Adds the average value of the numeric field to the dynamically generated aggregate query
+    * @param numericSObjectField The field to use for calculating the average
+    * @return The instance of IAggregateResultQueryBuilder, to allow chaining methods
+    */
     public IAggregateResultQueryBuilder avg(Schema.SObjectField numericSObjectField) {
         return buildAggregateFunction('AVG', numericSObjectField);
     }
-
-    /**
-   * @description Adds the number of distinct values in the field to the dynamically generated aggregate query
-   * @param sobjectField The field to use for calculating the average
-   * @return The instance of IAggregateResultQueryBuilder, to allow chaining methods
-   * @example
-   * TODO
-   */
-
-
-    // public IAggregateResultQueryBuilder count() {
-    //     // TODO remove or finish implementing COUNT() works differently from the other functions
-    //     // It doesn't use a field as a parameter, so it builds its own string here
-    //     // instead of using the buildAggregateFunction method
-    //     this.aggregateFunctionList.add('COUNT() COUNT');
-    //     return this;
-    // }
 
     public IAggregateResultQueryBuilder count(Schema.SObjectField sobjectField) {
         return buildAggregateFunction('COUNT', sobjectField);
@@ -83,34 +64,28 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
     }
 
     /**
-   * @description Adds the maximum value of the field to the dynamically generated aggregate query
-   * @param sobjectField The field to use for calculating the maximum
-   * @return The instance of IAggregateResultQueryBuilder, to allow chaining methods
-   * @example
-   * TODO
-   */
+    * @description Adds the maximum value of the field to the dynamically generated aggregate query
+    * @param sobjectField The field to use for calculating the maximum
+    * @return The instance of IAggregateResultQueryBuilder, to allow chaining methods
+    */
     public IAggregateResultQueryBuilder max(Schema.SObjectField sobjectField) {
         return buildAggregateFunction('MAX', sobjectField);
     }
 
     /**
-   * @description Adds the minimum value of the field to the dynamically generated aggregate query
-   * @param sobjectField The field to use for calculating the minimum
-   * @return The instance of IAggregateResultQueryBuilder, to allow chaining methods
-   * @example
-   * TODO
-   */
+    * @description Adds the minimum value of the field to the dynamically generated aggregate query
+    * @param sobjectField The field to use for calculating the minimum
+    * @return The instance of IAggregateResultQueryBuilder, to allow chaining methods
+    */
     public IAggregateResultQueryBuilder min(Schema.SObjectField sobjectField) {
         return buildAggregateFunction('MIN', sobjectField);
     }
 
     /**
-   * @description Sums the values of the supplied numeric field to the dynamically generated aggregate query
-   * @param numericSObjectField The field to use for calculating the minimum
-   * @return The instance of IAggregateResultQueryBuilder, to allow chaining methods
-   * @example
-   * TODO
-   */
+    * @description Sums the values of the supplied numeric field to the dynamically generated aggregate query
+    * @param numericSObjectField The field to use for calculating the minimum
+    * @return The instance of IAggregateResultQueryBuilder, to allow chaining methods
+    */
     public IAggregateResultQueryBuilder sum(Schema.SObjectField numericSObjectField) {
         return buildAggregateFunction('SUM', numericSObjectField);
     }

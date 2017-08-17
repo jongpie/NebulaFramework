@@ -7,7 +7,8 @@
 *
 * @group Query Builder
 *
-* @description TODO
+* @description Handles generating any query conditions (the WHERE statement in a query)
+* Each part of a WHERE statement is a separate instance of query filter.
 *
 */
 public class QueryFilter implements IQueryFilter {

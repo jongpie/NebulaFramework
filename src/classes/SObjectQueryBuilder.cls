@@ -182,7 +182,6 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
    }
 
    public virtual List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup) {
-       // TODO SObjectQueryBuilder??
        List<SObject> results = Search.query(this.getSearchQuery(searchTerm, searchGroup))[0];
 
        super.doLogEntry(this.getSearchQuery(searchTerm, searchGroup), results);

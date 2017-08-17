@@ -7,7 +7,7 @@
 *
 * @group Repository
 *
-* @description TODO
+* @description Provides methods with default behavior for DML actions (insert, upsert, etc)
 *
 */
 public abstract class DML extends NebulaCore implements IDML {

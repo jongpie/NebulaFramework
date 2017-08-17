@@ -1,3 +1,4 @@
+
 /*************************************************************************************************
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
@@ -21,10 +22,8 @@ public interface IAggregateResultQueryBuilder {
     IAggregateResultQueryBuilder groupBy(Schema.SObjectField groupByField);
     IAggregateResultQueryBuilder groupBy(List<Schema.SObjectField> groupByFields);
 
-//methods for all the aggregate functions - https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_agg_functions.htm
     // Aggregate functions
     IAggregateResultQueryBuilder avg(Schema.SObjectField sbojectField);
-    // TODO IAggregateResultQueryBuilder count();
     IAggregateResultQueryBuilder count(Schema.SObjectField sbojectField);
     IAggregateResultQueryBuilder count_distinct(Schema.SObjectField sbojectField);
     IAggregateResultQueryBuilder max(Schema.SObjectField sbojectField);
