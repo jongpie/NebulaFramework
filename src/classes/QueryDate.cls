@@ -7,7 +7,9 @@
 *
 * @group Query Builder
 *
-* @description TODO
+* @description Used to dynamically generate SOQL & SOSQL date functions.
+* "Date functions in SOQL queries allow you to group or filter data by date periods such as day, calendar month, or fiscal year."
+* Salesforce docs: developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_date_functions.htm
 *
 */
 public without sharing class QueryDate extends NebulaCore { // TODO decide if this class is needed & if so, if there is a better name
