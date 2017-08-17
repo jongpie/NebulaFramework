@@ -15,9 +15,6 @@ private class QueryFilter_Tests {
         QueryFilter queryFilter = (QueryFilter)new QueryFilter().setValue(sobjectField, operator, providedValues);
         Test.stopTest();
 
-        String expectedQueryFieldName = 'CompanyName';
-        System.assertEquals(expectedQueryFieldName, queryFilter.queryFieldName);
-
         String expectedQueryFilter = 'CompanyName ' + operator.getValue() + ' (\'' + String.join(providedValues, '\', \'') + '\')';
         System.assertEquals(expectedQueryFilter, queryFilter.getValue());
     }
@@ -33,9 +30,6 @@ private class QueryFilter_Tests {
         Test.startTest();
         QueryFilter queryFilter = (QueryFilter)new QueryFilter().setValue(parentFieldToFilter, operator, providedValue);
         Test.stopTest();
-
-        String expectedQueryFieldName = 'CreatedBy.Email';
-        System.assertEquals(expectedQueryFieldName, queryFilter.queryFieldName);
 
         String expectedQueryFilter = 'CreatedBy.Email ' + operator.getValue() + ' \'' + providedValue + '\'';
         System.assertEquals(expectedQueryFilter, queryFilter.getValue());
@@ -53,66 +47,49 @@ private class QueryFilter_Tests {
         QueryFilter queryFilter = (QueryFilter)new QueryFilter().setValue(grandparentFieldToFilter, operator, providedValue);
         Test.stopTest();
 
-        String expectedQueryFieldName = 'Owner.Manager.Profile.Name';
-        System.assertEquals(expectedQueryFieldName, queryFilter.queryFieldName);
-
         String expectedQueryFilter = 'Owner.Manager.Profile.Name ' + operator.getValue() + ' \'' + providedValue + '\'';
         System.assertEquals(expectedQueryFilter, queryFilter.getValue());
     }
 
     @isTest
-    static void it_should_return_the_sobject_field_for_a_field() {
-        Schema.SObjectField sobjectField = Schema.User.CompanyName;
-        QueryOperator operator           = QueryOperator.EQUALS;
-        String providedValue             = 'derp';
-
-        QueryFilter queryFilter = (QueryFilter)new QueryFilter().setValue(sobjectField, operator, providedValue);
-
-        Test.startTest();
-        System.assertEquals(sobjectField, queryFilter.getSObjectField());
-        Test.stopTest();
-    }
-
-    @isTest
-    static void it_should_not_return_the_sobject_field_for_a_parent_field() {
-        List<Schema.SObjectField> parentFieldToFilter = new List<Schema.SObjectField>{
-            Schema.Lead.OwnerId, Schema.User.ManagerId, Schema.User.ProfileId, Schema.Profile.Name
-        };
-        QueryOperator operator           = QueryOperator.EQUALS;
-        String providedValue             = 'derp';
-
-        QueryFilter queryFilter = (QueryFilter)new QueryFilter().setValue(parentFieldToFilter, operator, providedValue);
-
-        Test.startTest();
-        System.assertEquals(null, queryFilter.getSObjectField());
-        Test.stopTest();
-    }
-
-
-    @isTest
-    static void it_should_always_return_the_query_operator() {
-        Schema.SObjectField sobjectField = Schema.User.CompanyName;
+    static void it_should_return_the_query_filter_for_a_query_date() {
+        QueryDate qd           = QueryDate.CALENDAR_MONTH(Schema.Lead.CreatedDate);
         QueryOperator operator = QueryOperator.EQUALS;
-        String providedValue   = 'derp';
-
-        QueryFilter queryFilter = (QueryFilter)new QueryFilter().setValue(sobjectField, operator, providedValue);
+        Integer providedValue  = 3;
 
         Test.startTest();
-        System.assertEquals(operator, queryFilter.getQueryOperator());
+        QueryFilter queryFilter = (QueryFilter)new QueryFilter().setValue(qd, operator, providedValue);
         Test.stopTest();
+
+        String expectedQueryFilter = 'CALENDAR_MONTH(CreatedDate) ' + operator.getValue() + ' ' + providedValue;
+        System.assertEquals(expectedQueryFilter, queryFilter.getValue());
     }
 
     @isTest
-    static void it_should_always_return_the_provided_value() {
-        Schema.SObjectField sobjectField = Schema.User.CompanyName;
-        QueryOperator operator = QueryOperator.EQUALS;
-        String providedValue   = 'derp';
-
-        QueryFilter queryFilter = (QueryFilter)new QueryFilter().setValue(sobjectField, operator, providedValue);
+    static void it_should_return_the_query_filter_for_a_subquery() {
+        QueryOperator operator                          = QueryOperator.IS_IN;
+        Schema.SObjectField lookupFieldOnRelatedSObject = Schema.Lead.ConvertedAccountId;
 
         Test.startTest();
-        System.assertEquals(providedValue, queryFilter.getProvidedValue());
+        QueryFilter queryFilter = (QueryFilter)new QueryFilter().setValue(operator, lookupFieldOnRelatedSObject);
         Test.stopTest();
+
+        String expectedQueryFilter = 'Id ' + operator.getValue() + ' (SELECT ' + lookupFieldOnRelatedSObject.getDescribe().getName() + ' FROM Lead)';
+        System.assertEquals(expectedQueryFilter, queryFilter.getValue());
+    }
+
+    @isTest
+    static void it_should_return_the_query_filter_for_a_subquery_with_a_specified_field() {
+        QueryOperator operator                          = QueryOperator.IS_IN;
+        Schema.SObjectField lookupField                 = Schema.Lead.OwnerId;
+        Schema.SObjectField lookupFieldOnRelatedSObject = Schema.User.Id;
+
+        Test.startTest();
+        QueryFilter queryFilter = (QueryFilter)new QueryFilter().setValue(operator, lookupField, lookupFieldOnRelatedSObject);
+        Test.stopTest();
+
+        String expectedQueryFilter = 'OwnerId ' + operator.getValue() + ' (SELECT ' + lookupFieldOnRelatedSObject.getDescribe().getName() + ' FROM User)';
+        System.assertEquals(expectedQueryFilter, queryFilter.getValue());
     }
 
 }

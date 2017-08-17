@@ -89,7 +89,7 @@ public class QueryFilter implements IQueryFilter {
     * QueryFilter filter = new QueryFilter().setValue(Schema.Lead.OwnerId, QueryOperator.IS_IN, Schema.User.Id);
     * System.assertEquals('OwnerId IN (SELECT Id FROM User)', filter.getValue());
     */
-    public IQueryFilter setValue(Schema.SObjectField lookupField, QueryOperator inOrNotIn, Schema.SObjectField lookupFieldOnRelatedSObject) {
+    public IQueryFilter setValue(QueryOperator inOrNotIn, Schema.SObjectField lookupField, Schema.SObjectField lookupFieldOnRelatedSObject) {
         return this.setValueForSubselect(lookupField.getDescribe().getName(), inOrNotIn, lookupFieldOnRelatedSObject);
     }
 
@@ -123,7 +123,7 @@ public class QueryFilter implements IQueryFilter {
         String relatedSObjectTypeName = new SObjectFieldDescriber(lookupFieldOnRelatedSObject).getSObjectType().getDescribe().getName();
         String lookupFieldOnRelatedSObjectName = lookupFieldOnRelatedSObject.getDescribe().getName();
 
-        this.queryFilterString = idFieldName + ' ' + inOrNotIn + ' (SELECT ' + lookupFieldOnRelatedSObjectName + ' FROM ' + relatedSObjectTypeName + ')';
+        this.queryFilterString = idFieldName + ' ' + inOrNotIn.getValue() + ' (SELECT ' + lookupFieldOnRelatedSObjectName + ' FROM ' + relatedSObjectTypeName + ')';
 
         return this;
     }
