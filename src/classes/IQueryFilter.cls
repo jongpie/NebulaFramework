@@ -19,8 +19,5 @@ public interface IQueryFilter {
 
     // Getter methods
     String getValue();
-    Schema.SObjectField getSObjectField();
-    QueryOperator getQueryOperator();
-    Object getProvidedValue();
 
 }
