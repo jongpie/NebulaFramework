@@ -31,6 +31,8 @@ public abstract class QueryBuilder extends NebulaCore {
     }
 
     protected void doFilterBy(List<IQueryFilter> queryFilters) {
+        if(queryFilters == null) return;
+
         for(IQueryFilter queryFilter : queryFilters) this.whereClauseList.add(queryFilter.getValue());
     }
 
