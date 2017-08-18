@@ -31,7 +31,7 @@ public class QueryFilter implements IQueryFilter {
 
     /**
     * @description Creates a filter for a field on a parent sobject
-    * @param fieldToFilter Field on the current sobject that you want to filter list to check
+    * @param fieldToFilterChain An ordered list of fields that chain together to build the parent field
     * @param operator The instance of QueryOperator to use in the filter the list to check
     * @param providedValue The value to compare to in the filter
     * @return The instance of IQueryFilter, to allow chaining methods
