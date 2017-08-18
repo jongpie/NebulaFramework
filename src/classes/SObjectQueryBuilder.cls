@@ -134,56 +134,49 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
        return this;
     }
 
-   public ISObjectQueryBuilder orderBy(Schema.SObjectField orderByField) {
-       super.doOrderBy(orderByField);
-       return this;
-   }
+    public ISObjectQueryBuilder orderBy(Schema.SObjectField orderByField) {
+        super.doOrderBy(orderByField);
+        return this;
+    }
 
-   public ISObjectQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder) {
-       super.doOrderBy(orderByField, sortOrder);
-       return this;
-   }
+    public ISObjectQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder) {
+        super.doOrderBy(orderByField, sortOrder);
+        return this;
+    }
 
-   public ISObjectQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder, QueryNullSortOrder nullsSortOrder) {
-       super.doOrderBy(orderByField, sortOrder, nullsSortOrder);
-       return this;
-   }
+    public ISObjectQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder, QueryNullSortOrder nullsSortOrder) {
+        super.doOrderBy(orderByField, sortOrder, nullsSortOrder);
+        return this;
+    }
 
-   public ISObjectQueryBuilder limitCount(Integer limitCount) {
-       super.doLimitCount(limitCount);
-       return this;
-   }
+    public ISObjectQueryBuilder limitCount(Integer limitCount) {
+        super.doLimitCount(limitCount);
+        return this;
+    }
 
-   public ISObjectQueryBuilder setAsUpdate() {
-       this.forUpdate = true;
-       return this;
-   }
+    public ISObjectQueryBuilder setAsUpdate() {
+        this.forUpdate = true;
+        return this;
+    }
 
-   public ISObjectQueryBuilder usingScope(QueryFilterScope filterScope) {
-       this.filterScope = filterScope;
-       return this;
-   }
+    public ISObjectQueryBuilder usingScope(QueryFilterScope filterScope) {
+        this.filterScope = filterScope;
+        return this;
+    }
 
-   // Query execution methods
-   public SObject getFirstQueryResult() {
-       return this.getQueryResults()[0];
-   }
+    // Query execution methods
+    public SObject getFirstQueryResult() {
+        return this.getQueryResults()[0];
+    }
 
-   public List<SObject> getQueryResults() {
-       List<SObject> results = Database.query(this.getQuery());
+    public List<SObject> getQueryResults() {
+       return super.doGetQueryResults(this.getQuery());
+    }
 
-       super.doLogEntry(this.getQuery(), results);
-
-       return results;
-   }
-
-   public virtual List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup) {
-       List<SObject> results = Search.query(this.getSearchQuery(searchTerm, searchGroup))[0];
-
-       super.doLogEntry(this.getSearchQuery(searchTerm, searchGroup), results);
-
-       return results;
-   }
+    public virtual List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup) {
+        String query = this.getSearchQuery(searchTerm, searchGroup);
+        return super.doGetSearchResults(query)[0];
+    }
 
     private void addField(Schema.SObjectField field) {
         this.queryFields.add(field.getDescribe().getName().toLowerCase());

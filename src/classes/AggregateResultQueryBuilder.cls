@@ -125,11 +125,7 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
     }
 
     public List<AggregateResult> getQueryResults() {
-        List<AggregateResult> results = Database.query(this.getQuery());
-
-        this.doLogEntry(this.getQuery(), results);
-
-        return results;
+        return super.doGetQueryResults(this.getQuery());
     }
 
     @testVisible

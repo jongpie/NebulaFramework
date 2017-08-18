@@ -70,10 +70,20 @@ public abstract class QueryBuilder extends NebulaCore {
         return this.limitCount != null ? '\nLIMIT '+ this.limitCount : '';
     }
 
-    protected void doLogEntry(String query, List<Object> results) {
-        // TODO give this method a better name - addLogEntry maybe?
-        String logEntry = 'Query:\n' + query + '\n\nResults:\n' + JSON.serializePretty(results);
-        Logger.addEntry(this, logEntry);
+    protected List<SObject> doGetQueryResults(String query) {
+        List<SObject> results = Database.query(query);
+
+        this.logResults(query, results);
+
+        return results;
+    }
+
+    protected List<List<SObject>> doGetSearchResults(String query) {
+        List<List<SObject>> results = Search.query(query);
+
+        this.logResults(query, results);
+
+        return results;
     }
 
     private void filterByWithSeparator(List<IQueryFilter> queryFilters, String separator) {
@@ -84,6 +94,11 @@ public abstract class QueryBuilder extends NebulaCore {
 
         String orStatement = '(' + String.join(queryFilterValues, ' ' + separator + ' ') + ')';
         this.whereClauseList.add(orStatement);
+    }
+
+    private void logResults(String query, List<Object> results) {
+        String logEntry = 'Query:\n' + query + '\n\nResults:\n' + JSON.serializePretty(results);
+        Logger.addEntry(this, logEntry);
     }
 
 }
