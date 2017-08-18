@@ -14,14 +14,12 @@ public abstract class SObjectRecordTypes extends NebulaCore implements ISObjectR
 
     private static Map<String, List<RecordType>> cachedRecordTypesBySObjectMap = new Map<String, List<RecordType>>();
 
-    private Schema.SObjectType sobjectType;
     private String sobjectName;
 
     public SObjectRecordTypes() {
         this.currentModule = NebulaCore.Module.RECORD_TYPES;
 
-        this.sobjectType = getSObjectType();
-        this.sobjectName = this.sobjectType.getDescribe().getName();
+        this.sobjectName = this.getSObjectType().getDescribe().getName();
 
         Logger.addEntry(this, 'Getting record types for ' + this.sobjectName);
 
@@ -67,7 +65,7 @@ public abstract class SObjectRecordTypes extends NebulaCore implements ISObjectR
 
         query.orderBy(Schema.RecordType.DeveloperName);
 
-        Logger.addEntry(this, 'Loading SObjectRecordTypes for=' + this.sobjectType);
+        Logger.addEntry(this, 'Loading SObjectRecordTypes for=' + this.getSObjectType());
 
         if(!cachedRecordTypesBySObjectMap.containsKey(this.sobjectName)) cachedRecordTypesBySObjectMap.put(this.sobjectName, new List<RecordType>());
         List<RecordType> recordTypeList = (List<RecordType>)query.getQueryResults();
