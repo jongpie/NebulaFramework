@@ -77,7 +77,7 @@ private class SObjectQueryBuilder_Tests {
         }
 
         // Execute the query to make sure it's executable
-        Database.query(query.getQuery());
+        query.getQueryResults();
     }
 
     @isTest
@@ -102,7 +102,7 @@ private class SObjectQueryBuilder_Tests {
         }
 
         // Execute the query to make sure it's executable
-        Database.query(query.getQuery());
+        query.getQueryResults();
     }
 
     @isTest
@@ -133,7 +133,7 @@ private class SObjectQueryBuilder_Tests {
         }
 
         // Execute the query to make sure it's executable
-        Database.query(query.getQuery());
+        query.getQueryResults();
     }
 
     @isTest
@@ -164,7 +164,7 @@ private class SObjectQueryBuilder_Tests {
         }
 
         // Execute the query to make sure it's executable
-        Database.query(query.getQuery());
+        query.getQueryResults();
     }
 
     @isTest
@@ -195,7 +195,7 @@ private class SObjectQueryBuilder_Tests {
         }
 
         // Execute the query to make sure it's executable
-        Database.query(query.getQuery());
+        query.getQueryResults();
     }
 
     @isTest
@@ -226,7 +226,7 @@ private class SObjectQueryBuilder_Tests {
         }
 
         // Execute the query to make sure it's executable
-        Database.query(query.getQuery());
+        query.getQueryResults();
     }
 
     @isTest
@@ -243,7 +243,7 @@ private class SObjectQueryBuilder_Tests {
         System.assert(orderByString.contains(Contact.CreatedDate.getDescribe().getName()), orderByString);
 
         // Execute the query to make sure it's executable
-        Database.query(query.getQuery());
+        query.getQueryResults();
     }
 
     @isTest
@@ -260,7 +260,7 @@ private class SObjectQueryBuilder_Tests {
         System.assert(orderByString.contains(Contact.CreatedDate.getDescribe().getName() + ' ASC'), orderByString);
 
         // Execute the query to make sure it's executable
-        Database.query(query.getQuery());
+        query.getQueryResults();
     }
 
     @isTest
@@ -277,7 +277,7 @@ private class SObjectQueryBuilder_Tests {
         System.assert(orderByString.contains(Contact.CreatedDate.getDescribe().getName() + ' DESC'), orderByString);
 
         // Execute the query to make sure it's executable
-        Database.query(query.getQuery());
+        query.getQueryResults();
     }
 
     @isTest
@@ -294,7 +294,7 @@ private class SObjectQueryBuilder_Tests {
         System.assert(orderByString.contains(Contact.FirstName.getDescribe().getName() + ' ASC NULLS FIRST'), orderByString);
 
         // Execute the query to make sure it's executable
-        Database.query(query.getQuery());
+        query.getQueryResults();
     }
 
     @isTest
@@ -311,7 +311,7 @@ private class SObjectQueryBuilder_Tests {
         System.assert(orderByString.contains(Contact.FirstName.getDescribe().getName() + ' DESC NULLS FIRST'), orderByString);
 
         // Execute the query to make sure it's executable
-        Database.query(query.getQuery());
+        query.getQueryResults();
     }
 
     @isTest
@@ -328,7 +328,7 @@ private class SObjectQueryBuilder_Tests {
         System.assert(orderByString.contains(Contact.FirstName.getDescribe().getName() + ' ASC NULLS LAST'), orderByString);
 
         // Execute the query to make sure it's executable
-        Database.query(query.getQuery());
+        query.getQueryResults();
     }
 
     @isTest
@@ -345,7 +345,7 @@ private class SObjectQueryBuilder_Tests {
         System.assert(orderByString.contains(Contact.FirstName.getDescribe().getName() + ' DESC NULLS LAST'), orderByString);
 
         // Execute the query to make sure it's executable
-        Database.query(query.getQuery());
+        query.getQueryResults();
     }
 
     @isTest
@@ -362,7 +362,7 @@ private class SObjectQueryBuilder_Tests {
         System.assert(query.getQuery().contains('LIMIT ' + limitCount));
 
         // Execute the query to make sure it's executable
-        Database.query(query.getQuery());
+        query.getQueryResults();
     }
 
     @isTest
@@ -378,7 +378,7 @@ private class SObjectQueryBuilder_Tests {
         System.assert(query.getQuery().contains('FOR UPDATE'));
 
         // Execute the query to make sure it's executable
-        Database.query(query.getQuery());
+        query.getQueryResults();
     }
 
     @isTest
@@ -395,7 +395,7 @@ private class SObjectQueryBuilder_Tests {
         System.assert(query.getQuery().contains('USING SCOPE ' + scope.name()));
 
         // Execute the query to make sure it's executable
-        Database.query(query.getQuery());
+        query.getQueryResults();
     }
 
     @isTest

@@ -52,6 +52,8 @@ public interface ISObjectQueryBuilder {
     ISObjectQueryBuilder setAsUpdate();
     ISObjectQueryBuilder usingScope(QueryFilterScope filterScope);
 
+    Database.QueryLocator getQueryLocator();
+
     // Query execution methods
     SObject getFirstQueryResult();
     List<SObject> getQueryResults();

@@ -157,6 +157,10 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
         return this;
     }
 
+    public Database.QueryLocator getQueryLocator() {
+        return Database.getQueryLocator(this.getQuery());
+    }
+
     // Query execution methods
     public SObject getFirstQueryResult() {
         return this.getQueryResults()[0];
