@@ -31,7 +31,7 @@ public without sharing class Logger {
     }
 
     public static void saveLogs() {
-        if(!NebulaSettings.loggerSettings.EnableLogging__c) return;
+        if(!NebulaSettings.LoggerSettings.EnableLogging__c) return;
 
         saveTransactionLog();
         saveSingleLogFile();
