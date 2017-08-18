@@ -10,7 +10,7 @@
 * @description A builder class that generates dynamic queries & returns a list of AggregateResult
 *
 */
-public class AggregateResultQueryBuilder extends QueryBuilder implements IAggregateResultQueryBuilder {//{} //extends QueryBuilder implements IAggregateResultQueryBuilder {
+public class AggregateResultQueryBuilder extends QueryBuilder implements IAggregateResultQueryBuilder {
 
     private Schema.SObjectType sobjectType;
     private List<String> groupByList;
