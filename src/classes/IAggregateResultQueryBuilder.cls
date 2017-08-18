@@ -20,6 +20,9 @@ public interface IAggregateResultQueryBuilder {
     IAggregateResultQueryBuilder groupBy(Schema.FieldSet fieldSet);
     IAggregateResultQueryBuilder groupBy(Schema.SObjectField groupByField);
     IAggregateResultQueryBuilder groupBy(List<Schema.SObjectField> groupByFields);
+    // TODO add support for other features, like 'having count(id) > 1', etc support
+    // https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_groupby.htm
+    // TODO need to research 'GROUP BY CUBE' & 'GROUPING' more https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_groupby_cube.htm
 
     // Aggregate functions
     IAggregateResultQueryBuilder avg(Schema.SObjectField sbojectField);
@@ -28,8 +31,6 @@ public interface IAggregateResultQueryBuilder {
     IAggregateResultQueryBuilder max(Schema.SObjectField sbojectField);
     IAggregateResultQueryBuilder min(Schema.SObjectField sbojectField);
     IAggregateResultQueryBuilder sum(Schema.SObjectField sbojectField);
-// group by rollup, having(blah), etc support - https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_groupby.htm
-//need to research 'GROUP BY CUBE' & 'GROUPING' more https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_groupby_cube.htm
 
     // Filter methods
     IAggregateResultQueryBuilder filterBy(IQueryFilter queryFilter);
