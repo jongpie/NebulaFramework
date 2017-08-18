@@ -7,7 +7,8 @@
 *
 * @group Query Builder
 *
-* @description TODO
+* @description Enum of possible values for SOQL's optional USING SCOPE
+* Salesforce docs: developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_using_scope.htm
 *
 */
-public enum QueryFilterScope { EVERYTHING, TEAM, MINE }
+public enum QueryFilterScope { EVERYTHING, DELEGATED, TEAM, MINE, MY_TERRITORY, MY_TEAM_TERRITORY }

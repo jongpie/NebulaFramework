@@ -13,7 +13,7 @@
 public abstract class QueryBuilder extends NebulaCore {
 
     protected List<String> whereClauseList;
-    @testVisible protected List<String> orderByList;
+    protected List<String> orderByList;
     protected Integer limitCount;
 
     protected SObjectType sobjectType;

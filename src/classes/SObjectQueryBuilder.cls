@@ -15,7 +15,7 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
     private Set<String> queryFields;
     private List<String> childRelationshipQueries;
     private QueryFilterScope filterScope;
-    @testVisible private Boolean forUpdate;
+    private Boolean forUpdate;
     private SObjectType sobjectType;
     private Map<String, Schema.SObjectField> sobjectTypeFieldMap;
 
@@ -47,49 +47,42 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
     }
 
     public ISObjectQueryBuilder addAllFields() {
-        for(Schema.SObjectField field : this.sobjectTypeFieldMap.values()) {
-            this.queryFields.add(field.getDescribe().getName());
-        }
+        for(Schema.SObjectField field : this.sobjectTypeFieldMap.values()) this.addField(field);
         return this;
     }
 
     public ISObjectQueryBuilder addAllStandardFields() {
         for(Schema.SObjectField field : this.sobjectTypeFieldMap.values()) {
-            Schema.DescribeFieldResult fieldDescribe = field.getDescribe();
-            // If it's not a standard field, skip it
-            if(fieldDescribe.isCustom()) continue;
+            if(field.getDescribe().isCustom()) continue;
 
-            this.queryFields.add(fieldDescribe.getName());
+            this.addField(field);
         }
         return this;
     }
 
     public ISObjectQueryBuilder addAllCustomFields() {
         for(Schema.SObjectField field : this.sobjectTypeFieldMap.values()) {
-            // If it's not a custom field, skip it
             if(!field.getDescribe().isCustom()) continue;
 
-            this.queryFields.add(field.getDescribe().getName());
+            this.addField(field);
         }
         return this;
     }
 
     public ISObjectQueryBuilder addAllReadableFields() {
         for(Schema.SObjectField field : this.sobjectTypeFieldMap.values()) {
-            // If it's not a readable field, skip it
             if(!field.getDescribe().isAccessible()) continue;
 
-            this.queryFields.add(field.getDescribe().getName());
+            this.addField(field);
         }
         return this;
     }
 
     public ISObjectQueryBuilder addAllEditableFields() {
         for(Schema.SObjectField field : this.sobjectTypeFieldMap.values()) {
-            // If it's not an editable field, skip it
             if(!field.getDescribe().isUpdateable()) continue;
 
-            this.queryFields.add(field.getDescribe().getName());
+            this.addField(field);
         }
         return this;
     }
@@ -179,11 +172,11 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
     }
 
     private void addField(Schema.SObjectField field) {
-        this.queryFields.add(field.getDescribe().getName().toLowerCase());
+        this.queryFields.add(field.getDescribe().getName());
 
         // If the field is a lookup, then we need to get the name field from the parent object
         if(field.getDescribe().getType().name() == 'Reference') {
-            this.queryFields.add(this.getParentSObjectNameField(field).toLowerCase());
+            this.queryFields.add(this.getParentSObjectNameField(field));
         }
     }
 
@@ -204,6 +197,7 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
     private String getQuery() {
         String query = 'SELECT ' + this.getQueryFieldString() + this.getChildRelationshipsQueryString()
             + '\nFROM ' + this.sobjectType
+            + this.getUsingScopeString()
             + super.doGetWhereClauseString()
             + super.doGetOrderByString()
             + super.doGetLimitCountString()
@@ -250,8 +244,12 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
         return this.orderByList.isEmpty() && this.forUpdate ? '\nFOR UPDATE' : '';
     }
 
+    private String getUsingScopeString() {
+        return this.filterScope == null ? '' : '\nUSING SCOPE ' + this.filterScope.name();
+    }
+
     private void addCommonQueryFields() {
-        if(!NebulaSettings.RepositorySettings.IncludeCommonFields__c) return;
+        if(!NebulaSettings.SObjectQueryBuilderSettings.IncludeCommonFields__c) return;
         // Auto-add the common fields that are available for the SObject Type
         List<String> commonFieldNameList = new List<String>{
             'Id', 'CaseNumber', 'CreatedById', 'CreatedDate', 'IsClosed', 'LastModifiedById', 'LastModifiedDate',
@@ -261,7 +259,7 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
             this.sobjectTypeFieldMap = this.sobjectType.getDescribe().fields.getMap();
             if(!this.sobjectTypeFieldMap.containsKey(commonFieldName)) continue;
 
-            this.queryFields.add(commonFieldName.toLowerCase());
+            this.queryFields.add(commonFieldName);
         }
     }
 

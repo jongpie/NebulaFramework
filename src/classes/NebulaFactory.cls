@@ -21,6 +21,10 @@ public without sharing class NebulaFactory {
     private static Map<String, NebulaInterfaceImplementation__mdt> interfaceConfigs;
     private static String invalidClassForInterfaceError = 'The configured class "{0}" does not implement the Nebula interface "{1}". Actual type: {2}';
 
+    static {
+        getInterfaceConfigs();
+    }
+
     public static IAggregateResultQueryBuilder getAggregateQueryBuilder() {
         return (IAggregateResultQueryBuilder)createInterfaceImplementation(IAggregateResultQueryBuilder.class, DEFAULT_AGGREGATE_RESULT_QUERY_BUILDER_IMPLEMENTATION);
     }
@@ -42,8 +46,6 @@ public without sharing class NebulaFactory {
     }
 
     private static Object createInterfaceImplementation(System.Type interfaceType, System.Type defaultImplementation) {
-        getInterfaceConfigs();
-
         String interfaceName = interfaceType.getName();
 
         NebulaInterfaceImplementation__mdt config = interfaceConfigs.get(interfaceName);
