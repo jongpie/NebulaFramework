@@ -36,8 +36,8 @@ private class SObjectRepository_Tests {
             return Schema.User.SObjectType;
         }
 
-        public override void upsertRecords(SObject record, Schema.SObjectField externalIdField) {
-            super.upsertRecords(record, externalIdField);
+        public override List<Database.UpsertResult> upsertRecords(SObject record, Schema.SObjectField externalIdField) {
+            return super.upsertRecords(record, externalIdField);
         }
     }
 
