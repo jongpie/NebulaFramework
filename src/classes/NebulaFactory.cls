@@ -16,7 +16,6 @@ public without sharing class NebulaFactory {
     private static final System.Type DEFAULT_QUERY_ARGUMENT_FORMATTER_IMPLEMENTATION       = QueryArgumentFormatter.class;
     private static final System.Type DEFAULT_SOBJECT_QUERY_BUILDER_IMPLEMENTATION          = SObjectQueryBuilder.class;
     private static final System.Type DEFAULT_QUERY_FILTER_IMPLEMENTATION                   = QueryFilter.class;
-    private static final System.Type DEFAULT_SOBJECT_REPOSITORY_IMPLEMENTATION             = SObjectRepository.class;
 
     private static Map<String, NebulaInterfaceImplementation__mdt> interfaceConfigs;
     private static String invalidClassForInterfaceError = 'The configured class "{0}" does not implement the Nebula interface "{1}". Actual type: {2}';
@@ -39,10 +38,6 @@ public without sharing class NebulaFactory {
 
     public static ISObjectQueryBuilder getSObjectQueryBuilder() {
         return (ISObjectQueryBuilder)createInterfaceImplementation(ISObjectQueryBuilder.class, DEFAULT_SOBJECT_QUERY_BUILDER_IMPLEMENTATION);
-    }
-
-    public static ISObjectRepository getSObjectRepository() {
-        return (ISObjectRepository)createInterfaceImplementation(ISObjectRepository.class, DEFAULT_SOBJECT_REPOSITORY_IMPLEMENTATION);
     }
 
     private static Object createInterfaceImplementation(System.Type interfaceType, System.Type defaultImplementation) {
