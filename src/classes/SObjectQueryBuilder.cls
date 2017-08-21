@@ -170,7 +170,6 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
             childRelationshipName = childRelationship.getRelationshipName();
         }
 
-        String query = 'SELECT ' + + this.getQueryFieldString()
             + '\nFROM ' + childRelationshipName
             + this.getUsingScopeString()
             + super.doGetWhereClauseString()
