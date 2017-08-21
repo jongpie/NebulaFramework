@@ -26,7 +26,7 @@ public class QueryFilter implements IQueryFilter {
     * System.assertEquals('Email != null', filter.getValue());
     */
     public IQueryFilter filterByField(Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue) {
-        return this.filterByParentField(new List<Schema.SObjectField>{fieldToFilter}, operator, providedValue);
+        return this.filterByParentField(new SObjectFieldWrapper(fieldToFilter), operator, providedValue);
     }
 
     /**
@@ -40,8 +40,8 @@ public class QueryFilter implements IQueryFilter {
     * QueryFilter filter = new QueryFilter().setValue(parentFieldChain, QueryOperator.NOT_EQUAL_TO, null);
     * System.assertEquals('CreatedBy.Email != null', filter.getValue());
     */
-    public IQueryFilter filterByParentField(List<Schema.SObjectField> fieldToFilterChain, QueryOperator operator, Object providedValue) {
-        this.queryFilterString = this.parseSObjectFieldName(fieldToFilterChain)
+    public IQueryFilter filterByParentField(SObjectFieldWrapper fieldWrapper, QueryOperator operator, Object providedValue) {
+        this.queryFilterString = fieldWrapper.VALUE
             + ' ' + operator.getValue()
             + ' ' + NebulaFactory.getQueryArgumentFormatter().getValue(providedValue);
 
@@ -119,24 +119,6 @@ public class QueryFilter implements IQueryFilter {
     */
     public String getValue() {
         return this.queryFilterString;
-    }
-
-    private String parseSObjectFieldName(List<Schema.SObjectField> fieldToFilterChain) {
-        Schema.SObjectField lastField = (Schema.SObjectField)CollectionUtils.pop(fieldToFilterChain);
-
-        List<String> fieldChain = new List<String>();
-        for(Schema.SObjectField parentField : fieldToFilterChain) {
-            fieldChain.add(parentField.getDescribe().getRelationshipName());
-        }
-
-        String parsedFieldChain = '';
-        if(!fieldChain.isEmpty()) {
-            // If there is a chain of fields, build a string with the dot notation needed for SOQL/SOSL
-            parsedFieldChain = String.join(fieldChain, '.') + '.';
-        }
-
-        // Return the fully qualified field name
-        return parsedFieldChain + lastField.getDescribe().getName();
     }
 
     private IQueryFilter setValueForSubquery(String idFieldName, QueryOperator inOrNotIn, Schema.SObjectField lookupFieldOnRelatedSObject) {

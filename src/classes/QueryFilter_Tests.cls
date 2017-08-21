@@ -21,9 +21,9 @@ private class QueryFilter_Tests {
 
     @isTest
     static void it_should_return_the_query_filter_for_a_parent_field() {
-         List<Schema.SObjectField> parentFieldToFilter = new List<Schema.SObjectField>{
+         SObjectFieldWrapper parentFieldToFilter = new SObjectFieldWrapper(new List<Schema.SObjectField>{
             Schema.Lead.CreatedById, Schema.User.Email
-        };
+        });
         QueryOperator operator = QueryOperator.EQUALS;
         String providedValue   = 'derp@test.com';
 
@@ -37,9 +37,9 @@ private class QueryFilter_Tests {
 
     @isTest
     static void it_should_return_the_query_filter_for_a_grandparent_field() {
-        List<Schema.SObjectField> grandparentFieldToFilter = new List<Schema.SObjectField>{
+        SObjectFieldWrapper grandparentFieldToFilter = new SObjectFieldWrapper(new List<Schema.SObjectField>{
             Schema.Lead.OwnerId, Schema.User.ManagerId, Schema.User.ProfileId, Schema.Profile.Name
-        };
+        });
         QueryOperator operator = QueryOperator.EQUALS;
         String providedValue   = 'derp';
 

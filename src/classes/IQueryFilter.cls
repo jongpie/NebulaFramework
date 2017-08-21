@@ -14,7 +14,7 @@ public interface IQueryFilter {
 
     // Setter methods
     IQueryFilter filterByField(Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue);
-    IQueryFilter filterByParentField(List<Schema.SObjectField> fieldToFilterChain, QueryOperator operator, Object providedValue);
+    IQueryFilter filterByParentField(SObjectFieldWrapper fieldWrapper, QueryOperator operator, Object providedValue);
     IQueryFilter filterByQueryDate(QueryDate queryDateToFilter, QueryOperator operator, Integer providedValue);
     IQueryFilter filterBySubquery(QueryOperator inOrNotIn, Schema.SObjectField lookupFieldOnRelatedSObject);
     IQueryFilter filterBySubquery(QueryOperator inOrNotIn, Schema.SObjectField lookupField, Schema.SObjectField lookupFieldOnRelatedSObject);
