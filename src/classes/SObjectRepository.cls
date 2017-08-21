@@ -85,7 +85,7 @@ public abstract class SObjectRepository extends DML implements ISObjectRepositor
 
     public virtual List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup, List<IQueryFilter> queryFilters) {
         return this.SearchQuery
-            .addSObjectQueryBuilder(this.Query.filterBy(queryFilters))
+            .addSObjectQueryBuilders(this.Query.filterBy(queryFilters))
             .setQuerySearchGroup(searchGroup)
             .getFirstQueryResult(searchTerm);
     }
