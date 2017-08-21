@@ -54,11 +54,12 @@ public interface ISObjectQueryBuilder {
 
     Database.QueryLocator getQueryLocator();
     String getQuery();
+    String getSearchQuery();
     String getChildQuery(Schema.SObjectField childToParentRelationshipField);
 
     // Query execution methods
     SObject getFirstQueryResult();
     List<SObject> getQueryResults();
-    List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup);
+    // List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup);
 
 }

@@ -7,7 +7,7 @@
 *
 * @group Query Builder
 *
-* @description A builder class that generates dynamic SOQL & SOSL queries & returns an SObject or list of SObjects
+* @description A builder class that generates dynamic SOQL & returns an SObject or list of SObjects
 *
 */
 public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBuilder {
@@ -148,22 +148,32 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
         return query;
     }
 
+    public String getSearchQuery() {
+        String query = this.sobjectType + '(' + this.getQueryFieldString()
+            + super.doGetWhereClauseString()
+            + super.doGetOrderByString()
+            + super.doGetLimitCountString()
+            + ')';
+
+        return query;
+    }
+
     public String getChildQuery(Schema.SObjectField childToParentRelationshipField) {
+        Schema.SObjectType parentSObjectType = childToParentRelationshipField.getDescribe().getReferenceTo()[0];
         // Get the relationship name
         String childRelationshipName;
-        for(Schema.ChildRelationship childRelationship : this.sobjectType.getDescribe().getChildRelationships()) {
+        for(Schema.ChildRelationship childRelationship : parentSObjectType.getDescribe().getChildRelationships()) {
             if(childRelationship.getField() != childToParentRelationshipField) continue;
 
             childRelationshipName = childRelationship.getRelationshipName();
         }
 
-        String query = '(SELECT ' + + this.getQueryFieldString()
+        String query = 'SELECT ' + + this.getQueryFieldString()
             + '\nFROM ' + childRelationshipName
             + this.getUsingScopeString()
             + super.doGetWhereClauseString()
             + super.doGetOrderByString()
-            + super.doGetLimitCountString()
-            + ' )';
+            + super.doGetLimitCountString();
 
         return query;
     }
@@ -175,11 +185,6 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
 
     public List<SObject> getQueryResults() {
        return super.doGetQueryResults(this.getQuery());
-    }
-
-    public virtual List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup) {
-        String query = this.getSearchQuery(searchTerm, searchGroup);
-        return super.doGetSearchResults(query)[0];
     }
 
     private void addField(Schema.SObjectField field) {
@@ -202,23 +207,6 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
             }
         }
         return relationshipName + '.' + nameField;
-    }
-
-    @testVisible
-    private String getSearchQuery(String searchTerm, QuerySearchGroup searchGroup) {
-        String query = 'FIND ' + NebulaFactory.getQueryArgumentFormatter().getValue(searchTerm.toLowerCase())
-            + '\nIN ' + searchGroup.name().replace('_', ' ')
-            + '\nRETURNING ' + this.sobjectType + '('
-                + this.getQueryFieldString()
-                + super.doGetWhereClauseString()
-                + super.doGetOrderByString()
-                + super.doGetLimitCountString()
-            + ')';
-
-        if(this.forUpdate) Logger.addEntry(this, 'SOSL Search Query method flagged as FOR UPDATE. SOSL cannot use FOR UPDATE, ignoring');
-        if(this.filterScope != null) Logger.addEntry(this, 'SOSL Search Query method flagged as USING SCOPE ' + this.filterScope + '. SOSL cannot use USING SCOPE, ignoring');
-
-        return query;
     }
 
     private String getQueryFieldString() {

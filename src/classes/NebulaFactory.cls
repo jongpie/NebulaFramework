@@ -14,8 +14,9 @@ public without sharing class NebulaFactory {
 
     private static final System.Type DEFAULT_AGGREGATE_RESULT_QUERY_BUILDER_IMPLEMENTATION = AggregateResultQueryBuilder.class;
     private static final System.Type DEFAULT_QUERY_ARGUMENT_FORMATTER_IMPLEMENTATION       = QueryArgumentFormatter.class;
-    private static final System.Type DEFAULT_SOBJECT_QUERY_BUILDER_IMPLEMENTATION          = SObjectQueryBuilder.class;
     private static final System.Type DEFAULT_QUERY_FILTER_IMPLEMENTATION                   = QueryFilter.class;
+    private static final System.Type DEFAULT_SEARCH_QUERY_BUILDER_IMPLEMENTATION           = SearchQueryBuilder.class;
+    private static final System.Type DEFAULT_SOBJECT_QUERY_BUILDER_IMPLEMENTATION          = SObjectQueryBuilder.class;
 
     private static Map<String, NebulaInterfaceImplementation__mdt> interfaceConfigs;
     private static String invalidClassForInterfaceError = 'The configured class "{0}" does not implement the Nebula interface "{1}". Actual type: {2}';
@@ -34,6 +35,10 @@ public without sharing class NebulaFactory {
 
     public static IQueryFilter getQueryFilter() {
         return (IQueryFilter)createInterfaceImplementation(IQueryFilter.class, DEFAULT_QUERY_FILTER_IMPLEMENTATION);
+    }
+
+    public static ISearchQueryBuilder getSearchQueryBuilder() {
+        return (ISearchQueryBuilder)createInterfaceImplementation(ISearchQueryBuilder.class, DEFAULT_SEARCH_QUERY_BUILDER_IMPLEMENTATION);
     }
 
     public static ISObjectQueryBuilder getSObjectQueryBuilder() {

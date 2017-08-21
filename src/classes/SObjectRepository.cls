@@ -22,6 +22,11 @@ public abstract class SObjectRepository extends DML implements ISObjectRepositor
         private set;
     }
 
+    protected ISearchQueryBuilder SearchQuery {
+        get { return (ISearchQueryBuilder)NebulaFactory.getSearchQueryBuilder(); }
+        private set;
+    }
+
     private List<Schema.SObjectField> sobjectFieldList;
     private Map<String, Schema.SObjectField> sobjectFieldMap;
     private Schema.SObjectField idField;
@@ -79,9 +84,10 @@ public abstract class SObjectRepository extends DML implements ISObjectRepositor
     }
 
     public virtual List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup, List<IQueryFilter> queryFilters) {
-        return this.Query
-            .filterBy(queryFilters)
-            .getSearchResults(searchTerm, searchGroup);
+        return this.SearchQuery
+            .addSObjectQueryBuilder(this.Query.filterBy(queryFilters))
+            .setQuerySearchGroup(searchGroup)
+            .getFirstQueryResult(searchTerm);
     }
 
     private Schema.SObjectField getField(String fieldName) {
