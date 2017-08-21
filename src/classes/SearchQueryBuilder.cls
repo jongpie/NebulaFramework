@@ -25,8 +25,12 @@ public class SearchQueryBuilder extends QueryBuilder implements ISearchQueryBuil
         return this;
     }
 
-    public ISearchQueryBuilder addSObjectQueryBuilder(ISObjectQueryBuilder sobjectQueryBuilder) {
-        this.sobjectQueries.add(sobjectQueryBuilder.getSearchQuery());
+    public ISearchQueryBuilder addSObjectQueryBuilders(ISObjectQueryBuilder sobjectQueryBuilder) {
+        return this.addSObjectQueryBuilders(new List<ISObjectQueryBuilder>{sobjectQueryBuilder});
+    }
+
+    public ISearchQueryBuilder addSObjectQueryBuilders(List<ISObjectQueryBuilder> sobjectQueryBuilders) {
+        for(ISObjectQueryBuilder sobjectQueryBuilder : sobjectQueryBuilders) this.sobjectQueries.add(sobjectQueryBuilder.getSearchQuery());
         return this;
     }
 
