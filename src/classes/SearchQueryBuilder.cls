@@ -47,6 +47,7 @@ public class SearchQueryBuilder extends QueryBuilder implements ISearchQueryBuil
     }
 
     private String getSObjectQueriesString() {
+        this.sobjectQueries.sort();
         return String.join(this.sobjectQueries, ', ');
     }
 
