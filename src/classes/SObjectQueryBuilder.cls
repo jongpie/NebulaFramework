@@ -87,34 +87,9 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
         return this;
     }
 
-    public ISObjectQueryBuilder includeChildrenRecords(Schema.SObjectField childToParentRelationshipField, List<Schema.SObjectField> childFields, List<IQueryFilter> childFilters) {
-        // TODO null handling for filters, need a better long-term solution
-        childFilters = childFilters != null ? childFilters : new List<IQueryFilter>();
-
-        // Get the relationship name
-        String childRelationshipName;
-        for(Schema.ChildRelationship childRelationship : this.sobjectType.getDescribe().getChildRelationships()) {
-            if(childRelationship.getField() != childToParentRelationshipField) continue;
-
-            childRelationshipName = childRelationship.getRelationshipName();
-        }
-
-        // Build the child filters
-        List<String> childFieldNames = new List<String>();
-        for(Schema.SObjectField childField : childFields) childFieldNames.add(childField.getDescribe().getName());
-        childFieldNames.sort();
-
-        // Build the child filters
-        List<String> childWhereClauseList = new List<String>();
-        for(IQueryFilter childFilter : childFilters) childWhereClauseList.add(childFilter.getValue());
-        String childWhereClauseString = childWhereClauseList.isEmpty() ? '' : '\n\tWHERE ' + String.join(childWhereClauseList, '\n\tAND ');
-
-        // Build the child query
-        String childQuery = '\tSELECT ' + String.join(childFieldNames, ', ')
-            + '\n\tFROM ' + childRelationshipName
-            + childWhereClauseString;
-        childRelationshipQueries.add(childQuery);
-        return this;
+    public ISObjectQueryBuilder includeChildrenRecords(Schema.SObjectField childToParentRelationshipField, ISObjectQueryBuilder sobjectQueryBuilder) {
+         childRelationshipQueries.add(sobjectQueryBuilder.getChildQuery(childToParentRelationshipField));
+         return this;
     }
 
     public ISObjectQueryBuilder filterBy(IQueryFilter queryFilter) {
@@ -161,6 +136,38 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
         return Database.getQueryLocator(this.getQuery());
     }
 
+    public String getQuery() {
+        String query = 'SELECT ' + this.getQueryFieldString() + this.getChildRelationshipsQueryString()
+            + '\nFROM ' + this.sobjectType
+            + this.getUsingScopeString()
+            + super.doGetWhereClauseString()
+            + super.doGetOrderByString()
+            + super.doGetLimitCountString()
+            + this.getForUpdateString();
+
+        return query;
+    }
+
+    public String getChildQuery(Schema.SObjectField childToParentRelationshipField) {
+        // Get the relationship name
+        String childRelationshipName;
+        for(Schema.ChildRelationship childRelationship : this.sobjectType.getDescribe().getChildRelationships()) {
+            if(childRelationship.getField() != childToParentRelationshipField) continue;
+
+            childRelationshipName = childRelationship.getRelationshipName();
+        }
+
+        String query = '(SELECT ' + + this.getQueryFieldString()
+            + '\nFROM ' + childRelationshipName
+            + this.getUsingScopeString()
+            + super.doGetWhereClauseString()
+            + super.doGetOrderByString()
+            + super.doGetLimitCountString()
+            + ' )';
+
+        return query;
+    }
+
     // Query execution methods
     public SObject getFirstQueryResult() {
         return this.getQueryResults()[0];
@@ -195,19 +202,6 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
             }
         }
         return relationshipName + '.' + nameField;
-    }
-
-    @testVisible
-    private String getQuery() {
-        String query = 'SELECT ' + this.getQueryFieldString() + this.getChildRelationshipsQueryString()
-            + '\nFROM ' + this.sobjectType
-            + this.getUsingScopeString()
-            + super.doGetWhereClauseString()
-            + super.doGetOrderByString()
-            + super.doGetLimitCountString()
-            + this.getForUpdateString();
-
-        return query;
     }
 
     @testVisible

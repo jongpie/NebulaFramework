@@ -24,8 +24,10 @@ private class SObjectRepository_Tests {
                 .filterBy(NebulaFactory.getQueryFilter().filterByField(Schema.Account.Id, QueryOperator.EQUALS, accountId))
                 .includeChildrenRecords(
                     Schema.Contact.AccountId,
-                    new List<Schema.SObjectField>{Schema.Contact.Id, Schema.Contact.Name},
-                    new List<IQueryFilter>{new QueryFilter().filterByField(Schema.Contact.Email, QueryOperator.NOT_EQUAL_TO, null)}
+                    new SObjectQueryBuilder()
+                        .setSObjectType(Schema.Contact.SObjectType)
+                        .addAllStandardFields()
+                        .filterBy(new QueryFilter().filterByField(Schema.Contact.Email, QueryOperator.NOT_EQUAL_TO, null))
                 )
                 .getFirstQueryResult();
         }

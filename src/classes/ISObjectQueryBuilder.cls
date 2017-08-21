@@ -36,7 +36,7 @@ public interface ISObjectQueryBuilder {
     ISObjectQueryBuilder addFields(List<Schema.SObjectField> fields);
 
     // Parent-to-child relationship query methods
-    ISObjectQueryBuilder includeChildrenRecords(Schema.SObjectField childToParentRelationshipField, List<Schema.SObjectField> fields, List<IQueryFilter> filters);
+    ISObjectQueryBuilder includeChildrenRecords(Schema.SObjectField childToParentRelationshipField, ISObjectQueryBuilder sobjectQueryBuilder);
 
     // Filter methods
     ISObjectQueryBuilder filterBy(IQueryFilter queryFilter);
@@ -53,6 +53,8 @@ public interface ISObjectQueryBuilder {
     ISObjectQueryBuilder usingScope(QueryFilterScope filterScope);
 
     Database.QueryLocator getQueryLocator();
+    String getQuery();
+    String getChildQuery(Schema.SObjectField childToParentRelationshipField);
 
     // Query execution methods
     SObject getFirstQueryResult();
