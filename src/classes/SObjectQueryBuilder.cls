@@ -149,11 +149,13 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
     }
 
     public String getSearchQuery() {
-        String query = this.sobjectType + '(' + this.getQueryFieldString()
+        String sobjectTypeOptions =  this.getQueryFieldString()
             + super.doGetWhereClauseString()
             + super.doGetOrderByString()
-            + super.doGetLimitCountString()
-            + ')';
+            + super.doGetLimitCountString();
+        // If we have any sobject-specific options, then wrap the options in parentheses
+        sobjectTypeOptions = String.isEmpty(sobjectTypeOptions) ? '' : '(' + sobjectTypeOptions + ')';
+        String query = this.sobjectType + sobjectTypeOptions;
 
         return query;
     }
