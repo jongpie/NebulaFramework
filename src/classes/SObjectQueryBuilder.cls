@@ -149,7 +149,7 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
     }
 
     public String getSearchQuery() {
-        String sobjectTypeOptions =  this.getQueryFieldString()
+        String sobjectTypeOptions = this.getQueryFieldString()
             + super.doGetWhereClauseString()
             + super.doGetOrderByString()
             + super.doGetLimitCountString();
@@ -170,6 +170,7 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
             childRelationshipName = childRelationship.getRelationshipName();
         }
 
+        String query = 'SELECT ' + this.getQueryFieldString()
             + '\nFROM ' + childRelationshipName
             + this.getUsingScopeString()
             + super.doGetWhereClauseString()
