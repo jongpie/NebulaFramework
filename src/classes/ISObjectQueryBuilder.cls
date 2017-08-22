@@ -32,8 +32,8 @@ public interface ISObjectQueryBuilder {
     ISObjectQueryBuilder addAllCustomFields();
     ISObjectQueryBuilder addAllReadableFields();
     ISObjectQueryBuilder addAllEditableFields();
+    ISObjectQueryBuilder addFields(List<QueryField> queryFields);
     ISObjectQueryBuilder addFields(Schema.FieldSet fieldSet);
-    ISObjectQueryBuilder addFields(List<Schema.SObjectField> fields);
 
     // Parent-to-child relationship query methods
     ISObjectQueryBuilder includeChildrenRecords(Schema.SObjectField childToParentRelationshipField, ISObjectQueryBuilder sobjectQueryBuilder);

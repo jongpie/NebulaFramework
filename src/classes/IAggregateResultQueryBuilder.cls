@@ -16,21 +16,27 @@ public interface IAggregateResultQueryBuilder {
     IAggregateResultQueryBuilder setSObjectType(Schema.SObjectType sobjectType);
 
     // Group By methods
-    IAggregateResultQueryBuilder groupBy(QueryDate queryDate);
-    IAggregateResultQueryBuilder groupBy(Schema.FieldSet fieldSet);
     IAggregateResultQueryBuilder groupBy(QueryField groupByQueryField);
     IAggregateResultQueryBuilder groupBy(List<QueryField> groupByQueryFields);
+    IAggregateResultQueryBuilder groupBy(Schema.FieldSet fieldSet);
+    IAggregateResultQueryBuilder groupBy(QueryDate queryDate);
     // TODO add support for other features, like 'having count(id) > 1', etc support
     // https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_groupby.htm
     // TODO need to research 'GROUP BY CUBE' & 'GROUPING' more https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_groupby_cube.htm
 
     // Aggregate functions
-    IAggregateResultQueryBuilder avg(Schema.SObjectField sbojectField);
-    IAggregateResultQueryBuilder count(Schema.SObjectField sbojectField);
-    IAggregateResultQueryBuilder count_distinct(Schema.SObjectField sbojectField);
-    IAggregateResultQueryBuilder max(Schema.SObjectField sbojectField);
-    IAggregateResultQueryBuilder min(Schema.SObjectField sbojectField);
-    IAggregateResultQueryBuilder sum(Schema.SObjectField sbojectField);
+    IAggregateResultQueryBuilder avg(QueryField queryField);
+    IAggregateResultQueryBuilder avg(QueryField queryField, String fieldAlias);
+    IAggregateResultQueryBuilder count(QueryField queryField);
+    IAggregateResultQueryBuilder count(QueryField queryField, String fieldAlias);
+    IAggregateResultQueryBuilder count_distinct(QueryField queryField);
+    IAggregateResultQueryBuilder count_distinct(QueryField queryField, String fieldAlias);
+    IAggregateResultQueryBuilder max(QueryField queryField);
+    IAggregateResultQueryBuilder max(QueryField queryField, String fieldAlias);
+    IAggregateResultQueryBuilder min(QueryField queryField);
+    IAggregateResultQueryBuilder min(QueryField queryField, String fieldAlias);
+    IAggregateResultQueryBuilder sum(QueryField queryField);
+    IAggregateResultQueryBuilder sum(QueryField queryField, String fieldAlias);
 
     // Filter methods
     IAggregateResultQueryBuilder filterBy(IQueryFilter queryFilter);

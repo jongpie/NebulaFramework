@@ -34,15 +34,15 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
         return this;
     }
 
+    public ISObjectQueryBuilder addFields(List<QueryField> queryFields) {
+        for(QueryField queryField : queryFields) this.queryFields.add(queryField.getValue());
+        return this;
+    }
+
     public ISObjectQueryBuilder addFields(Schema.FieldSet fieldSet) {
         for(Schema.FieldSetMember field : fieldSet.getFields()) {
             this.addField(this.sobjectTypeFieldMap.get(field.getFieldPath()));
         }
-        return this;
-    }
-
-    public ISObjectQueryBuilder addFields(List<Schema.SObjectField> fields) {
-        for(Schema.SObjectField field : fields) this.addField(field);
         return this;
     }
 
