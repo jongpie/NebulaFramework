@@ -18,8 +18,8 @@ public interface IAggregateResultQueryBuilder {
     // Group By methods
     IAggregateResultQueryBuilder groupBy(QueryDate queryDate);
     IAggregateResultQueryBuilder groupBy(Schema.FieldSet fieldSet);
-    IAggregateResultQueryBuilder groupBy(Schema.SObjectField groupByField);
-    IAggregateResultQueryBuilder groupBy(List<Schema.SObjectField> groupByFields);
+    IAggregateResultQueryBuilder groupBy(QueryField groupByQueryField);
+    IAggregateResultQueryBuilder groupBy(List<QueryField> groupByQueryFields);
     // TODO add support for other features, like 'having count(id) > 1', etc support
     // https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_groupby.htm
     // TODO need to research 'GROUP BY CUBE' & 'GROUPING' more https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_groupby_cube.htm
@@ -37,9 +37,9 @@ public interface IAggregateResultQueryBuilder {
     IAggregateResultQueryBuilder filterBy(List<IQueryFilter> queryFilters);
 
     // Order By methods
-    IAggregateResultQueryBuilder orderBy(Schema.SObjectField orderByField);
-    IAggregateResultQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder);
-    IAggregateResultQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder, QueryNullSortOrder nullsSortOrder);
+    IAggregateResultQueryBuilder orderBy(QueryField orderByQueryField);
+    IAggregateResultQueryBuilder orderBy(QueryField orderByQueryField, QuerySortOrder sortOrder);
+    IAggregateResultQueryBuilder orderBy(QueryField orderByQueryField, QuerySortOrder sortOrder, QueryNullSortOrder nullsSortOrder);
 
     // Additional query option methods
     IAggregateResultQueryBuilder limitCount(Integer limitCount);

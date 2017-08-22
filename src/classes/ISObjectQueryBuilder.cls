@@ -43,9 +43,9 @@ public interface ISObjectQueryBuilder {
     ISObjectQueryBuilder filterBy(List<IQueryFilter> queryFilters);
 
     // Order By methods
-    ISObjectQueryBuilder orderBy(Schema.SObjectField orderByField);
-    ISObjectQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder);
-    ISObjectQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder, QueryNullSortOrder nullsSortOrder);
+    ISObjectQueryBuilder orderBy(QueryField orderByQueryField);
+    ISObjectQueryBuilder orderBy(QueryField orderByQueryField, QuerySortOrder sortOrder);
+    ISObjectQueryBuilder orderBy(QueryField orderByQueryField, QuerySortOrder sortOrder, QueryNullSortOrder nullsSortOrder);
 
     // Additional query option methods
     ISObjectQueryBuilder limitCount(Integer limitCount);

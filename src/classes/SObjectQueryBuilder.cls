@@ -102,18 +102,18 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
        return this;
     }
 
-    public ISObjectQueryBuilder orderBy(Schema.SObjectField orderByField) {
-        super.doOrderBy(orderByField);
+    public ISObjectQueryBuilder orderBy(QueryField orderByQueryField) {
+        super.doOrderBy(orderByQueryField);
         return this;
     }
 
-    public ISObjectQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder) {
-        super.doOrderBy(orderByField, sortOrder);
+    public ISObjectQueryBuilder orderBy(QueryField orderByQueryField, QuerySortOrder sortOrder) {
+        super.doOrderBy(orderByQueryField, sortOrder);
         return this;
     }
 
-    public ISObjectQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder, QueryNullSortOrder nullsSortOrder) {
-        super.doOrderBy(orderByField, sortOrder, nullsSortOrder);
+    public ISObjectQueryBuilder orderBy(QueryField orderByQueryField, QuerySortOrder sortOrder, QueryNullSortOrder nullsSortOrder) {
+        super.doOrderBy(orderByQueryField, sortOrder, nullsSortOrder);
         return this;
     }
 

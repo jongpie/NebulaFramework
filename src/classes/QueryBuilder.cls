@@ -36,22 +36,22 @@ public abstract class QueryBuilder extends NebulaCore {
         for(IQueryFilter queryFilter : queryFilters) this.whereClauseList.add(queryFilter.getValue());
     }
 
-    protected void doOrderBy(Schema.SObjectField orderByField) {
-        this.doOrderBy(orderByField, null, null);
+    protected void doOrderBy(QueryField orderByQueryField) {
+        this.doOrderBy(orderByQueryField, null, null);
     }
 
-    protected void doOrderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder) {
-        this.doOrderBy(orderByField, sortOrder, null);
+    protected void doOrderBy(QueryField orderByQueryField, QuerySortOrder sortOrder) {
+        this.doOrderBy(orderByQueryField, sortOrder, null);
     }
 
-    protected void doOrderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder, QueryNullSortOrder nullsSortOrder) {
+    protected void doOrderBy(QueryField orderByQueryField, QuerySortOrder sortOrder, QueryNullSortOrder nullsSortOrder) {
         String sortOrderString = '';
         if(sortOrder == QuerySortOrder.ASCENDING) sortOrderString = ' ASC';
         else if(sortOrder == QuerySortOrder.DESCENDING) sortOrderString = ' DESC';
 
         if(nullsSortOrder != null) sortOrderString += ' NULLS ' + nullsSortOrder;
 
-        this.orderByList.add(orderByField.getDescribe().getName() + sortOrderString);
+        this.orderByList.add(orderByQueryField.getValue() + sortOrderString);
     }
 
     protected void doLimitCount(Integer limitCount) {

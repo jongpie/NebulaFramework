@@ -16,22 +16,8 @@ public class QueryFilter implements IQueryFilter {
     private String queryFilterString;
 
     /**
-    * @description Creates a filter for a field on the current sobject
-    * @param fieldToFilter Field on the current sobject that you want to filter list to check
-    * @param operator The instance of QueryOperator to use in the filter the list to check
-    * @param providedValue The value to compare to in the filter
-    * @return The instance of IQueryFilter, to allow chaining methods
-    * @example
-    * QueryFilter filter = new QueryFilter().setValue(Schema.User.Email, QueryOperator.NOT_EQUAL_TO, null);
-    * System.assertEquals('Email != null', filter.getValue());
-    */
-    public IQueryFilter filterByField(Schema.SObjectField fieldToFilter, QueryOperator operator, Object providedValue) {
-        return this.filterByParentField(new SObjectFieldWrapper(fieldToFilter), operator, providedValue);
-    }
-
-    /**
     * @description Creates a filter for a field on a parent sobject
-    * @param fieldToFilterChain An ordered list of fields that chain together to build the parent field
+    * @param queryField An instance of QueryField, containg the field or chain of fields that should be filtered
     * @param operator The instance of QueryOperator to use in the filter the list to check
     * @param providedValue The value to compare to in the filter
     * @return The instance of IQueryFilter, to allow chaining methods
@@ -40,8 +26,8 @@ public class QueryFilter implements IQueryFilter {
     * QueryFilter filter = new QueryFilter().setValue(parentFieldChain, QueryOperator.NOT_EQUAL_TO, null);
     * System.assertEquals('CreatedBy.Email != null', filter.getValue());
     */
-    public IQueryFilter filterByParentField(SObjectFieldWrapper fieldWrapper, QueryOperator operator, Object providedValue) {
-        this.queryFilterString = fieldWrapper.Value
+    public IQueryFilter filterByField(QueryField queryField, QueryOperator operator, Object providedValue) {
+        this.queryFilterString = queryField.getValue()
             + ' ' + operator.getValue()
             + ' ' + NebulaFactory.getQueryArgumentFormatter().getValue(providedValue);
 
