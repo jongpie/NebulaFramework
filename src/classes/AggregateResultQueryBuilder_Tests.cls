@@ -13,12 +13,12 @@ private class AggregateResultQueryBuilder_Tests {
             + '\nGROUP BY Type';
 
         AggregateResultQueryBuilder aggregateResultQueryBuilder = (AggregateResultQueryBuilder)new AggregateResultQueryBuilder()
-            .max(Schema.Opportunity.CreatedDate)
-            .avg(Schema.Opportunity.Amount)
-            .count_distinct(Schema.Opportunity.OwnerId)
-            .min(Schema.Opportunity.CreatedDate)
+            .max(new QueryField(Schema.Opportunity.CreatedDate))
+            .avg(new QueryField(Schema.Opportunity.Amount))
+            .count_distinct(new QueryField(Schema.Opportunity.OwnerId))
+            .min(new QueryField(Schema.Opportunity.CreatedDate))
             .groupBy(new QueryField(Schema.Opportunity.Type))
-            .count(Schema.Opportunity.AccountId)
+            .count(new QueryField(Schema.Opportunity.AccountId))
             .setSObjectType(Schema.Opportunity.SObjectType);
         String returnedQueryString = aggregateResultQueryBuilder.getQuery();
 

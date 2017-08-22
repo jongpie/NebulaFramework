@@ -35,7 +35,7 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
     }
 
     public ISObjectQueryBuilder addFields(List<QueryField> queryFields) {
-        for(QueryField queryField : queryFields) this.queryFields.add(queryField.getValue());
+        for(QueryField queryField : queryFields) this.addField(queryField);
         return this;
     }
 
@@ -187,6 +187,16 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
 
     public List<SObject> getQueryResults() {
        return super.doGetQueryResults(this.getQuery());
+    }
+
+    private void addField(QueryField queryField) {
+        // If it's a parent field, add it immediately
+        if(queryField.getValue().contains('.')) this.queryFields.add(queryField.getValue());
+        // Otherwise, parse it to an SObjectField so we can reused the logic in addField(Schema.SObjectField field)
+        else {
+            Schema.SObjectField field = this.sobjectType.getDescribe().fields.getMap().get(queryField.getValue());
+            this.addField(field);
+        }
     }
 
     private void addField(Schema.SObjectField field) {
