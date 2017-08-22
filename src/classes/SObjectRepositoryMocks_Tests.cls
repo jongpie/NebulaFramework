@@ -17,7 +17,7 @@ private class SObjectRepositoryMocks_Tests {
     @isTest
     static void it_should_fake_returning_by_field_and_value() {
         Id testId = getTestId();
-        SObjectField field = getField();
+        QueryField field = getField();
 
         List<IQueryFilter> queryFilters = new List<IQueryFilter>{NebulaFactory.getQueryFilter().filterByField(field, QueryOperator.EQUALS, getFieldValue())};
         SObject returnedObj = new SObjectRepositoryMocks.Base(null).getByIdAndQueryFilters(new Set<Id>{testId}, queryFilters)[0];
@@ -38,8 +38,8 @@ private class SObjectRepositoryMocks_Tests {
         System.assert(base.getSearchResults(getFieldValue(),QuerySearchGroup.ALL_FIELDS) instanceof List<SObject>);
     }
 
-    static SObjectField getField() {
-        return Schema.Lead.LeadSource;
+    static QueryField getField() {
+        return new QueryField(Schema.Lead.LeadSource);
     }
 
     static String getFieldValue() {
