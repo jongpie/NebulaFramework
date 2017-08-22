@@ -37,12 +37,12 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
         return this;
     }
 
-    public IAggregateResultQueryBuilder groupBy(Schema.SObjectField groupByField) {
-        return this.groupBy(new List<Schema.SObjectField>{groupByField});
+    public IAggregateResultQueryBuilder groupBy(QueryField groupByQueryField) {
+        return this.groupBy(new List<QueryField>{groupByQueryField});
     }
 
-    public IAggregateResultQueryBuilder groupBy(List<Schema.SObjectField> groupByFields) {
-        for(Schema.SobjectField field : groupByFields) this.groupByList.add(field.getDescribe().getName());
+    public IAggregateResultQueryBuilder groupBy(List<QueryField> groupByQueryFields) {
+        for(QueryField queryField : groupByQueryFields) this.groupByList.add(queryField.getValue());
         return this;
     }
 
@@ -100,18 +100,18 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
         return this;
     }
 
-    public IAggregateResultQueryBuilder orderBy(Schema.SObjectField orderByField) {
-        super.doOrderBy(orderByField);
+    public IAggregateResultQueryBuilder orderBy(QueryField orderByQueryField) {
+        super.doOrderBy(orderByQueryField);
         return this;
     }
 
-    public IAggregateResultQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder) {
-        super.doOrderBy(orderByField, sortOrder);
+    public IAggregateResultQueryBuilder orderBy(QueryField orderByQueryField, QuerySortOrder sortOrder) {
+        super.doOrderBy(orderByQueryField, sortOrder);
         return this;
     }
 
-    public IAggregateResultQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder, QueryNullSortOrder nullsSortOrder) {
-        super.doOrderBy(orderByField, sortOrder, nullsSortOrder);
+    public IAggregateResultQueryBuilder orderBy(QueryField orderByQueryField, QuerySortOrder sortOrder, QueryNullSortOrder nullsSortOrder) {
+        super.doOrderBy(orderByQueryField, sortOrder, nullsSortOrder);
         return this;
     }
 
