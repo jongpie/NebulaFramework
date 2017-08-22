@@ -12,7 +12,7 @@ private class QueryFilter_Tests {
         List<String> providedValues      = new List<String>{'derp', 'herp'};
 
         Test.startTest();
-        QueryFilter queryFilter = (QueryFilter)new QueryFilter().filterByField(sobjectField, operator, providedValues);
+        QueryFilter queryFilter = (QueryFilter)new QueryFilter().filterByField(new QueryField(sobjectField), operator, providedValues);
         Test.stopTest();
 
         String expectedQueryFilter = 'CompanyName ' + operator.getValue() + ' (\'' + String.join(providedValues, '\', \'') + '\')';
@@ -21,14 +21,14 @@ private class QueryFilter_Tests {
 
     @isTest
     static void it_should_return_the_query_filter_for_a_parent_field() {
-         SObjectFieldWrapper parentFieldToFilter = new SObjectFieldWrapper(new List<Schema.SObjectField>{
+         QueryField parentFieldToFilter = new QueryField(new List<Schema.SObjectField>{
             Schema.Lead.CreatedById, Schema.User.Email
         });
         QueryOperator operator = QueryOperator.EQUALS;
         String providedValue   = 'derp@test.com';
 
         Test.startTest();
-        QueryFilter queryFilter = (QueryFilter)new QueryFilter().filterByParentField(parentFieldToFilter, operator, providedValue);
+        QueryFilter queryFilter = (QueryFilter)new QueryFilter().filterByField(parentFieldToFilter, operator, providedValue);
         Test.stopTest();
 
         String expectedQueryFilter = 'CreatedBy.Email ' + operator.getValue() + ' \'' + providedValue + '\'';
@@ -37,14 +37,14 @@ private class QueryFilter_Tests {
 
     @isTest
     static void it_should_return_the_query_filter_for_a_grandparent_field() {
-        SObjectFieldWrapper grandparentFieldToFilter = new SObjectFieldWrapper(new List<Schema.SObjectField>{
+        QueryField grandparentFieldToFilter = new QueryField(new List<Schema.SObjectField>{
             Schema.Lead.OwnerId, Schema.User.ManagerId, Schema.User.ProfileId, Schema.Profile.Name
         });
         QueryOperator operator = QueryOperator.EQUALS;
         String providedValue   = 'derp';
 
         Test.startTest();
-        QueryFilter queryFilter = (QueryFilter)new QueryFilter().filterByParentField(grandparentFieldToFilter, operator, providedValue);
+        QueryFilter queryFilter = (QueryFilter)new QueryFilter().filterByField(grandparentFieldToFilter, operator, providedValue);
         Test.stopTest();
 
         String expectedQueryFilter = 'Owner.Manager.Profile.Name ' + operator.getValue() + ' \'' + providedValue + '\'';

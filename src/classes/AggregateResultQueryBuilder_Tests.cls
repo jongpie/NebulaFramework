@@ -17,7 +17,7 @@ private class AggregateResultQueryBuilder_Tests {
             .avg(Schema.Opportunity.Amount)
             .count_distinct(Schema.Opportunity.OwnerId)
             .min(Schema.Opportunity.CreatedDate)
-            .groupBy(Schema.Opportunity.Type)
+            .groupBy(new QueryField(Schema.Opportunity.Type))
             .count(Schema.Opportunity.AccountId)
             .setSObjectType(Schema.Opportunity.SObjectType);
         String returnedQueryString = aggregateResultQueryBuilder.getQuery();
