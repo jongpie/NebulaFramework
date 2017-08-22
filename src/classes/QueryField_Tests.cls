@@ -1,22 +1,29 @@
 @isTest
-private class SObjectFieldWrapper_Tests {
+private class QueryField_Tests {
+
     @isTest
     static void it_should_return_string_for_sobject_field_name() {
-        System.assertEquals('CreatedDate', new SObjectFieldWrapper(Lead.CreatedDate).Value);
+        System.assertEquals('CreatedDate', new QueryField(Schema.Lead.CreatedDate).getValue());
     }
 
     @isTest
     static void it_should_return_string_for_parent_sobject_field_name() {
-        System.assertEquals('Account.Name', new SObjectFieldWrapper(new List<SObjectField>{ Contact.AccountId, Account.Name }).Value);
+        List<SObjectField> fieldChain = new List<SObjectField>{
+            Schema.Contact.AccountId, Schema.Account.CreatedById, Schema.User.Name
+        };
+        System.assertEquals('Account.CreatedBy.Name', new QueryField(fieldChain).getValue());
     }
 
     @isTest
     static void it_should_be_callable_multiple_times_without_pop_removing_field_references() {
-        SObjectFieldWrapper wrapper = new SObjectFieldWrapper(new List<SObjectField>{ Contact.AccountId, Account.Name });
+        List<SObjectField> fieldChain = new List<SObjectField>{
+            Schema.Contact.AccountId, Schema.Account.Name
+        };
+        QueryField queryField = new QueryField(fieldChain);
         String expected = 'Account.Name';
-        String actualOne = wrapper.Value;
-        String actualTwo = wrapper.Value;
-        System.assertEquals(expected, actualOne);
-        System.assertEquals(expected, actualTwo);
+        for(Integer i = 0; i < 5; i++) {
+            System.assertEquals(expected, queryField.getValue());
+        }
     }
+
 }
