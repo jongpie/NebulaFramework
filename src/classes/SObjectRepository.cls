@@ -29,13 +29,13 @@ public abstract class SObjectRepository extends DML implements ISObjectRepositor
 
     private List<Schema.SObjectField> sobjectFieldList;
     private Map<String, Schema.SObjectField> sobjectFieldMap;
-    private Schema.SObjectField idField;
+    private QueryField idQueryField;
 
     public SObjectRepository() {
         this.currentModule = NebulaCore.Module.REPOSITORY;
 
         this.sobjectFieldMap = this.getSObjectType().getDescribe().fields.getMap();
-        this.idField         = this.getField('Id');
+        this.idQueryField    = new QueryField(this.getField('Id'));
     }
 
     public abstract Schema.SObjectType getSObjectType();
@@ -43,13 +43,13 @@ public abstract class SObjectRepository extends DML implements ISObjectRepositor
     // SOQL
     public virtual SObject getById(Id recordId) {
         return this.Query
-            .filterBy(NebulaFactory.getQueryFilter().filterByField(this.idField, QueryOperator.EQUALS, recordId))
+            .filterBy(NebulaFactory.getQueryFilter().filterByField(this.idQueryField, QueryOperator.EQUALS, recordId))
             .getFirstQueryResult();
     }
 
     public virtual List<SObject> getById(List<Id> recordIds) {
         return this.Query
-            .filterBy(NebulaFactory.getQueryFilter().filterByField(this.idField, QueryOperator.IS_IN, recordIds))
+            .filterBy(NebulaFactory.getQueryFilter().filterByField(this.idQueryField, QueryOperator.IS_IN, recordIds))
             .getQueryResults();
     }
 
@@ -69,7 +69,7 @@ public abstract class SObjectRepository extends DML implements ISObjectRepositor
 
     public virtual List<SObject> getByIdAndQueryFilters(List<Id> idList, List<IQueryFilter> queryFilters) {
         return this.Query
-            .filterBy(NebulaFactory.getQueryFilter().filterByField(this.idField, QueryOperator.IS_IN, idList))
+            .filterBy(NebulaFactory.getQueryFilter().filterByField(this.idQueryField, QueryOperator.IS_IN, idList))
             .filterBy(queryFilters)
             .getQueryResults();
     }
