@@ -9,7 +9,7 @@ public class SObjectFieldWrapper {
         this.fields = fields;
     }
 
-    public String VALUE {
+    public String Value {
         get {
             if(this.Fields.size() == 1 ) {
                 return String.valueOf(this.Fields[0]);

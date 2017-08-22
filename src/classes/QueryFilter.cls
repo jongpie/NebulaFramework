@@ -41,7 +41,7 @@ public class QueryFilter implements IQueryFilter {
     * System.assertEquals('CreatedBy.Email != null', filter.getValue());
     */
     public IQueryFilter filterByParentField(SObjectFieldWrapper fieldWrapper, QueryOperator operator, Object providedValue) {
-        this.queryFilterString = fieldWrapper.VALUE
+        this.queryFilterString = fieldWrapper.Value
             + ' ' + operator.getValue()
             + ' ' + NebulaFactory.getQueryArgumentFormatter().getValue(providedValue);
 
