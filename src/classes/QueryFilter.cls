@@ -11,7 +11,7 @@
 * Each part of a WHERE statement is a separate instance of query filter.
 *
 */
-public class QueryFilter implements IQueryFilter {
+public class QueryFilter implements IQueryFilter, Comparable {
 
     private String queryFilterString;
 
@@ -105,6 +105,13 @@ public class QueryFilter implements IQueryFilter {
     */
     public String getValue() {
         return this.queryFilterString;
+    }
+
+    public Integer compareTo(Object compareTo) {
+        QueryFilter compareToQueryFilter = (QueryFilter)compareTo;
+        if(this.getValue() == compareToQueryFilter.getValue()) return 0;
+        if(this.getValue() > compareToQueryFilter.getValue()) return 1;
+        return -1;
     }
 
     private IQueryFilter setValueForSubquery(String idFieldName, QueryOperator inOrNotIn, Schema.SObjectField lookupFieldOnRelatedSObject) {

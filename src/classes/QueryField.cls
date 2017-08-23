@@ -10,7 +10,7 @@
 * @description Used to dynamically generate field string for SObject fields, including parent fields.
 *
 */
-public without sharing class QueryField {
+public without sharing class QueryField implements Comparable {
 
     private final List<SObjectField> fields;
 
@@ -34,6 +34,14 @@ public without sharing class QueryField {
         }
         // Return the fully qualified field name
         return String.join(fieldChain, '.') + '.' + lastField.getDescribe().getName();
+    }
+
+
+    public Integer compareTo(Object compareTo) {
+        QueryField compareToQueryField = (QueryField)compareTo;
+        if(this.getValue() == compareToQueryField.getValue()) return 0;
+        if(this.getValue() > compareToQueryField.getValue()) return 1;
+        return -1;
     }
 
 }
