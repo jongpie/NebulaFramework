@@ -61,12 +61,18 @@ public abstract class QueryBuilder extends NebulaCore {
     protected String doGetWhereClauseString() {
         if(this.whereClauseList.isEmpty()) return '';
 
+        // Dedupe
+        this.whereClauseList = new List<String>(new Set<String>(this.whereClauseList));
+
         this.whereClauseList.sort();
         return '\nWHERE ' + String.join(this.whereClauseList, '\nAND ');
     }
 
     protected String doGetOrderByString() {
         if(this.orderByList.isEmpty()) return '';
+
+        // Dedupe
+        this.orderByList = new List<String>(new Set<String>(this.orderByList));
 
         this.orderByList.sort();
         return '\nORDER BY ' + String.join(new List<String>(orderByList), ', ');
