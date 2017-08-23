@@ -12,13 +12,23 @@
 */
 public abstract class SObjectRepository extends DML implements ISObjectRepository, IDML {
 
+    protected List<IQueryFilter> BaseQueryFilters = new List<IQueryFilter>();
+
     protected ISObjectQueryBuilder Query {
-        get { return (ISObjectQueryBuilder)NebulaFactory.getSObjectQueryBuilder().setSObjectType(this.getSObjectType()); }
+        get {
+            return new SObjectQueryBuilder()
+                .setSObjectType(this.getSObjectType())
+                .filterBy(this.BaseQueryFilters);
+        }
         private set;
     }
 
     protected IAggregateResultQueryBuilder AggregateQuery {
-        get { return (IAggregateResultQueryBuilder)NebulaFactory.getAggregateQueryBuilder().setSObjectType(this.getSObjectType()); }
+        get {
+            return new AggregateResultQueryBuilder()
+                .setSObjectType(this.getSObjectType())
+                .filterBy(this.BaseQueryFilters);
+        }
         private set;
     }
 

@@ -19,7 +19,6 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
     private SObjectType sobjectType;
     private Map<String, Schema.SObjectField> sobjectTypeFieldMap;
 
-
     public SObjectQueryBuilder() {
         this.queryFields              = new Set<String>();
         this.childRelationshipQueries = new List<String>();
