@@ -6,7 +6,7 @@ public interface ISearchQueryBuilder {
 
     String getQuery(String searchTerm);
 
-    List<SObject> getFirstQueryResult(String searchTerm);
-    List<List<SObject>> getQueryResults(String searchTerm);
+    List<SObject> getFirstSearchResult(String searchTerm);
+    List<List<SObject>> getSearchResults(String searchTerm);
 
 }

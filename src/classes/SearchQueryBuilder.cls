@@ -42,11 +42,11 @@ public class SearchQueryBuilder extends QueryBuilder implements ISearchQueryBuil
         return query;
     }
 
-    public List<SObject> getFirstQueryResult(String searchTerm) {
-        return this.getQueryResults(searchTerm)[0];
+    public List<SObject> getFirstSearchResult(String searchTerm) {
+        return this.getSearchResults(searchTerm)[0];
     }
 
-    public List<List<SObject>> getQueryResults(String searchTerm) {
+    public List<List<SObject>> getSearchResults(String searchTerm) {
        return super.doGetSearchResults(this.getQuery(searchTerm));
     }
 
