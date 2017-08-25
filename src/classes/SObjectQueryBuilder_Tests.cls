@@ -407,7 +407,7 @@ private class SObjectQueryBuilder_Tests {
     @isTest
     static void it_should_generate_a_query_with_a_subselect() {
         List<Lead> leads = (List<Lead>)new SObjectQueryBuilder(Schema.Lead.SObjectType)
-            .filterBy(new QueryFilter().filterBySubquery(QueryOperator.IS_IN, Schema.Lead.OwnerId, Schema.User.Id))
+            .filterBy(new QueryFilter().filterBySubquery(Schema.Lead.OwnerId, QueryOperator.IS_IN, Schema.User.Id))
             .getQueryResults();
 
         // TODO finish writings tests System.assert(false, 'finish writing tests');
