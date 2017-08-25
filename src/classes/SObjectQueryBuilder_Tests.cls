@@ -70,7 +70,7 @@ private class SObjectQueryBuilder_Tests {
         expectedQueryFieldStrings.sort();
 
         Test.startTest();
-        SObjectQueryBuilder query = (SObjectQueryBuilder)new SObjectQueryBuilder().setSObjectType(sobjectType);
+        SObjectQueryBuilder query = (SObjectQueryBuilder)new SObjectQueryBuilder(sobjectType);
         query.addFields(convertToQueryFields(fields));
         Test.stopTest();
 
@@ -95,7 +95,7 @@ private class SObjectQueryBuilder_Tests {
         List<String> expectedQueryFieldStrings = buildExpectedQueryFieldStrings(sobjectType.getDescribe().fields.getMap().values());
 
         Test.startTest();
-        SObjectQueryBuilder query = (SObjectQueryBuilder)new SObjectQueryBuilder().setSObjectType(sobjectType);
+        SObjectQueryBuilder query = (SObjectQueryBuilder)new SObjectQueryBuilder(sobjectType);
         query.addAllFields();
         Test.stopTest();
 
@@ -126,7 +126,7 @@ private class SObjectQueryBuilder_Tests {
         List<String> expectedQueryFieldStrings = buildExpectedQueryFieldStrings(standardFields);
 
         Test.startTest();
-        SObjectQueryBuilder query = (SObjectQueryBuilder)new SObjectQueryBuilder().setSObjectType(sobjectType);
+        SObjectQueryBuilder query = (SObjectQueryBuilder)new SObjectQueryBuilder(sobjectType);
         query.addAllStandardFields();
         Test.stopTest();
 
@@ -157,7 +157,7 @@ private class SObjectQueryBuilder_Tests {
         List<String> expectedQueryFieldStrings = buildExpectedQueryFieldStrings(customFields);
 
         Test.startTest();
-        SObjectQueryBuilder query = (SObjectQueryBuilder)new SObjectQueryBuilder().setSObjectType(sobjectType);
+        SObjectQueryBuilder query = (SObjectQueryBuilder)new SObjectQueryBuilder(sobjectType);
         query.addAllCustomFields();
         Test.stopTest();
 
@@ -188,7 +188,7 @@ private class SObjectQueryBuilder_Tests {
         List<String> expectedQueryFieldStrings = buildExpectedQueryFieldStrings(standardFields);
 
         Test.startTest();
-        SObjectQueryBuilder query = (SObjectQueryBuilder)new SObjectQueryBuilder().setSObjectType(sobjectType);
+        SObjectQueryBuilder query = (SObjectQueryBuilder)new SObjectQueryBuilder(sobjectType);
         query.addAllReadableFields();
         Test.stopTest();
 
@@ -219,7 +219,7 @@ private class SObjectQueryBuilder_Tests {
         List<String> expectedQueryFieldStrings = buildExpectedQueryFieldStrings(standardFields);
 
         Test.startTest();
-        SObjectQueryBuilder query = (SObjectQueryBuilder)new SObjectQueryBuilder().setSObjectType(sobjectType);
+        SObjectQueryBuilder query = (SObjectQueryBuilder)new SObjectQueryBuilder(sobjectType);
         query.addAllEditableFields();
         Test.stopTest();
 
@@ -241,7 +241,7 @@ private class SObjectQueryBuilder_Tests {
         List<SObjectField> fields = new List<SObjectField>{Schema.Contact.CreatedDate};
 
         Test.startTest();
-        SObjectQueryBuilder query = (SObjectQueryBuilder)new SObjectQueryBuilder().setSObjectType(sobjectType).addFields(convertToQueryFields(fields));
+        SObjectQueryBuilder query = (SObjectQueryBuilder)new SObjectQueryBuilder(sobjectType).addFields(convertToQueryFields(fields));
         query.orderBy(new QueryField(Schema.Contact.CreatedDate));
         Test.stopTest();
 
@@ -258,7 +258,7 @@ private class SObjectQueryBuilder_Tests {
         List<SObjectField> fields = new List<SObjectField>{Schema.Contact.CreatedDate};
 
         Test.startTest();
-        SObjectQueryBuilder query = (SObjectQueryBuilder)new SObjectQueryBuilder().setSObjectType(sobjectType).addFields(convertToQueryFields(fields));
+        SObjectQueryBuilder query = (SObjectQueryBuilder)new SObjectQueryBuilder(sobjectType).addFields(convertToQueryFields(fields));
         query.orderBy(new QueryField(Schema.Contact.CreatedDate), QuerySortOrder.ASCENDING);
         Test.stopTest();
 
@@ -275,7 +275,7 @@ private class SObjectQueryBuilder_Tests {
         List<SObjectField> fields = new List<SObjectField>{Schema.Contact.CreatedDate};
 
         Test.startTest();
-        SObjectQueryBuilder query = (SObjectQueryBuilder)new SObjectQueryBuilder().setSObjectType(sobjectType).addFields(convertToQueryFields(fields));
+        SObjectQueryBuilder query = (SObjectQueryBuilder)new SObjectQueryBuilder(sobjectType).addFields(convertToQueryFields(fields));
         query.orderBy(new QueryField(Schema.Contact.CreatedDate), QuerySortOrder.DESCENDING);
         Test.stopTest();
 
@@ -292,7 +292,7 @@ private class SObjectQueryBuilder_Tests {
         List<SObjectField> fields = new List<SObjectField>{Schema.Contact.FirstName};
 
         Test.startTest();
-        SObjectQueryBuilder query = (SObjectQueryBuilder)new SObjectQueryBuilder().setSObjectType(sobjectType).addFields(convertToQueryFields(fields));
+        SObjectQueryBuilder query = (SObjectQueryBuilder)new SObjectQueryBuilder(sobjectType).addFields(convertToQueryFields(fields));
         query.orderBy(new QueryField(Schema.Contact.FirstName), QuerySortOrder.ASCENDING, QueryNullSortOrder.FIRST);
         Test.stopTest();
 
@@ -309,7 +309,7 @@ private class SObjectQueryBuilder_Tests {
         List<SObjectField> fields = new List<SObjectField>{Schema.Contact.FirstName};
 
         Test.startTest();
-        SObjectQueryBuilder query = (SObjectQueryBuilder)new SObjectQueryBuilder().setSObjectType(sobjectType).addFields(convertToQueryFields(fields));
+        SObjectQueryBuilder query = (SObjectQueryBuilder)new SObjectQueryBuilder(sobjectType).addFields(convertToQueryFields(fields));
         query.orderBy(new QueryField(Schema.Contact.FirstName), QuerySortOrder.DESCENDING, QueryNullSortOrder.FIRST);
         Test.stopTest();
 
@@ -326,7 +326,7 @@ private class SObjectQueryBuilder_Tests {
         List<SObjectField> fields = new List<SObjectField>{Schema.Contact.FirstName};
 
         Test.startTest();
-        SObjectQueryBuilder query = (SObjectQueryBuilder)new SObjectQueryBuilder().setSObjectType(sobjectType).addFields(convertToQueryFields(fields));
+        SObjectQueryBuilder query = (SObjectQueryBuilder)new SObjectQueryBuilder(sobjectType).addFields(convertToQueryFields(fields));
         query.orderBy(new QueryField(Schema.Contact.FirstName), QuerySortOrder.ASCENDING, QueryNullSortOrder.LAST);
         Test.stopTest();
 
@@ -343,7 +343,7 @@ private class SObjectQueryBuilder_Tests {
         List<SObjectField> fields = new List<SObjectField>{Schema.Contact.FirstName};
 
         Test.startTest();
-        SObjectQueryBuilder query = (SObjectQueryBuilder)new SObjectQueryBuilder().setSObjectType(sobjectType).addFields(convertToQueryFields(fields));
+        SObjectQueryBuilder query = (SObjectQueryBuilder)new SObjectQueryBuilder(sobjectType).addFields(convertToQueryFields(fields));
         query.orderBy(new QueryField(Schema.Contact.FirstName), QuerySortOrder.DESCENDING, QueryNullSortOrder.LAST);
         Test.stopTest();
 
@@ -361,7 +361,7 @@ private class SObjectQueryBuilder_Tests {
         Integer limitCount = 99;
 
         Test.startTest();
-        SObjectQueryBuilder query = (SObjectQueryBuilder)new SObjectQueryBuilder().setSObjectType(sobjectType).addFields(convertToQueryFields(fields));
+        SObjectQueryBuilder query = (SObjectQueryBuilder)new SObjectQueryBuilder(sobjectType).addFields(convertToQueryFields(fields));
         query.limitCount(limitCount);
         Test.stopTest();
 
@@ -377,7 +377,7 @@ private class SObjectQueryBuilder_Tests {
         List<SObjectField> fields = new List<SObjectField>{Schema.Contact.CreatedDate};
 
         Test.startTest();
-        SObjectQueryBuilder query = (SObjectQueryBuilder)new SObjectQueryBuilder().setSObjectType(sobjectType).addFields(convertToQueryFields(fields));
+        SObjectQueryBuilder query = (SObjectQueryBuilder)new SObjectQueryBuilder(sobjectType).addFields(convertToQueryFields(fields));
         query.setAsUpdate();
         Test.stopTest();
 
@@ -394,7 +394,7 @@ private class SObjectQueryBuilder_Tests {
         QueryFilterScope scope = QueryFilterScope.TEAM;
 
         Test.startTest();
-        SObjectQueryBuilder query = (SObjectQueryBuilder)new SObjectQueryBuilder().setSObjectType(sobjectType).addFields(convertToQueryFields(fields));
+        SObjectQueryBuilder query = (SObjectQueryBuilder)new SObjectQueryBuilder(sobjectType).addFields(convertToQueryFields(fields));
         query.usingScope(scope);
         Test.stopTest();
 
@@ -406,9 +406,7 @@ private class SObjectQueryBuilder_Tests {
 
     @isTest
     static void it_should_generate_a_query_with_a_subselect() {
-        List<Lead> leads = (List<Lead>)new SObjectQueryBuilder()
-            .setSObjectType(Schema.Lead.SObjectType)
-            // TODO this overloaded setValue method is confusing because it's similar to a field filter (Field, opertor, Object)
+        List<Lead> leads = (List<Lead>)new SObjectQueryBuilder(Schema.Lead.SObjectType)
             .filterBy(new QueryFilter().filterBySubquery(QueryOperator.IS_IN, Schema.Lead.OwnerId, Schema.User.Id))
             .getQueryResults();
 

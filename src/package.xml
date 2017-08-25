@@ -1,34 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
-    <types>
-        <members>*</members>
-        <name>ApexClass</name>
-    </types>
-    <types>
-        <members>Nebula</members>
-        <name>CustomApplication</name>
-    </types>
-    <types>
-        <members>*</members>
-        <name>CustomMetadata</name>
-    </types>
-    <types>
-        <members>NebulaInterfaceImplementation__mdt</members>
-        <members>NebulaLog__c</members>
-        <members>NebulaLoggerSettings__c</members>
-        <members>NebulaRecordTypesSettings__c</members>
-        <members>NebulaSObjectQueryBuilderSettings__c</members>
-        <members>NebulaTriggerHandlerSettings__c</members>
-        <name>CustomObject</name>
-    </types>
-    <types>
-        <members>NebulaLog__c</members>
-        <name>CustomTab</name>
-    </types>
-    <types>
-        <members>NebulaInterfaceImplementation__mdt-Nebula Interface Implementation Layout</members>
-        <members>NebulaLog__c-Log Layout</members>
-        <name>Layout</name>
-    </types>
-    <version>39.0</version>
+	<types>
+		<members>*</members>
+		<name>ApexClass</name>
+	</types>
+	<types>
+		<members>Nebula</members>
+		<name>CustomApplication</name>
+	</types>
+	<types>
+		<members>NebulaLog__c</members>
+		<members>NebulaLoggerSettings__c</members>
+		<members>NebulaRecordTypesSettings__c</members>
+		<members>NebulaSObjectQueryBuilderSettings__c</members>
+		<members>NebulaTriggerHandlerSettings__c</members>
+		<name>CustomObject</name>
+	</types>
+	<types>
+		<members>NebulaLog__c</members>
+		<name>CustomTab</name>
+	</types>
+	<types>
+		<members>NebulaInterfaceImplementation__mdt-Nebula Interface Implementation Layout</members>
+		<members>NebulaLog__c-Log Layout</members>
+		<name>Layout</name>
+	</types>
+	<version>39.0</version>
 </Package>

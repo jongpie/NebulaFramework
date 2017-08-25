@@ -16,15 +16,11 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
     private List<String> groupByList;
     private List<String> aggregateFunctionList;
 
-    public AggregateResultQueryBuilder() {
+    public AggregateResultQueryBuilder(Schema.SObjectType sobjectType) {
+        this.sobjectType = sobjectType;
+
         this.aggregateFunctionList = new List<String>();
         this.groupByList           = new List<String>();
-    }
-
-    // Setter methods
-    public IAggregateResultQueryBuilder setSObjectType(Schema.SObjectType sobjectType) {
-        this.sobjectType = sobjectType;
-        return this;
     }
 
     public IAggregateResultQueryBuilder groupBy(QueryField groupByQueryField) {
@@ -144,16 +140,7 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
         return this;
     }
 
-    public AggregateResult getFirstQueryResult() {
-        return this.getQueryResults()[0];
-    }
-
-    public List<AggregateResult> getQueryResults() {
-        return super.doGetQueryResults(this.getQuery());
-    }
-
-    @testVisible
-    private String getQuery() {
+    public String getQuery() {
         String queryString = 'SELECT ' + this.getGroupByFieldString() + this.getAggregateFunctionString()
             + '\nFROM ' + this.sobjectType.getDescribe().getName()
             + super.doGetWhereClauseString()
@@ -162,6 +149,14 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
             + super.doGetLimitCountString();
 
         return queryString;
+    }
+
+    public AggregateResult getFirstQueryResult() {
+        return this.getQueryResults()[0];
+    }
+
+    public List<AggregateResult> getQueryResults() {
+        return super.doGetQueryResults(this.getQuery());
     }
 
     private String getGroupByFieldString() {

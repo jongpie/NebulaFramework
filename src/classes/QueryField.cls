@@ -10,9 +10,10 @@
 * @description Used to dynamically generate field string for SObject fields, including parent fields.
 *
 */
-public without sharing class QueryField implements Comparable {
+public without sharing class QueryField implements IQueryField, Comparable {
 
     private final List<SObjectField> fields;
+    private final String value;
 
     public QueryField(SObjectField field) {
         this(new List<SObjectField>{field});
@@ -20,9 +21,14 @@ public without sharing class QueryField implements Comparable {
 
     public QueryField(List<SObjectField> fields) {
         this.fields = fields;
+        this.value  = this.parseFields();
     }
 
     public String getValue() {
+        return this.value;
+    }
+
+    private String parseFields() {
         if(this.fields.size() == 1) return String.valueOf(this.fields[0]);
 
         //Remove the last field from the list to iterate through so only the parent relationships are hopped

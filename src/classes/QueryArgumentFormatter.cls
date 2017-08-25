@@ -12,11 +12,18 @@
 */
 public virtual class QueryArgumentFormatter extends NebulaCore implements IQueryArgumentFormatter {
 
-    public QueryArgumentFormatter() {
+    private String value;
+
+    public QueryArgumentFormatter(Object valueToFormat) {
         this.currentModule = NebulaCore.Module.REPOSITORY;
+        this.value = this.objectToQueryString(valueToFormat);
     }
 
-    public virtual String getValue(Object valueToFormat) {
+    public virtual String getValue() {
+        return this.value;
+    }
+
+    protected virtual String objectToQueryString(Object valueToFormat) {
         if(valueToFormat == null) return null;
         else if(CollectionUtils.isList(valueToFormat)) return this.listToQueryString((List<Object>)valueToFormat);
         else if(CollectionUtils.isSet(valueToFormat)) return this.setToQueryString(valueToFormat);
@@ -53,7 +60,7 @@ public virtual class QueryArgumentFormatter extends NebulaCore implements IQuery
 
     private String listToQueryString(List<Object> valueList) {
         List<String> parsedValueList = new List<String>();
-        for(Object value : valueList) parsedValueList.add(this.getValue(value));
+        for(Object value : valueList) parsedValueList.add(this.objectToQueryString(value));
         return '(' + String.join(parsedValueList, ', ') + ')';
     }
 
@@ -61,7 +68,7 @@ public virtual class QueryArgumentFormatter extends NebulaCore implements IQuery
         String unformattedString = String.valueOf(valueSet).replace('{', '').replace('}', '');
         List<String> parsedValueList = new List<String>();
         for(String collectionItem : unformattedString.split(',')) {
-            parsedValueList.add(this.getValue(collectionItem));
+            parsedValueList.add(this.objectToQueryString(collectionItem));
         }
 
         return '(' + String.join(parsedValueList, ', ') + ')';

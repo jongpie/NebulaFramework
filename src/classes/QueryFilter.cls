@@ -13,7 +13,7 @@
 */
 public class QueryFilter implements IQueryFilter, Comparable {
 
-    private String queryFilterString;
+    private String value;
 
     /**
     * @description Creates a filter for a field on a parent sobject
@@ -27,9 +27,9 @@ public class QueryFilter implements IQueryFilter, Comparable {
     * System.assertEquals('CreatedBy.Email != null', filter.getValue());
     */
     public IQueryFilter filterByField(QueryField queryField, QueryOperator operator, Object providedValue) {
-        this.queryFilterString = queryField.getValue()
+        this.value = queryField.getValue()
             + ' ' + operator.getValue()
-            + ' ' + NebulaFactory.getQueryArgumentFormatter().getValue(providedValue);
+            + ' ' + new QueryArgumentFormatter(providedValue);
 
         return this;
     }
@@ -46,7 +46,7 @@ public class QueryFilter implements IQueryFilter, Comparable {
     * System.assertEquals('CALENDAR_MONTH(CreatedDate) = 2', filter.getValue());
     */
     public IQueryFilter filterByQueryDate(QueryDate queryDateToFilter, QueryOperator operator, Integer providedValue) {
-        this.queryFilterString = queryDateToFilter.getValue()
+        this.value = queryDateToFilter.getValue()
             + ' ' + operator.getValue()
             + ' ' + providedValue;
 
@@ -77,7 +77,7 @@ public class QueryFilter implements IQueryFilter, Comparable {
     * QueryFilter filter = new QueryFilter().setValue(Schema.Lead.OwnerId, QueryOperator.IS_IN, Schema.User.Id);
     * System.assertEquals('OwnerId IN (SELECT Id FROM User)', filter.getValue());
     */
-    public IQueryFilter filterBySubquery(QueryOperator inOrNotIn, Schema.SObjectField lookupField, Schema.SObjectField lookupFieldOnRelatedSObject) {
+    public IQueryFilter filterBySubquery(Schema.SObjectField lookupField, QueryOperator inOrNotIn, Schema.SObjectField lookupFieldOnRelatedSObject) {
         return this.setValueForSubquery(lookupField.getDescribe().getName(), inOrNotIn, lookupFieldOnRelatedSObject);
     }
 
@@ -104,7 +104,7 @@ public class QueryFilter implements IQueryFilter, Comparable {
     * @return The string of the query filter, ready to be used in dynamic SOQL/SOSL
     */
     public String getValue() {
-        return this.queryFilterString;
+        return this.value;
     }
 
     public Integer compareTo(Object compareTo) {
@@ -118,7 +118,7 @@ public class QueryFilter implements IQueryFilter, Comparable {
         String relatedSObjectTypeName = new SObjectFieldDescriber(lookupFieldOnRelatedSObject).getSObjectType().getDescribe().getName();
         String lookupFieldOnRelatedSObjectName = lookupFieldOnRelatedSObject.getDescribe().getName();
 
-        this.queryFilterString = idFieldName + ' ' + inOrNotIn.getValue() + ' (SELECT ' + lookupFieldOnRelatedSObjectName + ' FROM ' + relatedSObjectTypeName + ')';
+        this.value = idFieldName + ' ' + inOrNotIn.getValue() + ' (SELECT ' + lookupFieldOnRelatedSObjectName + ' FROM ' + relatedSObjectTypeName + ')';
 
         return this;
     }
@@ -127,7 +127,7 @@ public class QueryFilter implements IQueryFilter, Comparable {
         List<String> queryFilterValues = new List<String>();
         for(IQueryFilter queryFilter : queryFilters) queryFilterValues.add(queryFilter.getValue());
 
-        this.queryFilterString = '(' + String.join(queryFilterValues, ' ' + separator + ' ') + ')';
+        this.value = '(' + String.join(queryFilterValues, ' ' + separator + ' ') + ')';
         return this;
     }
 

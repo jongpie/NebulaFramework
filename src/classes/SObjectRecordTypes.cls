@@ -48,19 +48,19 @@ public abstract class SObjectRecordTypes extends NebulaCore implements ISObjectR
     private void populateCache() {
         if(cachedRecordTypesBySObjectMap.containsKey(this.sobjectName)) return;
 
-        // Trying to call Schema.RecordType.SObjectType confuses Apex, so we have to get it do an extra describe call
+        // Trying to call Schema.RecordType.SObjectType confuses Apex, so we have to get it through an extra describe call
         Schema.SObjectType recordTypeSObjectType = Schema.SObjectType.RecordType.getSObjectType();
-        ISObjectQueryBuilder query = new SObjectQueryBuilder().setSObjectType(recordTypeSObjectType);
+        ISObjectQueryBuilder query = new SObjectQueryBuilder(recordTypeSObjectType);
 
         // If we don't have the SObject cached, then we need to query
         if(NebulaSettings.RecordTypesSettings.LazyLoad__c) {
-            query.filterBy(NebulaFactory.getQueryFilter().filterByField(new QueryField(Schema.RecordType.SObjectType), QueryOperator.EQUALS, this.sobjectName));
+            query.filterBy(new QueryFilter().filterByField(new QueryField(Schema.RecordType.SObjectType), QueryOperator.EQUALS, this.sobjectName));
             Logger.addEntry(this, 'NebulaSettings.RecordTypesSettings.LazyLoad__c=' + NebulaSettings.RecordTypesSettings.LazyLoad__c);
             Logger.addEntry(this, 'this.sobjectName=' + this.sobjectName);
         }
 
         if(!NebulaSettings.RecordTypesSettings.IncludeManagedRecordTypes__c) {
-            query.filterBy(NebulaFactory.getQueryFilter().filterByField(new QueryField(Schema.RecordType.NamespacePrefix), QueryOperator.EQUALS, null));
+            query.filterBy(new QueryFilter().filterByField(new QueryField(Schema.RecordType.NamespacePrefix), QueryOperator.EQUALS, null));
         }
 
         query.orderBy(new QueryField(Schema.RecordType.DeveloperName));

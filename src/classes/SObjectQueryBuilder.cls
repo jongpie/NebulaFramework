@@ -19,18 +19,15 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
     private SObjectType sobjectType;
     private Map<String, Schema.SObjectField> sobjectTypeFieldMap;
 
-    public SObjectQueryBuilder() {
+    public SObjectQueryBuilder(Schema.SObjectType sobjectType) {
+        this.sobjectType         = sobjectType;
+        this.sobjectTypeFieldMap = sobjectType.getDescribe().fields.getMap();
+
         this.queryFields              = new Set<String>();
         this.childRelationshipQueries = new List<String>();
         this.forUpdate                = false;
-    }
 
-    public ISObjectQueryBuilder setSObjectType(Schema.SObjectType sobjectType) {
-        // TODO verify/refactor so that this method doesnt have to be called as the first method
-        this.sobjectType         = sobjectType;
-        this.sobjectTypeFieldMap = sobjectType.getDescribe().fields.getMap();
         this.addCommonQueryFields();
-        return this;
     }
 
     public ISObjectQueryBuilder addFields(List<QueryField> queryFields) {

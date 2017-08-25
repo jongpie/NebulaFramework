@@ -12,6 +12,6 @@
 */
 public interface IQueryArgumentFormatter {
 
-    String getValue(Object argumentValue);
+    String getValue();
 
 }

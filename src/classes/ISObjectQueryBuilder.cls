@@ -12,27 +12,13 @@
 */
 public interface ISObjectQueryBuilder {
 
-
-        // TODO create diagram to show the pieces needed for using query Builder
-        //      1. set sobject Type
-        //      2. add some fields
-        //      3. Optional: filters
-        //      4. Optional: order by
-        //      5. Optional: limitCount, setAsUpdate & usingScope methods
-        //      6. Get results: getQueryResults, getFirstQueryResult, getSearchResults
-        //      7. Optional: getQuery to get the dynamically generated query string
-
-
-    // Setter methods
-    ISObjectQueryBuilder setSObjectType(Schema.SObjectType sobjectType);
-
     // Field methods
     ISObjectQueryBuilder addAllFields();
     ISObjectQueryBuilder addAllStandardFields();
     ISObjectQueryBuilder addAllCustomFields();
     ISObjectQueryBuilder addAllReadableFields();
     ISObjectQueryBuilder addAllEditableFields();
-    ISObjectQueryBuilder addFields(List<QueryField> queryFields);
+    ISObjectQueryBuilder addFields(List<IQueryField> queryFields);
     ISObjectQueryBuilder addFields(Schema.FieldSet fieldSet);
 
     // Parent-to-child relationship query methods
@@ -43,15 +29,16 @@ public interface ISObjectQueryBuilder {
     ISObjectQueryBuilder filterBy(List<IQueryFilter> queryFilters);
 
     // Order By methods
-    ISObjectQueryBuilder orderBy(QueryField orderByQueryField);
-    ISObjectQueryBuilder orderBy(QueryField orderByQueryField, QuerySortOrder sortOrder);
-    ISObjectQueryBuilder orderBy(QueryField orderByQueryField, QuerySortOrder sortOrder, QueryNullSortOrder nullsSortOrder);
+    ISObjectQueryBuilder orderBy(IQueryField orderByQueryField);
+    ISObjectQueryBuilder orderBy(IQueryField orderByQueryField, QuerySortOrder sortOrder);
+    ISObjectQueryBuilder orderBy(IQueryField orderByQueryField, QuerySortOrder sortOrder, QueryNullSortOrder nullsSortOrder);
 
     // Additional query option methods
     ISObjectQueryBuilder limitCount(Integer limitCount);
     ISObjectQueryBuilder setAsUpdate();
     ISObjectQueryBuilder usingScope(QueryFilterScope filterScope);
 
+    // Query string methods
     Database.QueryLocator getQueryLocator();
     String getQuery();
     String getSearchQuery();
@@ -60,6 +47,5 @@ public interface ISObjectQueryBuilder {
     // Query execution methods
     SObject getFirstQueryResult();
     List<SObject> getQueryResults();
-    // List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup);
 
 }

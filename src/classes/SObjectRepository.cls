@@ -16,8 +16,7 @@ public abstract class SObjectRepository extends DML implements ISObjectRepositor
 
     protected ISObjectQueryBuilder Query {
         get {
-            return new SObjectQueryBuilder()
-                .setSObjectType(this.getSObjectType())
+            return new SObjectQueryBuilder(this.getSObjectType())
                 .filterBy(this.BaseQueryFilters);
         }
         private set;
@@ -25,15 +24,14 @@ public abstract class SObjectRepository extends DML implements ISObjectRepositor
 
     protected IAggregateResultQueryBuilder AggregateQuery {
         get {
-            return new AggregateResultQueryBuilder()
-                .setSObjectType(this.getSObjectType())
+            return new AggregateResultQueryBuilder(this.getSObjectType())
                 .filterBy(this.BaseQueryFilters);
         }
         private set;
     }
 
     protected ISearchQueryBuilder SearchQuery {
-        get { return (ISearchQueryBuilder)NebulaFactory.getSearchQueryBuilder(); }
+        get { return new SearchQueryBuilder(); }
         private set;
     }
 
@@ -53,13 +51,14 @@ public abstract class SObjectRepository extends DML implements ISObjectRepositor
     // SOQL
     public virtual SObject getById(Id recordId) {
         return this.Query
-            .filterBy(NebulaFactory.getQueryFilter().filterByField(this.idQueryField, QueryOperator.EQUALS, recordId))
+            .filterBy(new QueryFilter().filterByField(this.idQueryField, QueryOperator.EQUALS, recordId))
+            .filterBy(new QueryFilter().filterByField(this.idQueryField, QueryOperator.EQUALS, recordId))
             .getFirstQueryResult();
     }
 
     public virtual List<SObject> getById(List<Id> recordIds) {
         return this.Query
-            .filterBy(NebulaFactory.getQueryFilter().filterByField(this.idQueryField, QueryOperator.IS_IN, recordIds))
+            .filterBy(new QueryFilter().filterByField(this.idQueryField, QueryOperator.IS_IN, recordIds))
             .getQueryResults();
     }
 
@@ -79,7 +78,7 @@ public abstract class SObjectRepository extends DML implements ISObjectRepositor
 
     public virtual List<SObject> getByIdAndQueryFilters(List<Id> idList, List<IQueryFilter> queryFilters) {
         return this.Query
-            .filterBy(NebulaFactory.getQueryFilter().filterByField(this.idQueryField, QueryOperator.IS_IN, idList))
+            .filterBy(new QueryFilter().filterByField(this.idQueryField, QueryOperator.IS_IN, idList))
             .filterBy(queryFilters)
             .getQueryResults();
     }

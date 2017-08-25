@@ -12,12 +12,9 @@
 */
 public interface IAggregateResultQueryBuilder {
 
-    // Setter methods
-    IAggregateResultQueryBuilder setSObjectType(Schema.SObjectType sobjectType);
-
     // Group By methods
-    IAggregateResultQueryBuilder groupBy(QueryField groupByQueryField);
-    IAggregateResultQueryBuilder groupBy(List<QueryField> groupByQueryFields);
+    IAggregateResultQueryBuilder groupBy(IQueryField groupByQueryField);
+    IAggregateResultQueryBuilder groupBy(List<IQueryField> groupByQueryFields);
     IAggregateResultQueryBuilder groupBy(Schema.FieldSet fieldSet);
     IAggregateResultQueryBuilder groupBy(QueryDate queryDate);
     // TODO add support for other features, like 'having count(id) > 1', etc support
@@ -25,32 +22,36 @@ public interface IAggregateResultQueryBuilder {
     // TODO need to research 'GROUP BY CUBE' & 'GROUPING' more https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_groupby_cube.htm
 
     // Aggregate functions
-    IAggregateResultQueryBuilder avg(QueryField queryField);
-    IAggregateResultQueryBuilder avg(QueryField queryField, String fieldAlias);
-    IAggregateResultQueryBuilder count(QueryField queryField);
-    IAggregateResultQueryBuilder count(QueryField queryField, String fieldAlias);
-    IAggregateResultQueryBuilder count_distinct(QueryField queryField);
-    IAggregateResultQueryBuilder count_distinct(QueryField queryField, String fieldAlias);
-    IAggregateResultQueryBuilder max(QueryField queryField);
-    IAggregateResultQueryBuilder max(QueryField queryField, String fieldAlias);
-    IAggregateResultQueryBuilder min(QueryField queryField);
-    IAggregateResultQueryBuilder min(QueryField queryField, String fieldAlias);
-    IAggregateResultQueryBuilder sum(QueryField queryField);
-    IAggregateResultQueryBuilder sum(QueryField queryField, String fieldAlias);
+    IAggregateResultQueryBuilder avg(IQueryField queryField);
+    IAggregateResultQueryBuilder avg(IQueryField queryField, String fieldAlias);
+    IAggregateResultQueryBuilder count(IQueryField queryField);
+    IAggregateResultQueryBuilder count(IQueryField queryField, String fieldAlias);
+    IAggregateResultQueryBuilder count_distinct(IQueryField queryField);
+    IAggregateResultQueryBuilder count_distinct(IQueryField queryField, String fieldAlias);
+    IAggregateResultQueryBuilder max(IQueryField queryField);
+    IAggregateResultQueryBuilder max(IQueryField queryField, String fieldAlias);
+    IAggregateResultQueryBuilder min(IQueryField queryField);
+    IAggregateResultQueryBuilder min(IQueryField queryField, String fieldAlias);
+    IAggregateResultQueryBuilder sum(IQueryField queryField);
+    IAggregateResultQueryBuilder sum(IQueryField queryField, String fieldAlias);
 
     // Filter methods
     IAggregateResultQueryBuilder filterBy(IQueryFilter queryFilter);
     IAggregateResultQueryBuilder filterBy(List<IQueryFilter> queryFilters);
 
     // Order By methods
-    IAggregateResultQueryBuilder orderBy(QueryField orderByQueryField);
-    IAggregateResultQueryBuilder orderBy(QueryField orderByQueryField, QuerySortOrder sortOrder);
-    IAggregateResultQueryBuilder orderBy(QueryField orderByQueryField, QuerySortOrder sortOrder, QueryNullSortOrder nullsSortOrder);
+    IAggregateResultQueryBuilder orderBy(IQueryField orderByQueryField);
+    IAggregateResultQueryBuilder orderBy(IQueryField orderByQueryField, QuerySortOrder sortOrder);
+    IAggregateResultQueryBuilder orderBy(IQueryField orderByQueryField, QuerySortOrder sortOrder, QueryNullSortOrder nullsSortOrder);
 
     // Additional query option methods
     IAggregateResultQueryBuilder limitCount(Integer limitCount);
 
+    // Query string methods
+    String getQuery();
+
     // Query execution methods
+    AggregateResult getFirstQueryResult();
     List<AggregateResult> getQueryResults();
 
 }

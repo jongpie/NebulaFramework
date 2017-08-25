@@ -11,7 +11,7 @@ private class QueryArgumentFormatter_Tests {
         String expectedString = null;
 
         Test.startTest();
-        String returnedValue = new QueryArgumentFormatter().getValue(providedValue);
+        String returnedValue = new QueryArgumentFormatter(providedValue).getValue();
         Test.stopTest();
 
         System.assertEquals(expectedString, returnedValue);
@@ -23,7 +23,7 @@ private class QueryArgumentFormatter_Tests {
         String expectedString = '(1, 2, 3)';
 
         Test.startTest();
-        String returnedValue = new QueryArgumentFormatter().getValue(providedValueList);
+        String returnedValue = new QueryArgumentFormatter(providedValueList).getValue();
         Test.stopTest();
 
         System.assertEquals(expectedString, returnedValue);
@@ -35,7 +35,7 @@ private class QueryArgumentFormatter_Tests {
         String expectedString = '(\'A\', \'B\', \'C\')';
 
         Test.startTest();
-        String returnedValue = new QueryArgumentFormatter().getValue(providedValueSet);
+        String returnedValue = new QueryArgumentFormatter(providedValueSet).getValue();
         Test.stopTest();
 
         System.assertEquals(expectedString, returnedValue);
@@ -49,7 +49,7 @@ private class QueryArgumentFormatter_Tests {
         String expectedString = '(\'' + String.join(sortedIdList, '\', \'') + '\')';
 
         Test.startTest();
-        String returnedValue = new QueryArgumentFormatter().getValue(providedValueMap);
+        String returnedValue = new QueryArgumentFormatter(providedValueMap).getValue();
         Test.stopTest();
 
         System.assertEquals(expectedString, returnedValue);
@@ -61,7 +61,7 @@ private class QueryArgumentFormatter_Tests {
         String expectedString          = providedValue.getValue();
 
         Test.startTest();
-        String returnedValue = new QueryArgumentFormatter().getValue(providedValue);
+        String returnedValue = new QueryArgumentFormatter(providedValue).getValue();
         Test.stopTest();
 
         System.assertEquals(expectedString, returnedValue);
@@ -73,7 +73,7 @@ private class QueryArgumentFormatter_Tests {
         String expectedString = String.valueOf(providedValue);
 
         Test.startTest();
-        String returnedValue = new QueryArgumentFormatter().getValue(providedValue);
+        String returnedValue = new QueryArgumentFormatter(providedValue).getValue();
         Test.stopTest();
 
         System.assertEquals(expectedString, returnedValue);
@@ -85,7 +85,7 @@ private class QueryArgumentFormatter_Tests {
         String expectedString = String.valueOf(providedValue);
 
         Test.startTest();
-        String returnedValue = new QueryArgumentFormatter().getValue(providedValue);
+        String returnedValue = new QueryArgumentFormatter(providedValue).getValue();
         Test.stopTest();
 
         System.assertEquals(expectedString, returnedValue);
@@ -97,7 +97,7 @@ private class QueryArgumentFormatter_Tests {
         String expectedString  = providedValue.format('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'', 'Greenwich Mean Time');
 
         Test.startTest();
-        String returnedValue = new QueryArgumentFormatter().getValue(providedValue);
+        String returnedValue = new QueryArgumentFormatter(providedValue).getValue();
         Test.stopTest();
 
         System.assertEquals(expectedString, returnedValue);
@@ -109,7 +109,7 @@ private class QueryArgumentFormatter_Tests {
         String expectedString = String.valueOf(providedValue);
 
         Test.startTest();
-        String returnedValue = new QueryArgumentFormatter().getValue(providedValue);
+        String returnedValue = new QueryArgumentFormatter(providedValue).getValue();
         Test.stopTest();
 
         System.assertEquals(expectedString, returnedValue);
@@ -121,7 +121,7 @@ private class QueryArgumentFormatter_Tests {
         String expectedString = String.valueOf(providedValue);
 
         Test.startTest();
-        String returnedValue = new QueryArgumentFormatter().getValue(providedValue);
+        String returnedValue = new QueryArgumentFormatter(providedValue).getValue();
         Test.stopTest();
 
         System.assertEquals(expectedString, returnedValue);
@@ -133,7 +133,7 @@ private class QueryArgumentFormatter_Tests {
         String expectedString = String.valueOf(providedValue);
 
         Test.startTest();
-        String returnedValue = new QueryArgumentFormatter().getValue(providedValue);
+        String returnedValue = new QueryArgumentFormatter(providedValue).getValue();
         Test.stopTest();
 
         System.assertEquals(expectedString, returnedValue);
@@ -145,7 +145,7 @@ private class QueryArgumentFormatter_Tests {
         String expectedString = String.valueOf(providedValue);
 
         Test.startTest();
-        String returnedValue = new QueryArgumentFormatter().getValue(providedValue);
+        String returnedValue = new QueryArgumentFormatter(providedValue).getValue();
         Test.stopTest();
 
         System.assertEquals(expectedString, returnedValue);
@@ -161,7 +161,7 @@ private class QueryArgumentFormatter_Tests {
         String expectedString = '\'' + providedValue.Id + '\'';
 
         Test.startTest();
-        String returnedValue = new QueryArgumentFormatter().getValue(providedValue);
+        String returnedValue = new QueryArgumentFormatter(providedValue).getValue();
         Test.stopTest();
 
         System.assertEquals(expectedString, returnedValue);
@@ -173,7 +173,7 @@ private class QueryArgumentFormatter_Tests {
         String expectedString = '\'' + providedValue.getDescribe().getName() + '\'';
 
         Test.startTest();
-        String returnedValue = new QueryArgumentFormatter().getValue(providedValue);
+        String returnedValue = new QueryArgumentFormatter(providedValue).getValue();
         Test.stopTest();
 
         System.assertEquals(expectedString, returnedValue);
@@ -185,7 +185,7 @@ private class QueryArgumentFormatter_Tests {
         String expectedString = '\'' + providedValue + '\'';
 
         Test.startTest();
-        String returnedValue = new QueryArgumentFormatter().getValue(providedValue);
+        String returnedValue = new QueryArgumentFormatter(providedValue).getValue();
         Test.stopTest();
 
         System.assertEquals(expectedString, returnedValue);
@@ -197,7 +197,7 @@ private class QueryArgumentFormatter_Tests {
         String expectedString = '\'' + String.escapeSingleQuotes(providedValue) + '\'';
 
         Test.startTest();
-        String returnedValue = new QueryArgumentFormatter().getValue(providedValue);
+        String returnedValue = new QueryArgumentFormatter(providedValue).getValue();
         Test.stopTest();
 
         System.assertEquals(expectedString, returnedValue);
@@ -209,7 +209,7 @@ private class QueryArgumentFormatter_Tests {
         String expectedString = String.valueOf(providedValue);
 
         Test.startTest();
-        String returnedValue = new QueryArgumentFormatter().getValue(providedValue);
+        String returnedValue = new QueryArgumentFormatter(providedValue).getValue();
         Test.stopTest();
 
         System.assertEquals(expectedString, returnedValue);
