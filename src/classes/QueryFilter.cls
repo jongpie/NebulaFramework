@@ -33,7 +33,7 @@ public class QueryFilter extends NebulaCore implements IQueryFilter, Comparable 
     public IQueryFilter filterByField(QueryField queryField, QueryOperator operator, Object providedValue) {
         this.value = queryField.getValue()
             + ' ' + operator.getValue()
-            + ' ' + new QueryArgumentFormatter(providedValue);
+            + ' ' + new QueryArgumentFormatter(providedValue).getValue();
 
         return this;
     }
