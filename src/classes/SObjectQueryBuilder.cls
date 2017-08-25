@@ -30,8 +30,8 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
         this.addCommonQueryFields();
     }
 
-    public ISObjectQueryBuilder addFields(List<QueryField> queryFields) {
-        for(QueryField queryField : queryFields) this.addField(queryField);
+    public ISObjectQueryBuilder addFields(List<IQueryField> queryFields) {
+        for(IQueryField queryField : queryFields) this.addField(queryField);
         return this;
     }
 
@@ -98,17 +98,17 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
        return this;
     }
 
-    public ISObjectQueryBuilder orderBy(QueryField orderByQueryField) {
+    public ISObjectQueryBuilder orderBy(IQueryField orderByQueryField) {
         super.doOrderBy(orderByQueryField);
         return this;
     }
 
-    public ISObjectQueryBuilder orderBy(QueryField orderByQueryField, QuerySortOrder sortOrder) {
+    public ISObjectQueryBuilder orderBy(IQueryField orderByQueryField, QuerySortOrder sortOrder) {
         super.doOrderBy(orderByQueryField, sortOrder);
         return this;
     }
 
-    public ISObjectQueryBuilder orderBy(QueryField orderByQueryField, QuerySortOrder sortOrder, QueryNullSortOrder nullsSortOrder) {
+    public ISObjectQueryBuilder orderBy(IQueryField orderByQueryField, QuerySortOrder sortOrder, QueryNullSortOrder nullsSortOrder) {
         super.doOrderBy(orderByQueryField, sortOrder, nullsSortOrder);
         return this;
     }
@@ -185,7 +185,7 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
        return super.doGetQueryResults(this.getQuery());
     }
 
-    private void addField(QueryField queryField) {
+    private void addField(IQueryField queryField) {
         // If it's a parent field, add it immediately
         if(queryField.getValue().contains('.')) this.queryFields.add(queryField.getValue());
         // Otherwise, parse it to an SObjectField so we can reused the logic in addField(Schema.SObjectField field)

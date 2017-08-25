@@ -35,7 +35,7 @@ public class SearchQueryBuilder extends QueryBuilder implements ISearchQueryBuil
     }
 
     public String getQuery(String searchTerm) {
-        String query = 'FIND ' + NebulaFactory.getQueryArgumentFormatter().getValue(searchTerm.toLowerCase())
+        String query = 'FIND ' + new QueryArgumentFormatter(searchTerm.toLowerCase()).getValue()
             + '\nIN ' + this.searchGroup.name().replace('_', ' ')
             + '\nRETURNING ' + this.getSObjectQueriesString();
 

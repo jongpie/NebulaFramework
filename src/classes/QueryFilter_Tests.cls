@@ -85,7 +85,7 @@ private class QueryFilter_Tests {
         Schema.SObjectField lookupFieldOnRelatedSObject = Schema.User.Id;
 
         Test.startTest();
-        QueryFilter queryFilter = (QueryFilter)new QueryFilter().filterBySubquery(operator, lookupField, lookupFieldOnRelatedSObject);
+        QueryFilter queryFilter = (QueryFilter)new QueryFilter().filterBySubquery(lookupField, operator, lookupFieldOnRelatedSObject);
         Test.stopTest();
 
         String expectedQueryFilter = 'OwnerId ' + operator.getValue() + ' (SELECT ' + lookupFieldOnRelatedSObject.getDescribe().getName() + ' FROM User)';

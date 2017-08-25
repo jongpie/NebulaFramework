@@ -23,12 +23,12 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
         this.groupByList           = new List<String>();
     }
 
-    public IAggregateResultQueryBuilder groupBy(QueryField groupByQueryField) {
-        return this.groupBy(new List<QueryField>{groupByQueryField});
+    public IAggregateResultQueryBuilder groupBy(IQueryField groupByQueryField) {
+        return this.groupBy(new List<IQueryField>{groupByQueryField});
     }
 
-    public IAggregateResultQueryBuilder groupBy(List<QueryField> groupByQueryFields) {
-        for(QueryField groupByQueryField : groupByQueryFields) this.groupByList.add(groupByQueryField.getValue());
+    public IAggregateResultQueryBuilder groupBy(List<IQueryField> groupByQueryFields) {
+        for(IQueryField groupByQueryField : groupByQueryFields) this.groupByList.add(groupByQueryField.getValue());
         return this;
     }
 
@@ -47,27 +47,27 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
     * @param numericQueryField The field to use for calculating the average
     * @return The instance of IAggregateResultQueryBuilder, to allow chaining methods
     */
-    public IAggregateResultQueryBuilder avg(QueryField numericQueryField) {
+    public IAggregateResultQueryBuilder avg(IQueryField numericQueryField) {
         return this.avg(numericQueryField, null);
     }
 
-    public IAggregateResultQueryBuilder avg(QueryField numericQueryField, String fieldAlias) {
+    public IAggregateResultQueryBuilder avg(IQueryField numericQueryField, String fieldAlias) {
         return buildAggregateFunction('AVG', numericQueryField, fieldAlias);
     }
 
-    public IAggregateResultQueryBuilder count(QueryField queryField) {
+    public IAggregateResultQueryBuilder count(IQueryField queryField) {
         return this.count(queryField, null);
     }
 
-    public IAggregateResultQueryBuilder count(QueryField queryField, String fieldAlias) {
+    public IAggregateResultQueryBuilder count(IQueryField queryField, String fieldAlias) {
         return buildAggregateFunction('COUNT', queryField, fieldAlias);
     }
 
-    public IAggregateResultQueryBuilder count_distinct(QueryField queryField) {
+    public IAggregateResultQueryBuilder count_distinct(IQueryField queryField) {
         return this.count_distinct(queryField, null);
     }
 
-    public IAggregateResultQueryBuilder count_distinct(QueryField queryField, String fieldAlias) {
+    public IAggregateResultQueryBuilder count_distinct(IQueryField queryField, String fieldAlias) {
         return buildAggregateFunction('COUNT_DISTINCT', queryField, fieldAlias);
     }
 
@@ -76,11 +76,11 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
     * @param queryField The field to use for calculating the maximum
     * @return The instance of IAggregateResultQueryBuilder, to allow chaining methods
     */
-    public IAggregateResultQueryBuilder max(QueryField queryField) {
+    public IAggregateResultQueryBuilder max(IQueryField queryField) {
         return this.max(queryField, null);
     }
 
-    public IAggregateResultQueryBuilder max(QueryField queryField, String fieldAlias) {
+    public IAggregateResultQueryBuilder max(IQueryField queryField, String fieldAlias) {
         return buildAggregateFunction('MAX', queryField, fieldAlias);
     }
 
@@ -89,11 +89,11 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
     * @param queryField The field to use for calculating the minimum
     * @return The instance of IAggregateResultQueryBuilder, to allow chaining methods
     */
-    public IAggregateResultQueryBuilder min(QueryField queryField) {
+    public IAggregateResultQueryBuilder min(IQueryField queryField) {
         return this.min(queryField, null);
     }
 
-    public IAggregateResultQueryBuilder min(QueryField queryField, String fieldAlias) {
+    public IAggregateResultQueryBuilder min(IQueryField queryField, String fieldAlias) {
         return buildAggregateFunction('MIN', queryField, fieldAlias);
     }
 
@@ -102,11 +102,11 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
     * @param numericQueryField The field to use for calculating the minimum
     * @return The instance of IAggregateResultQueryBuilder, to allow chaining methods
     */
-    public IAggregateResultQueryBuilder sum(QueryField numericQueryField) {
+    public IAggregateResultQueryBuilder sum(IQueryField numericQueryField) {
         return this.sum(numericQueryField, null);
     }
 
-    public IAggregateResultQueryBuilder sum(QueryField numericQueryField, String fieldAlias) {
+    public IAggregateResultQueryBuilder sum(IQueryField numericQueryField, String fieldAlias) {
         return buildAggregateFunction('SUM', numericQueryField, fieldAlias);
     }
 
@@ -120,17 +120,17 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
         return this;
     }
 
-    public IAggregateResultQueryBuilder orderBy(QueryField orderByQueryField) {
+    public IAggregateResultQueryBuilder orderBy(IQueryField orderByQueryField) {
         super.doOrderBy(orderByQueryField);
         return this;
     }
 
-    public IAggregateResultQueryBuilder orderBy(QueryField orderByQueryField, QuerySortOrder sortOrder) {
+    public IAggregateResultQueryBuilder orderBy(IQueryField orderByQueryField, QuerySortOrder sortOrder) {
         super.doOrderBy(orderByQueryField, sortOrder);
         return this;
     }
 
-    public IAggregateResultQueryBuilder orderBy(QueryField orderByQueryField, QuerySortOrder sortOrder, QueryNullSortOrder nullsSortOrder) {
+    public IAggregateResultQueryBuilder orderBy(IQueryField orderByQueryField, QuerySortOrder sortOrder, QueryNullSortOrder nullsSortOrder) {
         super.doOrderBy(orderByQueryField, sortOrder, nullsSortOrder);
         return this;
     }
@@ -171,11 +171,11 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
         return extraDelimiter + String.join(this.aggregateFunctionList, ', ');
     }
 
-    private IAggregateResultQueryBuilder buildAggregateFunction(String functionName, QueryField queryField) {
+    private IAggregateResultQueryBuilder buildAggregateFunction(String functionName, IQueryField queryField) {
         return this.buildAggregateFunction(functionName, queryField, null);
     }
 
-    private IAggregateResultQueryBuilder buildAggregateFunction(String functionName, QueryField queryField, String fieldAlias) {
+    private IAggregateResultQueryBuilder buildAggregateFunction(String functionName, IQueryField queryField, String fieldAlias) {
         if(fieldAlias == null) fieldAlias = functionName + '__' + queryField.getValue();
         // Alias: MIN(Schema.Lead.MyField__c) is auto-aliased to MIN_MyField__c
         this.aggregateFunctionList.add(functionName + '(' + queryField.getValue() + ') ' + fieldAlias);
