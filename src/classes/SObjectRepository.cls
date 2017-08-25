@@ -96,7 +96,7 @@ public abstract class SObjectRepository extends DML implements ISObjectRepositor
         return this.SearchQuery
             .addSObjectQueryBuilders(this.Query.filterBy(queryFilters))
             .setQuerySearchGroup(searchGroup)
-            .getFirstQueryResult(searchTerm);
+            .getFirstSearchResult(searchTerm);
     }
 
     private Schema.SObjectField getField(String fieldName) {
