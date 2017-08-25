@@ -30,6 +30,11 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
         this.addCommonQueryFields();
     }
 
+    public ISObjectQueryBuilder cacheResults() {
+        super.doCacheResults();
+        return this;
+    }
+
     public ISObjectQueryBuilder addFields(List<IQueryField> queryFields) {
         for(IQueryField queryField : queryFields) this.addField(queryField);
         return this;
@@ -231,7 +236,8 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
     private String getChildRelationshipsQueryString() {
         if(this.childRelationshipQueries.isEmpty()) return '';
 
-        return ',\n(' + String.join(childRelationshipQueries, '), (') + ')';
+        this.childRelationshipQueries.sort();
+        return ',\n(' + String.join(this.childRelationshipQueries, '), (') + ')';
     }
 
     private String getForUpdateString() {
