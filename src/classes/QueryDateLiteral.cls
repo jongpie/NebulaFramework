@@ -10,9 +10,13 @@
 * @description TODO
 *
 */
-public without sharing class QueryDateLiteral {
+public without sharing class QueryDateLiteral extends NebulaCore {
 
     private String value;
+
+    private QueryDateLiteral() {
+        this.currentModule = NebulaCore.Module.QUERY_BUILDER;
+    }
 
     public String getValue() {
         return this.value;

@@ -12,11 +12,15 @@
 * Salesforce docs: developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_date_functions.htm
 *
 */
-public without sharing class QueryDate extends NebulaCore { // TODO decide if this class is needed & if so, if there is a better name
+public without sharing class QueryDate extends NebulaCore {
 
     private Schema.SObjectField sobjectField;
     private Schema.SObjectType sobjectType;
     private String value;
+
+    private QueryDate() {
+        this.currentModule = NebulaCore.Module.QUERY_BUILDER;
+    }
 
     public String getValue() {
         return this.value;

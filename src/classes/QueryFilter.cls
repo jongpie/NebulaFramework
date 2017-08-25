@@ -11,9 +11,13 @@
 * Each part of a WHERE statement is a separate instance of query filter.
 *
 */
-public class QueryFilter implements IQueryFilter, Comparable {
+public class QueryFilter extends NebulaCore implements IQueryFilter, Comparable {
 
     private String value;
+
+    public QueryFilter() {
+        this.currentModule = NebulaCore.Module.QUERY_BUILDER;
+    }
 
     /**
     * @description Creates a filter for a field on a parent sobject

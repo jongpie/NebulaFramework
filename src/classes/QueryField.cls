@@ -10,7 +10,7 @@
 * @description Used to dynamically generate field string for SObject fields, including parent fields.
 *
 */
-public without sharing class QueryField implements IQueryField, Comparable {
+public without sharing class QueryField extends NebulaCore implements IQueryField, Comparable {
 
     private final List<SObjectField> fields;
     private final String value;
@@ -20,6 +20,8 @@ public without sharing class QueryField implements IQueryField, Comparable {
     }
 
     public QueryField(List<SObjectField> fields) {
+        this.currentModule = NebulaCore.Module.QUERY_BUILDER;
+
         this.fields = fields;
         this.value  = this.parseFields();
     }

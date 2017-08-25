@@ -11,11 +11,13 @@
 * Salesforce docs: developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_comparisonoperators.htm
 *
 */
-public without sharing class QueryOperator {
+public without sharing class QueryOperator extends NebulaCore {
 
     private String value;
 
     private QueryOperator(String value) {
+        this.currentModule = NebulaCore.Module.QUERY_BUILDER;
+
         this.value = value;
     }
 

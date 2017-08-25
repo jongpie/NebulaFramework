@@ -15,7 +15,7 @@ public virtual class QueryArgumentFormatter extends NebulaCore implements IQuery
     private String value;
 
     public QueryArgumentFormatter(Object valueToFormat) {
-        this.currentModule = NebulaCore.Module.REPOSITORY;
+        this.currentModule = NebulaCore.Module.QUERY_BUILDER;
         this.value = this.objectToQueryString(valueToFormat);
     }
 
