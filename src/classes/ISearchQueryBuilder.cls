@@ -1,12 +1,10 @@
 public interface ISearchQueryBuilder {
 
     ISearchQueryBuilder setQuerySearchGroup(QuerySearchGroup searchGroup);
-    ISearchQueryBuilder addSObjectQueryBuilders(ISObjectQueryBuilder sobjectQueryBuilder);
-    ISearchQueryBuilder addSObjectQueryBuilders(List<ISObjectQueryBuilder> sobjectQueryBuilders);
 
-    String getQuery(String searchTerm);
+    String getQuery();
 
-    List<SObject> getFirstSearchResult(String searchTerm);
-    List<List<SObject>> getSearchResults(String searchTerm);
+    List<SObject> getFirstSearchResult();
+    List<List<SObject>> getSearchResults();
 
 }

@@ -12,12 +12,24 @@
 */
 public class SearchQueryBuilder extends QueryBuilder implements ISearchQueryBuilder {
 
+    private String searchTerm;
     private QuerySearchGroup searchGroup;
+    private List<ISObjectQueryBuilder> sobjectQueryBuilders;
     private List<String> sobjectQueries;
 
-    public SearchQueryBuilder() {
-        this.searchGroup    = QuerySearchGroup.ALL_FIELDS;
-        this.sobjectQueries = new List<String>();
+    public SearchQueryBuilder(String searchTerm, ISObjectQueryBuilder sobjectQueryBuilder) {
+        this(searchTerm, new List<ISObjectQueryBuilder>{sobjectQueryBuilder});
+    }
+
+    public SearchQueryBuilder(String searchTerm, List<ISObjectQueryBuilder> sobjectQueryBuilders) {
+        this.searchTerm           = searchTerm;
+        this.sobjectQueryBuilders = sobjectQueryBuilders;
+
+        this.searchGroup         = QuerySearchGroup.ALL_FIELDS;
+        this.sobjectQueries      = new List<String>();
+
+        this.parseSObjectQueryBuilders();
+    }
     }
 
     public ISearchQueryBuilder setQuerySearchGroup(QuerySearchGroup searchGroup) {
@@ -25,29 +37,34 @@ public class SearchQueryBuilder extends QueryBuilder implements ISearchQueryBuil
         return this;
     }
 
-    public ISearchQueryBuilder addSObjectQueryBuilders(ISObjectQueryBuilder sobjectQueryBuilder) {
-        return this.addSObjectQueryBuilders(new List<ISObjectQueryBuilder>{sobjectQueryBuilder});
     }
 
-    public ISearchQueryBuilder addSObjectQueryBuilders(List<ISObjectQueryBuilder> sobjectQueryBuilders) {
-        for(ISObjectQueryBuilder sobjectQueryBuilder : sobjectQueryBuilders) this.sobjectQueries.add(sobjectQueryBuilder.getSearchQuery());
         return this;
     }
 
-    public String getQuery(String searchTerm) {
-        String query = 'FIND ' + new QueryArgumentFormatter(searchTerm.toLowerCase()).getValue()
+    public String getQuery() {
+        String query = 'FIND ' + new QueryArgumentFormatter(this.searchTerm.toLowerCase()).getValue()
             + '\nIN ' + this.searchGroup.name().replace('_', ' ')
-            + '\nRETURNING ' + this.getSObjectQueriesString();
+            + '\nRETURNING ' + this.getSObjectQueriesString()
+            + this.getWithHighlightString()
+            + this.getWithSpellCorrectionString();
 
         return query;
     }
 
-    public List<SObject> getFirstSearchResult(String searchTerm) {
-        return this.getSearchResults(searchTerm)[0];
+    public List<SObject> getFirstSearchResult() {
+        return this.getSearchResults()[0];
     }
 
-    public List<List<SObject>> getSearchResults(String searchTerm) {
-       return super.doGetSearchResults(this.getQuery(searchTerm));
+    public List<List<SObject>> getSearchResults() {
+       return super.doGetSearchResults(this.getQuery());
+    }
+
+    private ISearchQueryBuilder parseSObjectQueryBuilders() {
+        for(ISObjectQueryBuilder sobjectQueryBuilder : this.sobjectQueryBuilders) {
+            this.sobjectQueries.add(sobjectQueryBuilder.getSearchQuery());
+        }
+        return this;
     }
 
     private String getSObjectQueriesString() {

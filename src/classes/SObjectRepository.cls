@@ -12,29 +12,6 @@
 */
 public abstract class SObjectRepository extends DML implements ISObjectRepository, IDML {
 
-    protected List<IQueryFilter> BaseQueryFilters = new List<IQueryFilter>();
-
-    protected ISObjectQueryBuilder Query {
-        get {
-            return new SObjectQueryBuilder(this.getSObjectType())
-                .filterBy(this.BaseQueryFilters);
-        }
-        private set;
-    }
-
-    protected IAggregateResultQueryBuilder AggregateQuery {
-        get {
-            return new AggregateResultQueryBuilder(this.getSObjectType())
-                .filterBy(this.BaseQueryFilters);
-        }
-        private set;
-    }
-
-    protected ISearchQueryBuilder SearchQuery {
-        get { return new SearchQueryBuilder(); }
-        private set;
-    }
-
     private List<Schema.SObjectField> sobjectFieldList;
     private Map<String, Schema.SObjectField> sobjectFieldMap;
     private QueryField idQueryField;
@@ -50,14 +27,14 @@ public abstract class SObjectRepository extends DML implements ISObjectRepositor
 
     // SOQL
     public virtual SObject getById(Id recordId) {
-        return this.Query
+        return new SObjectQueryBuilder(this.getSObjectType())
             .filterBy(new QueryFilter().filterByField(this.idQueryField, QueryOperator.EQUALS, recordId))
             .filterBy(new QueryFilter().filterByField(this.idQueryField, QueryOperator.EQUALS, recordId))
             .getFirstQueryResult();
     }
 
     public virtual List<SObject> getById(List<Id> recordIds) {
-        return this.Query
+        return new SObjectQueryBuilder(this.getSObjectType())
             .filterBy(new QueryFilter().filterByField(this.idQueryField, QueryOperator.IS_IN, recordIds))
             .getQueryResults();
     }
@@ -67,7 +44,7 @@ public abstract class SObjectRepository extends DML implements ISObjectRepositor
     }
 
     public virtual List<SObject> get(List<IQueryFilter> queryFilters) {
-        return this.Query
+        return new SObjectQueryBuilder(this.getSObjectType())
             .filterBy(queryFilters)
             .getQueryResults();
     }
@@ -77,7 +54,7 @@ public abstract class SObjectRepository extends DML implements ISObjectRepositor
     }
 
     public virtual List<SObject> getByIdAndQueryFilters(List<Id> idList, List<IQueryFilter> queryFilters) {
-        return this.Query
+        return new SObjectQueryBuilder(this.getSObjectType())
             .filterBy(new QueryFilter().filterByField(this.idQueryField, QueryOperator.IS_IN, idList))
             .filterBy(queryFilters)
             .getQueryResults();
@@ -93,10 +70,9 @@ public abstract class SObjectRepository extends DML implements ISObjectRepositor
     }
 
     public virtual List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup, List<IQueryFilter> queryFilters) {
-        return this.SearchQuery
-            .addSObjectQueryBuilders(this.Query.filterBy(queryFilters))
+        return new SearchQueryBuilder(searchTerm, new SObjectQueryBuilder(this.getSObjectType()).filterBy(queryFilters))
             .setQuerySearchGroup(searchGroup)
-            .getFirstSearchResult(searchTerm);
+            .getFirstSearchResult();
     }
 
     private Schema.SObjectField getField(String fieldName) {
