@@ -15,7 +15,7 @@ public class FileGenerator {
         this.fileContent    = fileContent;
     }
 
-    public ContentVersion generateFile(Boolean insertRecord) {
+    public ContentVersion generateFile(Boolean upsertRecord) {
         ContentVersion contentVersion = new ContentVersion();
 
         //if(contentDocId != null) contentVersion.ContentDocumentId = contentDocId;
@@ -25,33 +25,32 @@ public class FileGenerator {
         contentVersion.VersionData  = Blob.valueOf(this.fileContent);
         contentVersion.Origin       = 'H';
 
-        if(insertRecord) {
-            insert contentVersion;
+        if(upsertRecord) {
+            upsert contentVersion;
             contentVersion = (ContentVersion)new SObjectQueryBuilder(Schema.ContentVersion.SObjectType)
                 .addAllStandardFields()
                 .filterBy(new QueryFilter().filterByField(new QueryField(Schema.ContentVersion.Id), QueryOperator.EQUALS, contentVersion.Id))
                 .getFirstQueryResult();
 
-            this.createContentDocumentLink(linkedEntityId, contentVersion);
+            this.insertContentDocumentLinks(new Map<ContentVersion, Id>{contentVersion => linkedEntityId});
         }
 
         return contentVersion;
     }
 
-    private void createContentDocumentLink(Id linkedEntityId, ContentVersion contentVersion) {
-        if(contentVersion.Id == null) return;
+    public void insertContentDocumentLinks(Map<ContentVersion, Id> contentToLinkedEntityIdMap) {
+        List<ContentDocumentLink> contentDocumentLinks = new List<ContentDocumentLink>();
+        for(ContentVersion contentVersion : contentToLinkedEntityIdMap.keySet()) {
+            ContentDocumentLink contentDocumentLink = new ContentDocumentLink(
+                ContentDocumentId = contentVersion.ContentDocumentId,
+                LinkedEntityId    = contentToLinkedEntityIdMap.get(contentVersion),
+                ShareType         = 'V'
+            );
 
-        ContentDocumentLink cdl = new ContentDocumentLink();
-        cdl.ContentDocumentId = contentVersion.ContentDocumentId;
-        cdl.LinkedEntityId = linkedEntityId;
-        cdl.ShareType = 'V';
-        insert cdl;
-    }
+            contentDocumentLinks.add(contentDocumentLink);
+        }
 
-    public static FeedItem generatePostWithRelatedDocument(Id parent, Id contentVersionId) {
-        FeedItem elm = new FeedItem(Body = 'Post with related document body', ParentId = parent, RelatedRecordId = contentVersionId, Type = 'ContentPost');
-        insert elm;
-        return elm;
+        insert contentDocumentLinks;
     }
 
 }
