@@ -12,7 +12,7 @@ private class SObjectRepository_Tests {
         }
 
         public List<Account> getMyRecentAccounts(Integer limitCount) {
-            return (List<Account>)this.Query
+            return (List<Account>)new SObjectQueryBuilder(this.getSObjectType())
                 .usingScope(QueryFilterScope.MINE)
                 .limitCount(limitCount)
                 .orderBy(new QueryField(Schema.Account.LastActivityDate))
@@ -20,7 +20,7 @@ private class SObjectRepository_Tests {
         }
 
         public Account getAccountAndContactsWithEmails(Id accountId) {
-            return (Account)this.Query
+            return (Account)new SObjectQueryBuilder(this.getSObjectType())
                 .filterBy(new QueryFilter().filterByField(new QueryField(Schema.Account.Id), QueryOperator.EQUALS, accountId))
                 .includeChildrenRecords(
                     Schema.Contact.AccountId,
