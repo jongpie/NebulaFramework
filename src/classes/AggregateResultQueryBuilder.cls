@@ -141,10 +141,10 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
     }
 
     public String getQuery() {
-        String queryString = 'SELECT ' + this.getGroupByFieldString() + this.getAggregateFunctionString()
+        String queryString = 'SELECT ' + this.getGroupByFieldString(false) + this.getAggregateFunctionString()
             + '\nFROM ' + this.sobjectType.getDescribe().getName()
             + super.doGetWhereClauseString()
-            + '\nGROUP BY ' + this.getGroupByFieldString()
+            + this.getGroupByFieldString(true)
             + super.doGetOrderByString()
             + super.doGetLimitCountString();
 
@@ -159,15 +159,18 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
         return super.doGetQueryResults(this.getQuery());
     }
 
-    private String getGroupByFieldString() {
-        return String.join(this.groupByList, ', ');
+    private String getGroupByFieldString(Boolean appendGroupByString) {
+        String prefix = appendGroupByString && !this.groupByList.isEmpty() ? '\nGROUP BY ' : '';
+        return prefix + String.join(this.groupByList, ', ');
     }
 
     private String getAggregateFunctionString() {
+        if(this.groupByList.isEmpty() && this.aggregateFunctionList.isEmpty()) return 'COUNT(Id) COUNT__Id';
+
         this.aggregateFunctionList.sort();
         // The extra delimiter adds a comma when needed for grouping by fields & aggregate functions
         // Example: 'Type, COUNT_DISTINCT(OwnerId)'
-        String extraDelimiter = getGroupByFieldString() == null ? '' : ',\n';
+        String extraDelimiter = getGroupByFieldString(false) == null ? '' : ',\n';
         return extraDelimiter + String.join(this.aggregateFunctionList, ', ');
     }
 
