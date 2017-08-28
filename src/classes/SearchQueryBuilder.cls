@@ -30,12 +30,6 @@ public class SearchQueryBuilder extends QueryBuilder implements ISearchQueryBuil
 
         this.parseSObjectQueryBuilders();
     }
-    }
-
-    public ISearchQueryBuilder setQuerySearchGroup(QuerySearchGroup searchGroup) {
-        this.searchGroup = searchGroup;
-        return this;
-    }
 
     public ISearchQueryBuilder setQuerySearchGroup(QuerySearchGroup searchGroup) {
         this.searchGroup = searchGroup;
@@ -45,9 +39,7 @@ public class SearchQueryBuilder extends QueryBuilder implements ISearchQueryBuil
     public String getQuery() {
         String query = 'FIND ' + new QueryArgumentFormatter(this.searchTerm.toLowerCase()).getValue()
             + '\nIN ' + this.searchGroup.name().replace('_', ' ')
-            + '\nRETURNING ' + this.getSObjectQueriesString()
-            + this.getWithHighlightString()
-            + this.getWithSpellCorrectionString();
+            + '\nRETURNING ' + this.getSObjectQueriesString();
 
         return query;
     }
