@@ -37,8 +37,8 @@ public class SearchQueryBuilder extends QueryBuilder implements ISearchQueryBuil
         return this;
     }
 
-    }
-
+    public ISearchQueryBuilder setQuerySearchGroup(QuerySearchGroup searchGroup) {
+        this.searchGroup = searchGroup;
         return this;
     }
 
