@@ -407,7 +407,7 @@ private class SObjectQueryBuilder_Tests {
 
         Test.startTest();
         SObjectQueryBuilder query = (SObjectQueryBuilder)new SObjectQueryBuilder(sobjectType).addFields(convertToQueryFields(fields));
-        query.forUpdate();
+        query.setAsUpdate();
         Test.stopTest();
 
         System.assert(query.getQuery().contains('FOR UPDATE'));
