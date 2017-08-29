@@ -6,6 +6,21 @@
 private class SearchQueryBuilder_Tests {
 
     @isTest
+    static void it_should_be_usable_after_construction() {
+        // Query builders should be usable as soon as it's constructed - it should be able to execute a query with some default values
+        String searchTerm = 'test';
+        ISObjectQueryBuilder opportunityQueryBuilder = new SObjectQueryBuilder(Schema.Opportunity.SObjectType);
+
+        ISearchQueryBuilder searchQueryBuilder = new SearchQueryBuilder(searchTerm, new List<ISObjectQueryBuilder>{opportunityQueryBuilder});
+
+        Test.startTest();
+
+        List<List<SObject>> results = (List<List<SObject>>)searchQueryBuilder.getSearchResults();
+
+        Test.stopTest();
+    }
+
+    @isTest
     static void it_should_cache_results() {
         String searchTerm = 'test';
         ISObjectQueryBuilder opportunityQueryBuilder = new SObjectQueryBuilder(Schema.Opportunity.SObjectType);

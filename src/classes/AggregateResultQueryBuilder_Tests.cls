@@ -5,6 +5,19 @@
 @isTest
 private class AggregateResultQueryBuilder_Tests {
 
+
+    @isTest
+    static void it_should_be_usable_after_construction() {
+        // Query builders should be usable as soon as it's constructed - it should be able to execute a query with some default values
+        IAggregateResultQueryBuilder aggregateQueryBuilder = new AggregateResultQueryBuilder(Schema.Opportunity.SObjectType);
+
+        Test.startTest();
+
+        List<AggregateResult> results = (List<AggregateResult>)aggregateQueryBuilder.getQueryResults();
+
+        Test.stopTest();
+    }
+
     @isTest
     static void it_should_cache_results() {
         IAggregateResultQueryBuilder aggregateResultQueryBuilder = new AggregateResultQueryBuilder(Schema.Opportunity.SObjectType);
