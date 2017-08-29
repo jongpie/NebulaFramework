@@ -16,6 +16,8 @@ public class SearchQueryBuilder extends QueryBuilder implements ISearchQueryBuil
     private QuerySearchGroup searchGroup;
     private List<ISObjectQueryBuilder> sobjectQueryBuilders;
     private List<String> sobjectQueries;
+    private Boolean withHighlight;
+    private Boolean withSpellCorrection;
 
     public SearchQueryBuilder(String searchTerm, ISObjectQueryBuilder sobjectQueryBuilder) {
         this(searchTerm, new List<ISObjectQueryBuilder>{sobjectQueryBuilder});
@@ -36,10 +38,22 @@ public class SearchQueryBuilder extends QueryBuilder implements ISearchQueryBuil
         return this;
     }
 
+    public ISearchQueryBuilder setWithHighlight(Boolean withHighlight) {
+        this.withHighlight = withHighlight;
+        return this;
+    }
+
+    public ISearchQueryBuilder setWithSpellCorrection(Boolean withSpellCorrection) {
+        this.withHighlight = withSpellCorrection;
+        return this;
+    }
+
     public String getQuery() {
         String query = 'FIND ' + new QueryArgumentFormatter(this.searchTerm.toLowerCase()).getValue()
             + '\nIN ' + this.searchGroup.name().replace('_', ' ')
-            + '\nRETURNING ' + this.getSObjectQueriesString();
+            + '\nRETURNING ' + this.getSObjectQueriesString()
+            + this.getWithHighlightString()
+            + this.getWithSpellCorrectionString();
 
         return query;
     }
@@ -62,6 +76,14 @@ public class SearchQueryBuilder extends QueryBuilder implements ISearchQueryBuil
     private String getSObjectQueriesString() {
         this.sobjectQueries.sort();
         return String.join(this.sobjectQueries, ', ');
+    }
+
+    private String getWithHighlightString() {
+        return (this.withHighlight == null || !this.withHighlight) ? '' : '\nWITH HIGHLIGHT';
+    }
+
+    private String getWithSpellCorrectionString() {
+        return this.withSpellCorrection == null ? '' : '\nWITH SPELL_CORRECTION = ' + this.withSpellCorrection;
     }
 
 }
