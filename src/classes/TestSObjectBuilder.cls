@@ -16,8 +16,7 @@ public class TestSObjectBuilder {
         public abstract Schema.SObjectType getSObjectType();
 
         public ITestSObjectBuilder set(Schema.SObjectField field, Object value) {
-            this.fieldValueMap.put(field, value);
-            return this;
+            return this.set(new Map<Schema.SObjectField, Object>{field => value});
         }
 
         public ITestSObjectBuilder set(Map<Schema.SObjectField, Object> fieldsAndValues) {
