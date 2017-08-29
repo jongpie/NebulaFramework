@@ -23,7 +23,7 @@ public abstract class SObjectRepository extends DML implements ISObjectRepositor
         this.idQueryField    = new QueryField(this.getField('Id'));
     }
 
-    public abstract Schema.SObjectType getSObjectType();
+    public override abstract Schema.SObjectType getSObjectType();
 
     // SOQL
     public virtual SObject getById(Id recordId) {
