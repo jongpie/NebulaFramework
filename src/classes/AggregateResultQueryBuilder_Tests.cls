@@ -6,6 +6,23 @@
 private class AggregateResultQueryBuilder_Tests {
 
     @isTest
+    static void it_should_cache_results() {
+        IAggregateResultQueryBuilder aggregateResultQueryBuilder = new AggregateResultQueryBuilder(Schema.Opportunity.SObjectType);
+        aggregateResultQueryBuilder.cacheResults();
+
+        Test.startTest();
+
+        System.assertEquals(0, Limits.getQueries());
+        for(Integer i = 0; i < 10; i++) {
+            System.debug(aggregateResultQueryBuilder.getQueryResults());
+        }
+
+        System.assertEquals(1, Limits.getQueries());
+
+        Test.stopTest();
+    }
+
+    @isTest
     static void it_should_build_a_ridiculous_query_string() {
         String expectedString = 'SELECT Type,\nAVG(Amount) AVG__Amount, COUNT(AccountId) COUNT__AccountId, '
             + 'COUNT_DISTINCT(OwnerId) COUNT_DISTINCT__OwnerId, MAX(CreatedDate) MAX__CreatedDate, MIN(CreatedDate) MIN__CreatedDate'
