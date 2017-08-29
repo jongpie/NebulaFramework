@@ -139,33 +139,6 @@ public abstract class QueryBuilder extends NebulaCore {
         List<List<SObject>> deepClonedResults = new List<List<SObject>>();
         for(List<SObject> cachedListOfResults : cachedResults) deepClonedResults.add(cachedListOfResults.deepClone(true, true, true));
         return deepClonedResults;
-
-        /* Sample code to show cloneing the list of list (doesn't work) vs deep cloning each list withn the list of lists
-        List<List<SObject>> cachedResults = [find 'gillespie' in all fields returning account(id, name)];
-List<List<SObject>> clonedResults = new List<List<SObject>>();
-for(List<SObject> cachedListOfResults : cachedResults) clonedResults.add(cachedListOfResults.deepClone(true, true, true));
-
-System.debug(cachedResults);
-clonedResults[0][0].put('Name', 'Poop');
-clonedResults[0][0].put('Id', null);
-System.debug(clonedResults);
-System.debug(cachedResults);
-System.assertNotEquals(cachedResults[0][0], clonedResults[0][0]);
-insert clonedResults[0][0];
-System.debug(clonedResults);
-System.debug(cachedResults);
-System.assertNotEquals(cachedResults[0][0], clonedResults[0][0]);
-System.assertNotEquals(cachedResults[0][0].Id, clonedResults[0][0].Id);
-///
-
-List<List<Sobject>> rs = [find 'gillespie' in all fields returning account(id, name)];
-System.debug(rs);
-List<List<Sobject>> rsClone = rs.clone();
-rsClone[0][0].put('Name', 'Poop');
-System.debug(rsClone);
-System.debug(rs);
-System.assertNotEquals(rs[0][0], rsClone[0][0]);
-*/
     }
 
     private List<List<SObject>> executeSearch(String query) {
