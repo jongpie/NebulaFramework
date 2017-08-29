@@ -23,6 +23,11 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
         this.groupByList           = new List<String>();
     }
 
+    public IAggregateResultQueryBuilder cacheResults() {
+        super.doCacheResults();
+        return this;
+    }
+
     public IAggregateResultQueryBuilder groupBy(IQueryField groupByQueryField) {
         return this.groupBy(new List<IQueryField>{groupByQueryField});
     }

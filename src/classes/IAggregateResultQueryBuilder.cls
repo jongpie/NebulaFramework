@@ -12,6 +12,8 @@
 */
 public interface IAggregateResultQueryBuilder {
 
+    IAggregateResultQueryBuilder cacheResults();
+
     // Group By methods
     IAggregateResultQueryBuilder groupBy(IQueryField groupByQueryField);
     IAggregateResultQueryBuilder groupBy(List<IQueryField> groupByQueryFields);
