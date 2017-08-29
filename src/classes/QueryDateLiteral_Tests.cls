@@ -3,7 +3,7 @@
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
 @isTest
-public class QueryDateLiteral_Tests {
+private class QueryDateLiteral_Tests {
 
     private static Integer offsetNumber = 5;
 

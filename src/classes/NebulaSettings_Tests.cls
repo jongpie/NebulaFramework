@@ -26,12 +26,12 @@ private class NebulaSettings_Tests {
     }
 
     @isTest
-    static void it_should_return_repository_settings() {
-        List<NebulaRepositorySettings__c> existingSettings = [SELECT Id FROM NebulaRepositorySettings__c];
+    static void it_should_return_SObjectQueryBuilder_settings() {
+        List<NebulaSObjectQueryBuilderSettings__c> existingSettings = [SELECT Id FROM NebulaSObjectQueryBuilderSettings__c];
         System.assert(existingSettings.isEmpty());
 
         Test.startTest();
-        System.assertNotEquals(null, NebulaSettings.RepositorySettings);
+        System.assertNotEquals(null, NebulaSettings.SObjectQueryBuilderSettings);
         Test.stopTest();
     }
 
@@ -55,9 +55,9 @@ private class NebulaSettings_Tests {
         upsert nebulaRecordTypesSettings;
         Id originalRecordTypesSettingsId = NebulaRecordTypesSettings__c.getInstance().Id;
 
-        NebulaRepositorySettings__c nebulaRepositorySettings = NebulaRepositorySettings__c.getInstance();
-        upsert nebulaRepositorySettings;
-        Id originalRepositorySettingsId = NebulaRepositorySettings__c.getInstance().Id;
+        NebulaSObjectQueryBuilderSettings__c nebulaSObjectQueryBuilderSettings = NebulaSObjectQueryBuilderSettings__c.getInstance();
+        upsert nebulaSObjectQueryBuilderSettings;
+        Id originalSObjectQueryBuilderSettingsId = NebulaSObjectQueryBuilderSettings__c.getInstance().Id;
 
         NebulaTriggerHandlerSettings__c nebulaTriggerHandlerSettings = NebulaTriggerHandlerSettings__c.getInstance();
         upsert nebulaTriggerHandlerSettings;
@@ -69,7 +69,7 @@ private class NebulaSettings_Tests {
 
         System.assertNotEquals(originalLoggerSettingsId, NebulaLoggerSettings__c.getInstance().Id);
         System.assertNotEquals(originalRecordTypesSettingsId, NebulaRecordTypesSettings__c.getInstance().Id);
-        System.assertNotEquals(originalRepositorySettingsId, NebulaRepositorySettings__c.getInstance().Id);
+        System.assertNotEquals(originalSObjectQueryBuilderSettingsId, NebulaSObjectQueryBuilderSettings__c.getInstance().Id);
         System.assertNotEquals(originalTriggerHandlerSettingsId, NebulaTriggerHandlerSettings__c.getInstance().Id);
     }
 

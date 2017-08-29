@@ -2,11 +2,23 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
+
+/**
+*
+* @group Configuration
+*
+* @description TODO
+*
+*/
 public without sharing class NebulaSettings {
 
+    /**
+    * @description TODO
+    * returns true if it's a sandbox
+    */
     public static NebulaLoggerSettings__c LoggerSettings {get; private set;}
     public static NebulaRecordTypesSettings__c RecordTypesSettings {get; private set;}
-    public static NebulaRepositorySettings__c RepositorySettings {get; private set;}
+    public static NebulaSObjectQueryBuilderSettings__c SObjectQueryBuilderSettings {get; private set;}
     public static NebulaTriggerHandlerSettings__c TriggerHandlerSettings {get; private set;}
 
     static {
@@ -21,21 +33,21 @@ public without sharing class NebulaSettings {
     private static void loadCustomSettings() {
         loadLoggerSettings();
         loadRecordTypesSettings();
-        loadRepositorySettings();
+        loadSObjectQueryBuilderSettings();
         loadTriggerHandlerSettings();
     }
 
     private static void deleteExistingCustomSettings() {
         delete [SELECT Id FROM NebulaLoggerSettings__c];
         delete [SELECT Id FROM NebulaRecordTypesSettings__c];
-        delete [SELECT Id FROM NebulaRepositorySettings__c];
+        delete [SELECT Id FROM NebulaSObjectQueryBuilderSettings__c];
         delete [SELECT Id FROM NebulaTriggerHandlerSettings__c];
     }
 
     private static void createCustomSettings() {
         upsert NebulaLoggerSettings__c.getOrgDefaults();
         upsert NebulaRecordTypesSettings__c.getOrgDefaults();
-        upsert NebulaRepositorySettings__c.getOrgDefaults();
+        upsert NebulaSObjectQueryBuilderSettings__c.getOrgDefaults();
         upsert NebulaTriggerHandlerSettings__c.getOrgDefaults();
     }
 
@@ -57,12 +69,12 @@ public without sharing class NebulaSettings {
         }
     }
 
-    private static void loadRepositorySettings() {
-        repositorySettings = NebulaRepositorySettings__c.getInstance();
+    private static void loadSObjectQueryBuilderSettings() {
+        sobjectQueryBuilderSettings = NebulaSObjectQueryBuilderSettings__c.getInstance();
 
-        if(repositorySettings.Id == null) {
-            upsert NebulaRepositorySettings__c.getOrgDefaults();
-            repositorySettings = NebulaRepositorySettings__c.getInstance();
+        if(sobjectQueryBuilderSettings.Id == null) {
+            upsert NebulaSObjectQueryBuilderSettings__c.getOrgDefaults();
+            sobjectQueryBuilderSettings = NebulaSObjectQueryBuilderSettings__c.getInstance();
         }
     }
 
