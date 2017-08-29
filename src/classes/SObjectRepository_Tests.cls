@@ -7,46 +7,38 @@ private class SObjectRepository_Tests {
 
     private class AccountRepository extends SObjectRepository {
         // Test subclass that extends SObjectRepository
-        public AccountRepository() {
-            super(Schema.Account.SObjectType, new List<Schema.SObjectField>{Schema.Account.Id, Schema.Account.Name});
-        }
-
-        public AccountRepository(Schema.FieldSet fieldSet) {
-            super(Schema.Account.SObjectType, fieldSet);
+        public override Schema.SObjectType getSObjectType() {
+            return Schema.Account.SObjectType;
         }
 
         public List<Account> getMyRecentAccounts(Integer limitCount) {
-            return (List<Account>)this.Query
+            return (List<Account>)new SObjectQueryBuilder(this.getSObjectType())
                 .usingScope(QueryFilterScope.MINE)
                 .limitCount(limitCount)
-                .orderBy(Schema.Account.LastActivityDate)
+                .orderBy(new QueryField(Schema.Account.LastActivityDate))
                 .getQueryResults();
         }
 
         public Account getAccountAndContactsWithEmails(Id accountId) {
-            return (Account)this.Query
-                .filterBy(new QueryFilter(Schema.Account.Id, QueryOperator.EQUALS, accountId))
+            return (Account)new SObjectQueryBuilder(this.getSObjectType())
+                .filterBy(new QueryFilter().filterByField(new QueryField(Schema.Account.Id), QueryOperator.EQUALS, accountId))
                 .includeChildrenRecords(
                     Schema.Contact.AccountId,
-                    new ContactRepository()
+                    new SObjectQueryBuilder(Schema.Contact.SObjectType)
+                        .addAllStandardFields()
+                        .filterBy(new QueryFilter().filterByField(new QueryField(Schema.Contact.Email), QueryOperator.NOT_EQUAL_TO, null))
                 )
                 .getFirstQueryResult();
         }
     }
 
-    private class ContactRepository extends SObjectRepository {
-        public ContactRepository() {
-            super(Schema.Contact.SObjectType, new List<Schema.SObjectField>{Schema.Contact.Id, Schema.Contact.AccountId, Schema.Contact.Email, Schema.Contact.LastName});
-        }
-    }
-
     private class UserRepository extends SObjectRepository {
-        public UserRepository() {
-            super(Schema.User.SObjectType);
+        public override Schema.SObjectType getSObjectType() {
+            return Schema.User.SObjectType;
         }
 
-        public override void upsertRecords(SObject record, Schema.SObjectField externalIdField) {
-            super.upsertRecords(record, externalIdField);
+        public override List<Database.UpsertResult> upsertRecords(SObject record, Schema.SObjectField externalIdField) {
+            return super.upsertRecords(record, externalIdField);
         }
     }
 
@@ -81,7 +73,7 @@ private class SObjectRepository_Tests {
         Schema.FieldSet fieldSet;
 
         Test.startTest();
-        SObjectRepository_Tests.AccountRepository accountRepo = new SObjectRepository_Tests.AccountRepository(fieldSet);
+        SObjectRepository_Tests.AccountRepository accountRepo = new SObjectRepository_Tests.AccountRepository();
         System.assertNotEquals(null, accountRepo);
         Test.stopTest();
     }
@@ -100,7 +92,7 @@ private class SObjectRepository_Tests {
     @isTest
     static void it_should_get_by_id_using_query_filter() {
         Account expectedAccount = [SELECT Id FROM Account LIMIT 1];
-        QueryFilter queryFilter = new QueryFilter(Schema.Account.Id, QueryOperator.EQUALS, expectedAccount.Id);
+        IQueryFilter queryFilter = new QueryFilter().filterByField(new QueryField(Schema.Account.Id), QueryOperator.EQUALS, expectedAccount.Id);
 
         Test.startTest();
         Account returnedAccount = ((List<Account>)new SObjectRepository_Tests.AccountRepository().get(queryFilter))[0];
@@ -112,10 +104,10 @@ private class SObjectRepository_Tests {
     @isTest
     static void it_should_get_by_id_using_list_of_query_filters() {
         Account expectedAccount = [SELECT Id FROM Account LIMIT 1];
-        QueryFilter queryFilter = new QueryFilter(Schema.Account.Id, QueryOperator.EQUALS, expectedAccount.Id);
+        IQueryFilter queryFilter = new QueryFilter().filterByField(new QueryField(Schema.Account.Id), QueryOperator.EQUALS, expectedAccount.Id);
 
         Test.startTest();
-        Account returnedAccount = ((List<Account>)new SObjectRepository_Tests.AccountRepository().get(new List<QueryFilter>{queryFilter}))[0];
+        Account returnedAccount = ((List<Account>)new SObjectRepository_Tests.AccountRepository().get(new List<IQueryFilter>{queryFilter}))[0];
         Test.stopTest();
 
         System.assertEquals(expectedAccount.Id, returnedAccount.Id);
@@ -153,8 +145,8 @@ private class SObjectRepository_Tests {
         ISObjectRepository repo = new SObjectRepository_Tests.AccountRepository();
 
         Test.startTest();
-        QueryFilter queryFilter = new QueryFilter(Schema.Account.Name, QueryOperator.EQUALS, 'My Test Company');
-        List<QueryFilter> queryFilters = new List<QueryFilter>{queryFilter};
+        IQueryFilter queryFilter = new QueryFilter().filterByField(new QueryField(Schema.Account.Name), QueryOperator.EQUALS, 'My Test Company');
+        List<IQueryFilter> queryFilters = new List<IQueryFilter>{queryFilter};
         List<Account> returnedAccountList = (List<Account>)repo.getByIdAndQueryFilters(expectedAccountMap.keyset(), queryFilters);
         Test.stopTest();
 
@@ -170,8 +162,8 @@ private class SObjectRepository_Tests {
         ISObjectRepository repo = new SObjectRepository_Tests.AccountRepository();
 
         Test.startTest();
-        QueryFilter queryFilter = new QueryFilter(Schema.Account.Name, QueryOperator.EQUALS, 'My Test Company');
-        List<QueryFilter> queryFilters = new List<QueryFilter>{queryFilter};
+        IQueryFilter queryFilter = new QueryFilter().filterByField(new QueryField(Schema.Account.Name), QueryOperator.EQUALS, 'My Test Company');
+        List<IQueryFilter> queryFilters = new List<IQueryFilter>{queryFilter};
         List<Account> returnedAccountList = (List<Account>)repo.getByIdAndQueryFilters(new List<Id>(expectedAccountMap.keyset()), queryFilters);
         Test.stopTest();
 
@@ -185,12 +177,13 @@ private class SObjectRepository_Tests {
         Account account = [SELECT Id FROM Account LIMIT 1];
 
         Contact contact = createContact(account.Id);
+        contact.Email = 'test@email.com';
         insert contact;
         contact = [SELECT Id, AccountId FROM Contact WHERE Id = :contact.Id];
         System.assertEquals(account.Id, contact.AccountId);
 
         Account expectedAccount = [
-            SELECT Id, (SELECT Id, AccountId FROM Contacts)
+            SELECT Id, (SELECT Id, AccountId FROM Contacts WHERE Email != null)
             FROM Account
             WHERE Id = :account.Id
         ];
@@ -257,8 +250,8 @@ private class SObjectRepository_Tests {
         System.assertNotEquals(0, expectedAccountList.size());
 
         Test.startTest();
-        QueryFilter queryFilter = new QueryFilter(Schema.Account.CreatedDate, QueryOperator.EQUALS, QueryDateLiteral.TODAY);
-        List<QueryFilter> queryFilters = new List<QueryFilter>{queryFilter};
+        IQueryFilter queryFilter = new QueryFilter().filterByField(new QueryField(Schema.Account.CreatedDate), QueryOperator.EQUALS, QueryDateLiteral.TODAY);
+        List<IQueryFilter> queryFilters = new List<IQueryFilter>{queryFilter};
         List<Account> returnedAccountList = (List<Account>)new SObjectRepository_Tests.AccountRepository().getSearchResults(searchTerm, QuerySearchGroup.NAME_FIELDS, queryFilters);
         Test.stopTest();
 
@@ -331,7 +324,7 @@ private class SObjectRepository_Tests {
         new SObjectRepository_Tests.UserRepository().upsertRecords(existingUser, Schema.User.Username);
         Test.stopTest();
 
-        existingUser = [SELECT Id, LastModifiedDate FROM User WHERE Id = :existingUser.Id];
+        existingUser = [SELECT Id, LastModifiedDate FROM User LIMIT 1];
         System.assert(existingUser.LastModifiedDate > originalLastModifiedDate, existingUser);
     }
 

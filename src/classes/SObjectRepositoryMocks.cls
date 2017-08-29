@@ -2,6 +2,14 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
+
+/**
+*
+* @group Repository
+*
+* @description TODO
+*
+*/
 @isTest
 public class SObjectRepositoryMocks {
 
@@ -17,6 +25,10 @@ public class SObjectRepositoryMocks {
 
         public Base(List<SObject> records) {
             this.records = records;
+        }
+
+        public Schema.SObjectType getSObjectType() {
+            return Schema.User.SObjectType;
         }
 
         public Base with(List<SObject> records) {
@@ -73,11 +85,14 @@ public class SObjectRepositoryMocks {
 
         public virtual List<SObject> getByIdAndQueryFilters(List<Id> idList, List<IQueryFilter> queryFilters) {
             List<SObject> records = this.getById(idList);
-            for(SObject record : records) {
-                for(IQueryFilter queryFilter : queryFilters) {
-                    record.put(queryFilter.getSObjectField(), queryFilter.getProvidedValue());
-                }
-            }
+            // TODO need to revisit - QueryFilter no longer has the methods needed below, so need a new solution
+            // for(SObject record : records) {
+            //     for(IQueryFilter queryFilter : queryFilters) {
+            //         if(queryFilter.getSObjectField() == null) continue;
+            //
+            //         record.put(queryFilter.getSObjectField(), queryFilter.getProvidedValue());
+            //     }
+            // }
 
             return records;
         }
@@ -93,10 +108,6 @@ public class SObjectRepositoryMocks {
 
         public virtual List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup, List<IQueryFilter> queryFilters) {
             return this.returnListOfSObjects();
-        }
-
-        public virtual IQueryBuilder getQueryBuilder() {
-            return new QueryBuilder(this.records.getSObjectType(), null, null);
         }
 
         private void createMockObjects() {

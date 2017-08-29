@@ -7,7 +7,7 @@
         These rules deal with different security problems that can occur within Apex.
     </description>
 
-	<rule name="ApexSharingViolations" since="5.5.3"
+	<!-- <rule name="ApexSharingViolations" since="5.5.3"
 		message="Apex classes should declare a sharing model if DML or SOQL/SOSL is used"
 		class="net.sourceforge.pmd.lang.apex.rule.security.ApexSharingViolationsRule"
 		externalInfoUrl="${pmd.website.baseurl}/rules/apex/security.html#ApexSharingViolations">
@@ -23,7 +23,7 @@ public without sharing class Foo {
 }
     ]]>
         </example>
-	</rule>
+	</rule> -->
 
 	<rule name="ApexOpenRedirect" since="5.5.3"
 		message="Apex classes should safely redirect to a known location"
@@ -171,14 +171,14 @@ public class Foo {
     ]]>
         </example>
 	</rule>
-	
+
 	<rule name="ApexCRUDViolation" since="5.5.3"
 		message="Validate CRUD permission before SOQL/DML operation"
 		class="net.sourceforge.pmd.lang.apex.rule.security.ApexCRUDViolationRule"
 		externalInfoUrl="${pmd.website.baseurl}/rules/apex/security.html#ApexCRUDViolationRule">
 		<description>
 The rule validates you are checking for access permissions before a SOQL/SOSL/DML operation.
-Since Apex runs in system mode not having proper permissions checks results in escalation of 
+Since Apex runs in system mode not having proper permissions checks results in escalation of
 privilege and may produce runtime errors. This check forces you to handle such scenarios.
         </description>
 		<priority>3</priority>
@@ -227,7 +227,7 @@ public class Foo {
     ]]>
         </example>
 	</rule>
-	
+
 		<rule name="ApexSuggestUsingNamedCred" since="5.5.3"
 		message="Suggest named credentials for authentication"
 		class="net.sourceforge.pmd.lang.apex.rule.security.ApexSuggestUsingNamedCredRule"
@@ -260,6 +260,6 @@ public class Foo {
     ]]>
         </example>
 	</rule>
-	
+
 
 </ruleset>
