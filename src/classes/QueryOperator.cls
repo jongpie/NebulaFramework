@@ -2,11 +2,22 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
-public without sharing class QueryOperator {
+
+/**
+*
+* @group Query Builder
+*
+* @description Provides all of the operators needed for SOQL/SOSL queries and minimizes the use of strings within the framework
+* Salesforce docs: developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_comparisonoperators.htm
+*
+*/
+public without sharing class QueryOperator extends NebulaCore {
 
     private String value;
 
     private QueryOperator(String value) {
+        this.currentModule = NebulaCore.Module.QUERY_BUILDER;
+
         this.value = value;
     }
 

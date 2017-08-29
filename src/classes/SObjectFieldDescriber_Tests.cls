@@ -13,23 +13,7 @@ private class SObjectFieldDescriber_Tests {
         Test.startTest();
 
         SObjectFieldDescriber sobjectFieldDescriber = new SObjectFieldDescriber(sobjectField);
-        System.assertEquals(expectedSObjectType, sobjectFieldDescriber.SObjectType);
-
-        Test.stopTest();
-    }
-
-    @isTest
-    static void it_should_return_the_sobject_field() {
-        Schema.SObjectField expectedSObjectField = Schema.Lead.Id;
-        Integer expectedSObjectFieldHash = ((Object)expectedSObjectField).hashCode();
-
-        Test.startTest();
-
-        SObjectFieldDescriber sobjectFieldDescriber = new SObjectFieldDescriber(expectedSObjectField);
-        Schema.SObjectField returnedSObjectField = sobjectFieldDescriber.sobjectField;
-        Integer returnedSObjectFieldHash = ((Object)returnedSObjectField).hashCode();
-
-        System.assertEquals(expectedSObjectFieldHash, returnedSObjectFieldHash);
+        System.assertEquals(expectedSObjectType, sobjectFieldDescriber.getSObjectType());
 
         Test.stopTest();
     }

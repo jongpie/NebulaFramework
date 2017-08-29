@@ -2,6 +2,14 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
+
+/**
+*
+* @group Metadata
+*
+* @description TODO
+*
+*/
 public without sharing class SObjectFieldDescriber {
     // We would love for Schema.SObjectField to have a way to return the SObject Type
     // Sadly, it doesn't, so we have this class to fill the void.
@@ -10,22 +18,26 @@ public without sharing class SObjectFieldDescriber {
 
     private static Map<Integer, Schema.SObjectType> sobjectFieldHashCodeToSObjectTypeMap;
 
-    public Schema.SObjectField SObjectField {get; private set;}
-    public Schema.SObjectType SObjectType {get; private set;}
+    private Schema.SObjectField sobjectField;
+    private Schema.SObjectType sobjectType;
 
     public SObjectFieldDescriber(Schema.SObjectField sobjectField) {
         this.cacheSObjectTypeFieldHashCodes();
 
-        this.SObjectField = sobjectField;
+        this.sobjectField = sobjectField;
         this.setSObjectType();
     }
 
     public String getFieldName() {
-        return this.SObjectField.getDescribe().getName();
+        return this.sobjectField.getDescribe().getName();
     }
 
     public String getFullFieldName() {
-        return this.SObjectType + '.' + this.getFieldName();
+        return this.sobjectType + '.' + this.getFieldName();
+    }
+
+    public Schema.SObjectType getSObjectType() {
+        return this.sobjectType;
     }
 
     public Schema.SObjectType getParentSObjectType() {

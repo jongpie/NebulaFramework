@@ -2,9 +2,15 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
-public without sharing class Environment {
 
-    private Environment() {}
+/**
+*
+* @group Metadata
+*
+* @description TODO
+*
+*/
+public without sharing class Environment {
 
     public static String BaseUrl {
         get {return URL.getSalesforceBaseUrl().toExternalForm();}
@@ -16,6 +22,10 @@ public without sharing class Environment {
         private set;
     }
 
+    /**
+    * @description Specifies if the org is a production environment or sandbox
+    * returns true if it's a sandbox
+    */
     public static Boolean IsSandbox {
         get {return organization.IsSandbox;}
         private set;
@@ -26,6 +36,11 @@ public without sharing class Environment {
         private set;
     }
 
+    public static String NamespacePrefix {
+        get {return organization.NamespacePrefix;}
+        private set;
+    }
+
     public static String Type {
         get {return organization.OrganizationType;}
         private set;
@@ -33,7 +48,7 @@ public without sharing class Environment {
 
     private static Organization organization {
         get {
-            if(organization == null) organization = [SELECT Id, InstanceName, IsSandbox, Name, OrganizationType FROM Organization];
+            if(organization == null) organization = [SELECT Id, InstanceName, IsSandbox, Name, NamespacePrefix, OrganizationType FROM Organization];
             return organization;
         }
         private set;

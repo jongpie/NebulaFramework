@@ -29,6 +29,12 @@ private class Environment_Tests {
     }
 
     @isTest
+    static void it_should_return_namespace_prefix() {
+        Organization org = [SELECT Id, NamespacePrefix FROM Organization];
+        System.assertEquals(org.NamespacePrefix, Environment.NamespacePrefix);
+    }
+
+    @isTest
     static void it_should_return_type() {
         Organization org = [SELECT Id, OrganizationType FROM Organization];
         System.assertEquals(org.OrganizationType, Environment.Type);

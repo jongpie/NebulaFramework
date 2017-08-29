@@ -2,23 +2,31 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
+
+/**
+*
+* @group Record Types
+*
+* @description TODO
+*
+*/
 public abstract class SObjectRecordTypes extends NebulaCore implements ISObjectRecordTypes {
 
     private static Map<String, List<RecordType>> cachedRecordTypesBySObjectMap = new Map<String, List<RecordType>>();
 
-    private Schema.SObjectType sobjectType;
     private String sobjectName;
 
-    public SObjectRecordTypes(Schema.SObjectType sobjectType) {
+    public SObjectRecordTypes() {
         this.currentModule = NebulaCore.Module.RECORD_TYPES;
 
-        this.sobjectType = sobjectType;
-        this.sobjectName = this.sobjectType.getDescribe().getName();
+        this.sobjectName = this.getSObjectType().getDescribe().getName();
 
         Logger.addEntry(this, 'Getting record types for ' + this.sobjectName);
 
         this.populateCache();
     }
+
+    public abstract Schema.SObjectType getSObjectType();
 
     public Map<Id, RecordType> getAllById() {
         return new Map<Id, RecordType>(cachedRecordTypesBySObjectMap.get(this.sobjectName));
@@ -40,24 +48,24 @@ public abstract class SObjectRecordTypes extends NebulaCore implements ISObjectR
     private void populateCache() {
         if(cachedRecordTypesBySObjectMap.containsKey(this.sobjectName)) return;
 
-        Schema.SObjectType recordTypeSObjectType = Schema.getGlobalDescribe().get('RecordType');
+        // Trying to call Schema.RecordType.SObjectType confuses Apex, so we have to get it through an extra describe call
+        Schema.SObjectType recordTypeSObjectType = Schema.SObjectType.RecordType.getSObjectType();
+        ISObjectQueryBuilder query = new SObjectQueryBuilder(recordTypeSObjectType);
 
         // If we don't have the SObject cached, then we need to query
-        QueryBuilder query = new QueryBuilder(recordTypeSObjectType);
-
         if(NebulaSettings.RecordTypesSettings.LazyLoad__c) {
-            query.filterBy(new QueryFilter(Schema.RecordType.SObjectType, QueryOperator.EQUALS, this.sobjectName));
+            query.filterBy(new QueryFilter().filterByField(new QueryField(Schema.RecordType.SObjectType), QueryOperator.EQUALS, this.sobjectName));
             Logger.addEntry(this, 'NebulaSettings.RecordTypesSettings.LazyLoad__c=' + NebulaSettings.RecordTypesSettings.LazyLoad__c);
             Logger.addEntry(this, 'this.sobjectName=' + this.sobjectName);
         }
 
         if(!NebulaSettings.RecordTypesSettings.IncludeManagedRecordTypes__c) {
-            query.filterBy(new QueryFilter(Schema.RecordType.NamespacePrefix, QueryOperator.EQUALS, null));
+            query.filterBy(new QueryFilter().filterByField(new QueryField(Schema.RecordType.NamespacePrefix), QueryOperator.EQUALS, null));
         }
 
-        query.orderBy(Schema.RecordType.DeveloperName);
+        query.orderBy(new QueryField(Schema.RecordType.DeveloperName));
 
-        Logger.addEntry(this, 'SObjectRecordTypes query=' + query.getQuery());
+        Logger.addEntry(this, 'Loading SObjectRecordTypes for=' + this.getSObjectType());
 
         if(!cachedRecordTypesBySObjectMap.containsKey(this.sobjectName)) cachedRecordTypesBySObjectMap.put(this.sobjectName, new List<RecordType>());
         List<RecordType> recordTypeList = (List<RecordType>)query.getQueryResults();
