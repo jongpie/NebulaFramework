@@ -35,7 +35,10 @@ public interface ISObjectQueryBuilder {
 
     // Additional query option methods
     ISObjectQueryBuilder limitCount(Integer limitCount);
-    ISObjectQueryBuilder setAsUpdate();
+    ISObjectQueryBuilder offset(Integer numberOfRowsToSkip);
+    ISObjectQueryBuilder forReference();
+    ISObjectQueryBuilder forUpdate();
+    ISObjectQueryBuilder forView();
     ISObjectQueryBuilder usingScope(QueryFilterScope filterScope);
 
     // Query string methods
