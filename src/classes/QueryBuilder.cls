@@ -2,232 +2,114 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
-public class QueryBuilder extends NebulaCore implements IQueryBuilder {
 
-    private String query;
-    private Set<String> queryFields;
-    private List<String> childRelationshipQueries;
-    private List<String> whereClauseList;
-    @testVisible private List<String> orderByList;
-    private QueryFilterScope filterScope;
-    @testVisible private Boolean forUpdate;
-    private Integer limitCount;
+/**
+*
+* @group Query Builder
+*
+* @description Abstract class that provides some shared properties & methods for SObjectQueryBuilder & AggregateResultQueryBuilder
+*
+*/
+public abstract class QueryBuilder extends NebulaCore {
 
-    private final Schema.FieldSet fieldSet;
-    private final List<Schema.SObjectField> sobjectFieldList;
-    private final SObjectType sobjectType;
-    private final Map<String, Schema.SObjectField> sobjectTypeFieldMap;
+    protected List<String> whereClauseList;
+    protected List<String> orderByList;
+    protected Integer limitCount;
 
-    public QueryBuilder(Schema.SObjectType sobjectType) {
-        this(sobjectType, null, null);
-    }
+    protected SObjectType sobjectType;
+    protected Map<String, Schema.SObjectField> sobjectTypeFieldMap;
 
-    public QueryBuilder(Schema.SObjectType sobjectType, Schema.FieldSet fieldSet, List<Schema.SObjectField> sobjectFieldList) {
-        this.currentModule = NebulaCore.Module.REPOSITORY;
+    public QueryBuilder() {
+        this.currentModule = NebulaCore.Module.QUERY_BUILDER;
 
-        this.sobjectType         = sobjectType;
-        this.sobjectFieldList    = sobjectFieldList;
-        this.fieldSet            = fieldSet;
-        this.sobjectTypeFieldMap = this.sobjectType.getDescribe().fields.getMap();
-
-        this.queryFields              = new Set<String>();
-        this.childRelationshipQueries = new List<String>();
         this.whereClauseList          = new List<String>();
         this.orderByList              = new List<String>();
-        this.forUpdate                = false;
-
-        this.addCommonQueryFields();
-        this.addFieldSetMembers();
-        this.addSObjectFields();
-        this.addSObjectTypeFields();
     }
 
-    public IQueryBuilder filterBy(IQueryFilter queryFilter) {
-        return this.filterBy(new List<IQueryFilter>{queryFilter});
+    protected void doFilterBy(IQueryFilter queryFilter) {
+        this.doFilterBy(new List<IQueryFilter>{queryFilter});
     }
 
-    public IQueryBuilder filterBy(List<IQueryFilter> queryFilters) {
-        if(queryFilters == null) return this;
+    protected void doFilterBy(List<IQueryFilter> queryFilters) {
+        if(queryFilters == null) return;
 
         for(IQueryFilter queryFilter : queryFilters) this.whereClauseList.add(queryFilter.getValue());
-        return this;
     }
 
-    public IQueryBuilder includeChildrenRecords(Schema.SObjectField childToParentRelationshipField, ISObjectRepository childSObjectRepository) {
-        return this.includeChildrenRecords(new Map<Schema.SObjectField, ISObjectRepository>{childToParentRelationshipField => childSObjectRepository});
+    protected void doOrderBy(IQueryField orderByQueryField) {
+        this.doOrderBy(orderByQueryField, null, null);
     }
 
-    public IQueryBuilder includeChildrenRecords(Map<Schema.SObjectField, ISObjectRepository> childFieldToChildSObjectRepositoryMap) {
-        for(Schema.SObjectField sobjectField : childFieldToChildSObjectRepositoryMap.keySet()) {
-            IQueryBuilder childQueryBuilder = childFieldToChildSObjectRepositoryMap.get(sobjectField).getQueryBuilder();
-
-            this.childRelationshipQueries.add(childQueryBuilder.getQuery(sobjectField));
-        }
-        return this;
+    protected void doOrderBy(IQueryField orderByQueryField, QuerySortOrder sortOrder) {
+        this.doOrderBy(orderByQueryField, sortOrder, null);
     }
 
-    public IQueryBuilder orderBy(Schema.SObjectField orderByField) {
-        return this.orderBy(orderByField, null, null);
+    protected void doOrderBy(IQueryField orderByQueryField, QuerySortOrder sortOrder, QueryNullSortOrder nullsSortOrder) {
+        String sortOrderString = '';
+        if(sortOrder == QuerySortOrder.ASCENDING) sortOrderString = ' ASC';
+        else if(sortOrder == QuerySortOrder.DESCENDING) sortOrderString = ' DESC';
+
+        if(nullsSortOrder != null) sortOrderString += ' NULLS ' + nullsSortOrder;
+
+        this.orderByList.add(orderByQueryField.getValue() + sortOrderString);
     }
 
-    public IQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder) {
-        return this.orderBy(orderByField, sortOrder, null);
-    }
-
-    public IQueryBuilder orderBy(Schema.SObjectField orderByField, QuerySortOrder sortOrder, QueryNullSortOrder nullsSortOrder) {
-        String sortOrderSoql = '';
-        if(sortOrder == QuerySortOrder.ASCENDING) sortOrderSoql = ' ASC';
-        else if(sortOrder == QuerySortOrder.DESCENDING) sortOrderSoql = ' DESC';
-
-        if(nullsSortOrder != null) sortOrderSoql += ' NULLS ' + nullsSortOrder;
-
-        this.orderByList.add(orderByField.getDescribe().getName() + sortOrderSoql);
-
-        return this;
-    }
-
-    public IQueryBuilder limitCount(Integer limitCount) {
+    protected void doLimitCount(Integer limitCount) {
         this.limitCount = limitCount;
-        return this;
     }
 
-    public IQueryBuilder setAsUpdate() {
-        this.forUpdate = true;
-        return this;
+    protected String doGetWhereClauseString() {
+        if(this.whereClauseList.isEmpty()) return '';
+
+        // Dedupe
+        this.whereClauseList = new List<String>(new Set<String>(this.whereClauseList));
+
+        this.whereClauseList.sort();
+        return '\nWHERE ' + String.join(this.whereClauseList, '\nAND ');
     }
 
-    public IQueryBuilder usingScope(QueryFilterScope filterScope) {
-        this.filterScope = filterScope;
-        return this;
+    protected String doGetOrderByString() {
+        if(this.orderByList.isEmpty()) return '';
+
+        // Dedupe
+        this.orderByList = new List<String>(new Set<String>(this.orderByList));
+
+        this.orderByList.sort();
+        return '\nORDER BY ' + String.join(new List<String>(orderByList), ', ');
     }
 
-    // Query execution methods
-    public SObject getFirstQueryResult() {
-        return this.getQueryResults()[0];
-    }
-
-    public List<SObject> getQueryResults() {
-        List<SObject> results = Database.query(this.getQuery());
-
-        this.logEntry(results);
-
-        return results;
-    }
-
-    public virtual List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup) {
-        List<SObject> results = Search.query(this.getSearchQuery(searchTerm, searchGroup))[0];
-
-        this.logEntry(results);
-
-        return results;
-    }
-
-    // Query string methods
-    public String getQuery() {
-        return this.getQuery(String.valueOf(this.sobjectType));
-    }
-
-    public String getQuery(Schema.SObjectField childRelationshipSObjectField) {
-        Schema.SObjectType parentSObjectType = new SObjectFieldDescriber(childRelationshipSObjectField).getParentSObjectType();
-        String childRelationshipName = new SObjectTypeDescriber(parentSObjectType).getChildRelationshipName(childRelationshipSObjectField);
-        return this.getQuery(childRelationshipName);
-    }
-
-    private String getQuery(String sobjectQueryName) {
-        this.query = 'SELECT ' + this.getQueryFieldString();
-
-        // Only 1 level of child relationships is allowed, so don't include them if the SObject name isn't the current SObject Type
-        if(sobjectQueryName == String.valueOf(this.sobjectType)) this.query += this.getChildRelationshipsQueryString();
-
-        this.query +='\nFROM ' + sobjectQueryName
-            + this.getWhereClauseString()
-            + this.getOrderByString()
-            + this.getLimitCountString()
-            + this.getForUpdateString();
-
-        return this.query;
-    }
-
-    private String getSearchQuery(String searchTerm, QuerySearchGroup searchGroup) {
-        this.query = 'FIND ' + new QueryArgumentFormatter(searchTerm.toLowerCase()).getValue()
-            + '\nIN ' + searchGroup.name().replace('_', ' ')
-            + '\nRETURNING ' + this.sobjectType + '('
-                + this.getQueryFieldString()
-                + this.getWhereClauseString()
-                + this.getOrderByString()
-                + this.getLimitCountString()
-            + ')';
-
-        if(this.forUpdate) Logger.addEntry(this, 'SOSL Search Query method flagged as FOR UPDATE. SOSL cannot use FOR UPDATE, ignoring');
-        if(this.filterScope != null) Logger.addEntry(this, 'SOSL Search Query method flagged as USING SCOPE ' + this.filterScope + '. SOSL cannot use USING SCOPE, ignoring');
-
-        return this.query;
-    }
-
-    private String getQueryFieldString() {
-        List<String> queryFieldList = new List<String>(this.queryFields);
-        queryFieldList.sort();
-        return String.join(queryFieldList, ', ');
-    }
-
-    private String getChildRelationshipsQueryString() {
-        if(this.childRelationshipQueries.isEmpty()) return '';
-
-        return ',\n(' + String.join(childRelationshipQueries, '), (') + ')';
-    }
-
-    private String getWhereClauseString() {
-        return !this.whereClauseList.isEmpty() ? '\nWHERE ' + String.join(this.whereClauseList, '\nAND ') : '';
-    }
-
-    private String getOrderByString() {
-        return !this.orderByList.isEmpty() ? '\nORDER BY ' + String.join(new List<String>(orderByList), ', ') : '';
-    }
-
-    private String getLimitCountString() {
+    protected String doGetLimitCountString() {
         return this.limitCount != null ? '\nLIMIT '+ this.limitCount : '';
     }
 
-    private String getForUpdateString() {
-        return this.orderByList.isEmpty() && this.forUpdate ? '\nFOR UPDATE' : '';
+    protected List<SObject> doGetQueryResults(String query) {
+        List<SObject> results = Database.query(query);
+
+        this.logResults(query, results);
+
+        return results;
     }
 
-    private void addCommonQueryFields() {
-        if(!NebulaSettings.RepositorySettings.IncludeCommonFields__c) return;
-        // Auto-add the common fields that are available for the SObject Type
-        List<String> commonFieldNameList = new List<String>{
-            'Id', 'CaseNumber', 'CreatedById', 'CreatedDate', 'IsClosed', 'LastModifiedById', 'LastModifiedDate',
-            'Name', 'OwnerId', 'ParentId', 'Subject', 'RecordTypeId', 'SystemModStamp'
-        };
-        for(String commonFieldName : commonFieldNameList) {
-            if(!this.sobjectTypeFieldMap.containsKey(commonFieldName)) continue;
+    protected List<List<SObject>> doGetSearchResults(String query) {
+        List<List<SObject>> results = Search.query(query);
 
-            this.queryFields.add(commonFieldName.toLowerCase());
-        }
+        this.logResults(query, results);
+
+        return results;
     }
 
-    private void addFieldSetMembers() {
-        if(this.fieldSet == null) return;
+    private void filterByWithSeparator(List<IQueryFilter> queryFilters, String separator) {
+        if(queryFilters == null) return;
 
-        for(Schema.FieldSetMember field : this.fieldSet.getFields()) this.queryFields.add(field.getFieldPath().toLowerCase());
+        List<String> queryFilterValues = new List<String>();
+        for(IQueryFilter queryFilter : queryFilters) queryFilterValues.add(queryFilter.getValue());
+
+        String orStatement = '(' + String.join(queryFilterValues, ' ' + separator + ' ') + ')';
+        this.whereClauseList.add(orStatement);
     }
 
-    private void addSObjectFields() {
-        if(this.sobjectFieldList == null) return;
-
-        for(Schema.SObjectField field : this.sobjectFieldList) this.queryFields.add(field.getDescribe().getName().toLowerCase());
-    }
-
-    private void addSObjectTypeFields() {
-        if(this.fieldSet != null || this.sobjectFieldList != null) return;
-
-        // If no field set or list of fields is provided, we enter 'lazy mode' and all fields for the SObject Type are added
-        // This is effectively 'select * from <sobject>'. Performance issues can occur with large objects, so use carefully.
-        for(Schema.SObjectField field : this.sobjectTypeFieldMap.values()) this.queryFields.add(field.getDescribe().getName().toLowerCase());
-    }
-
-    private void logEntry(List<Object> results) {
-        String logEntry = 'Query:\n' + this.query + '\n\nResults:\n' + JSON.serialize(results);
+    private void logResults(String query, List<Object> results) {
+        String logEntry = 'Query:\n' + query + '\n\nResults:\n' + JSON.serializePretty(results);
         Logger.addEntry(this, logEntry);
     }
 

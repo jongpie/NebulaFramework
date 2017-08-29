@@ -2,18 +2,25 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
+
+/**
+*
+* @group Query Builder
+*
+* @description TODO
+*
+*/
 public virtual class QueryArgumentFormatter extends NebulaCore implements IQueryArgumentFormatter {
 
-    private Object argumentValue;
+    private String value;
 
-    public QueryArgumentFormatter(Object argumentValue) {
-        this.currentModule = NebulaCore.Module.REPOSITORY;
-
-        this.argumentValue = argumentValue;
+    public QueryArgumentFormatter(Object valueToFormat) {
+        this.currentModule = NebulaCore.Module.QUERY_BUILDER;
+        this.value = this.objectToQueryString(valueToFormat);
     }
 
     public virtual String getValue() {
-        return this.objectToQueryString(this.argumentValue);
+        return this.value;
     }
 
     protected virtual String objectToQueryString(Object valueToFormat) {
@@ -43,7 +50,11 @@ public virtual class QueryArgumentFormatter extends NebulaCore implements IQuery
             Schema.SObjectType sobjectType = (Schema.SObjectType)valueToFormat;
             return wrapInSingleQuotes(sobjectType.getDescribe().getName());
         }
-        else if(valueToFormat instanceof String) return wrapInSingleQuotes((String)valueToFormat);
+        else if(valueToFormat instanceof String) {
+            // Escape single quotes to prevent SOQL/SOSL injection
+            String stringArgument = String.escapeSingleQuotes((String)valueToFormat);
+            return wrapInSingleQuotes(stringArgument);
+        }
         else return String.valueOf(valueToFormat);
     }
 

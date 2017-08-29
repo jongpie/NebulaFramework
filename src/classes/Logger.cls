@@ -2,9 +2,15 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
-public without sharing class Logger {
 
-    private Logger() {}
+/**
+*
+* @group Logging
+*
+* @description TODO
+*
+*/
+public without sharing class Logger {
 
     private static Id logId;
     private static Attachment logAttachment;
@@ -25,7 +31,7 @@ public without sharing class Logger {
     }
 
     public static void saveLogs() {
-        if(!NebulaSettings.loggerSettings.EnableLogging__c) return;
+        if(!NebulaSettings.LoggerSettings.EnableLogging__c) return;
 
         saveTransactionLog();
         saveSingleLogFile();

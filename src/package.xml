@@ -12,7 +12,7 @@
         <members>NebulaLog__c</members>
         <members>NebulaLoggerSettings__c</members>
         <members>NebulaRecordTypesSettings__c</members>
-        <members>NebulaRepositorySettings__c</members>
+        <members>NebulaSObjectQueryBuilderSettings__c</members>
         <members>NebulaTriggerHandlerSettings__c</members>
         <name>CustomObject</name>
     </types>
