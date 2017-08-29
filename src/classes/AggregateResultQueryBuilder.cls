@@ -63,11 +63,11 @@ public class AggregateResultQueryBuilder extends QueryBuilder implements IAggreg
         return buildAggregateFunction('COUNT', queryField, fieldAlias);
     }
 
-    public IAggregateResultQueryBuilder count_distinct(IQueryField queryField) {
-        return this.count_distinct(queryField, null);
+    public IAggregateResultQueryBuilder countDistinct(IQueryField queryField) {
+        return this.countDistinct(queryField, null);
     }
 
-    public IAggregateResultQueryBuilder count_distinct(IQueryField queryField, String fieldAlias) {
+    public IAggregateResultQueryBuilder countDistinct(IQueryField queryField, String fieldAlias) {
         return buildAggregateFunction('COUNT_DISTINCT', queryField, fieldAlias);
     }
 

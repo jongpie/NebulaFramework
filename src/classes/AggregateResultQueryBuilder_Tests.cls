@@ -15,7 +15,7 @@ private class AggregateResultQueryBuilder_Tests {
         IAggregateResultQueryBuilder aggregateResultQueryBuilder = new AggregateResultQueryBuilder(Schema.Opportunity.SObjectType)
             .max(new QueryField(Schema.Opportunity.CreatedDate))
             .avg(new QueryField(Schema.Opportunity.Amount))
-            .count_distinct(new QueryField(Schema.Opportunity.OwnerId))
+            .countDistinct(new QueryField(Schema.Opportunity.OwnerId))
             .min(new QueryField(Schema.Opportunity.CreatedDate))
             .groupBy(new QueryField(Schema.Opportunity.Type))
             .count(new QueryField(Schema.Opportunity.AccountId));

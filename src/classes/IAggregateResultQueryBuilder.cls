@@ -26,8 +26,8 @@ public interface IAggregateResultQueryBuilder {
     IAggregateResultQueryBuilder avg(IQueryField queryField, String fieldAlias);
     IAggregateResultQueryBuilder count(IQueryField queryField);
     IAggregateResultQueryBuilder count(IQueryField queryField, String fieldAlias);
-    IAggregateResultQueryBuilder count_distinct(IQueryField queryField);
-    IAggregateResultQueryBuilder count_distinct(IQueryField queryField, String fieldAlias);
+    IAggregateResultQueryBuilder countDistinct(IQueryField queryField);
+    IAggregateResultQueryBuilder countDistinct(IQueryField queryField, String fieldAlias);
     IAggregateResultQueryBuilder max(IQueryField queryField);
     IAggregateResultQueryBuilder max(IQueryField queryField, String fieldAlias);
     IAggregateResultQueryBuilder min(IQueryField queryField);
