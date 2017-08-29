@@ -12,6 +12,9 @@
 */
 public abstract class QueryBuilder extends NebulaCore {
 
+    private static Map<Integer, List<SObject>> cachedQueryResultsByHashCode        = new Map<Integer, List<SObject>>();
+    private static Map<Integer, List<List<SObject>>> cachedSearchResultsByHashCode = new Map<Integer, List<List<SObject>>>();
+
     protected List<String> whereClauseList;
     protected List<String> orderByList;
     protected Integer limitCount;
@@ -19,11 +22,18 @@ public abstract class QueryBuilder extends NebulaCore {
     protected SObjectType sobjectType;
     protected Map<String, Schema.SObjectField> sobjectTypeFieldMap;
 
+    private Boolean cacheResults;
+
     public QueryBuilder() {
         this.currentModule = NebulaCore.Module.QUERY_BUILDER;
 
-        this.whereClauseList          = new List<String>();
-        this.orderByList              = new List<String>();
+        this.whereClauseList = new List<String>();
+        this.orderByList     = new List<String>();
+        this.cacheResults    = false;
+    }
+
+    protected void doCacheResults() {
+        this.cacheResults = true;
     }
 
     protected void doFilterBy(IQueryFilter queryFilter) {
@@ -83,19 +93,13 @@ public abstract class QueryBuilder extends NebulaCore {
     }
 
     protected List<SObject> doGetQueryResults(String query) {
-        List<SObject> results = Database.query(query);
-
-        this.logResults(query, results);
-
-        return results;
+        if(this.cacheResults) return this.getCachedQuery(query);
+        else return this.executeQuery(query);
     }
 
     protected List<List<SObject>> doGetSearchResults(String query) {
-        List<List<SObject>> results = Search.query(query);
-
-        this.logResults(query, results);
-
-        return results;
+        if(this.cacheResults) return this.getCachedSearch(query);
+        else return this.executeSearch(query);
     }
 
     private void filterByWithSeparator(List<IQueryFilter> queryFilters, String separator) {
@@ -106,6 +110,68 @@ public abstract class QueryBuilder extends NebulaCore {
 
         String orStatement = '(' + String.join(queryFilterValues, ' ' + separator + ' ') + ')';
         this.whereClauseList.add(orStatement);
+    }
+
+    private List<SObject> getCachedQuery(String query) {
+        Integer hashCode = query.hashCode();
+
+        Boolean isCached = cachedQueryResultsByHashCode.containsKey(hashCode);
+        if(!isCached) cachedQueryResultsByHashCode.put(hashCode, this.executeQuery(query));
+
+        // Always return a deep clone so the original cached version is never modified
+        return cachedQueryResultsByHashCode.get(hashCode).deepClone(true, true, true);
+    }
+
+    private List<SObject> executeQuery(String query) {
+        List<SObject> results = Database.query(query);
+        this.logResults(query, results);
+        return results;
+    }
+
+    private List<List<SObject>> getCachedSearch(String query) {
+        Integer hashCode = query.hashCode();
+
+        Boolean isCached = cachedSearchResultsByHashCode.containsKey(hashCode);
+        if(!isCached) cachedSearchResultsByHashCode.put(hashCode, this.executeSearch(query));
+
+        // Always return a deep clone so the original cached version is never modified
+        List<List<SObject>> cachedResults = cachedSearchResultsByHashCode.get(hashCode);
+        List<List<SObject>> deepClonedResults = new List<List<SObject>>();
+        for(List<SObject> cachedListOfResults : cachedResults) deepClonedResults.add(cachedListOfResults.deepClone(true, true, true));
+        return deepClonedResults;
+
+        /* Sample code to show cloneing the list of list (doesn't work) vs deep cloning each list withn the list of lists
+        List<List<SObject>> cachedResults = [find 'gillespie' in all fields returning account(id, name)];
+List<List<SObject>> clonedResults = new List<List<SObject>>();
+for(List<SObject> cachedListOfResults : cachedResults) clonedResults.add(cachedListOfResults.deepClone(true, true, true));
+
+System.debug(cachedResults);
+clonedResults[0][0].put('Name', 'Poop');
+clonedResults[0][0].put('Id', null);
+System.debug(clonedResults);
+System.debug(cachedResults);
+System.assertNotEquals(cachedResults[0][0], clonedResults[0][0]);
+insert clonedResults[0][0];
+System.debug(clonedResults);
+System.debug(cachedResults);
+System.assertNotEquals(cachedResults[0][0], clonedResults[0][0]);
+System.assertNotEquals(cachedResults[0][0].Id, clonedResults[0][0].Id);
+///
+
+List<List<Sobject>> rs = [find 'gillespie' in all fields returning account(id, name)];
+System.debug(rs);
+List<List<Sobject>> rsClone = rs.clone();
+rsClone[0][0].put('Name', 'Poop');
+System.debug(rsClone);
+System.debug(rs);
+System.assertNotEquals(rs[0][0], rsClone[0][0]);
+*/
+    }
+
+    private List<List<SObject>> executeSearch(String query) {
+        List<List<SObject>> results = Search.query(query);
+        this.logResults(query, results);
+        return results;
     }
 
     private void logResults(String query, List<Object> results) {

@@ -31,6 +31,11 @@ public class SearchQueryBuilder extends QueryBuilder implements ISearchQueryBuil
         this.parseSObjectQueryBuilders();
     }
 
+    public ISearchQueryBuilder cacheResults() {
+        super.doCacheResults();
+        return this;
+    }
+
     public ISearchQueryBuilder setQuerySearchGroup(QuerySearchGroup searchGroup) {
         this.searchGroup = searchGroup;
         return this;
