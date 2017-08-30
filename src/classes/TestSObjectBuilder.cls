@@ -5,6 +5,23 @@
 @isTest
 public class TestSObjectBuilder  {
 
+    public static ITestSObjectBuilder getTestAccountBuilder() {
+        return getTestSObjectBuilderInstance('TestAccountBuilder', TestSObjectBuilder.TestAccountBuilder.class);
+    }
+
+    public static ITestSObjectBuilder getTestContactBuilder() {
+        return getTestSObjectBuilderInstance('TestContactBuilder', TestSObjectBuilder.TestContactBuilder.class);
+    }
+
+    public static ITestSObjectBuilder getTestLeadBuilder() {
+        return getTestSObjectBuilderInstance('TestLeadBuilder', TestSObjectBuilder.TestLeadBuilder.class);
+    }
+
+    private static ITestSObjectBuilder getTestSObjectBuilderInstance(String builderName, System.Type fallbackBuilder) {
+        System.Type t = Type.forName(builderName) != null ? Type.forName(builderName) : fallbackBuilder;
+        return (ITestSObjectBuilder)t.newInstance();
+    }
+
     public abstract class Base implements ITestSObjectBuilder {
 
         private Map<Schema.SObjectField, Object> fieldValueMap;
@@ -68,7 +85,8 @@ public class TestSObjectBuilder  {
         }
     }
 
-    public class TestAccountBuilder extends TestSObjectBuilder.Base {
+    private class TestAccountBuilder extends TestSObjectBuilder.Base {
+
         public override Schema.SObjectType getSObjectType() {
             return Schema.Account.SObjectType;
         }
@@ -78,9 +96,11 @@ public class TestSObjectBuilder  {
                 Schema.Account.Name  => 'My Test Company'
             };
         }
+
     }
 
-    public class TestContactBuilder extends TestSObjectBuilder.Base {
+    private class TestContactBuilder extends TestSObjectBuilder.Base {
+
         public override Schema.SObjectType getSObjectType() {
             return Schema.Contact.SObjectType;
         }
@@ -90,9 +110,11 @@ public class TestSObjectBuilder  {
                 Schema.Contact.LastName  => 'Gillespie'
             };
         }
+
     }
 
-    public class TestLeadBuilder extends TestSObjectBuilder.Base {
+    private class TestLeadBuilder extends TestSObjectBuilder.Base {
+
         public override Schema.SObjectType getSObjectType() {
             return Schema.Lead.SObjectType;
         }
@@ -103,6 +125,7 @@ public class TestSObjectBuilder  {
                 Schema.Lead.LastName => 'Gillespie'
             };
         }
+
     }
 
     private class TestSObjectBuilderException extends Exception {}
