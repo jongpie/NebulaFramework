@@ -5,13 +5,13 @@
 @isTest
 private class DMLMock_Tests {
 
-    static IDML dmlRepo = new DMLMock.Base();
-    static Schema.Contact con = createContact();
+    static IDML contactDMLRepo = new DMLMock.ContactDMLMock();
+    static Schema.Contact contact = (Contact)TestSObjectBuilder.getTestContactBuilder().build();
 
     @isTest
     static void it_should_fake_dml_insert() {
         Test.startTest();
-        dmlRepo.insertRecords(con);
+        contactDMLRepo.insertRecords(contact);
         Test.stopTest();
 
         System.assert(TestingUtils.insertedRecords.size() > 0);
@@ -20,7 +20,7 @@ private class DMLMock_Tests {
     @isTest
     static void it_should_fake_dml_update() {
         Test.startTest();
-        dmlRepo.updateRecords(con);
+        contactDMLRepo.updateRecords(contact);
         Test.stopTest();
 
         System.assert(!TestingUtils.updatedRecords.isEmpty());
@@ -29,7 +29,7 @@ private class DMLMock_Tests {
     @isTest
     static void it_should_fake_dml_upsert() {
         Test.startTest();
-        dmlRepo.upsertRecords(con);
+        contactDMLRepo.upsertRecords(contact);
         Test.stopTest();
 
         System.assert(!TestingUtils.upsertedRecords.isEmpty());
@@ -38,7 +38,7 @@ private class DMLMock_Tests {
     @isTest
     static void it_should_fake_dml_delete() {
         Test.startTest();
-        dmlRepo.deleteRecords(con);
+        contactDMLRepo.deleteRecords(contact);
         Test.stopTest();
 
         System.assert(!TestingUtils.deletedRecords.isEmpty());
@@ -47,7 +47,7 @@ private class DMLMock_Tests {
     @isTest
     static void it_should_fake_dml_hard_delete() {
         Test.startTest();
-        dmlRepo.hardDeleteRecords(con);
+        contactDMLRepo.hardDeleteRecords(contact);
         Test.stopTest();
 
         System.assert(!TestingUtils.deletedRecords.isEmpty());
@@ -56,7 +56,7 @@ private class DMLMock_Tests {
     @isTest
     static void it_should_fake_dml_undelete() {
         Test.startTest();
-        dmlRepo.undeleteRecords(con);
+        contactDMLRepo.undeleteRecords(contact);
         Test.stopTest();
 
         System.assert(!TestingUtils.undeletedRecords.isEmpty());
@@ -68,7 +68,7 @@ private class DMLMock_Tests {
         l = (Lead)TestingUtils.setReadOnlyField(l, Schema.Lead.IsConverted, true);
 
         Test.startTest();
-        dmlRepo.updateRecords(l);
+        contactDMLRepo.updateRecords(l);
         Test.stoptest();
 
         SObject record = TestingUtils.updatedRecords[0];
@@ -76,14 +76,5 @@ private class DMLMock_Tests {
         System.assert(record.get('IsConverted') != null);
     }
 
-    private static Contact createContact() {
-        con = new Contact();
-        con.Email = 'rightHandMan@hamilton.com';
-        con.FirstName = 'George';
-        con.LastName = 'Washington';
-        con.LeadSource = 'Web';
-
-        return con;
-    }
 
 }

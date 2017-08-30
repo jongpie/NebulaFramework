@@ -32,8 +32,8 @@ private class SObjectRepositoryMocks_Tests {
 
     @isTest
     static void it_should_return_list_of_sobjects_when_mocking_sosl_search_with_passed_objects() {
-        Contact con = new Contact();
-        ISObjectRepository base = new SObjectRepositoryMocks.Base().with(new List<SObject>{con});
+        Contact contact = (Contact)TestSObjectBuilder.getTestContactBuilder().build();
+        ISObjectRepository base = new SObjectRepositoryMocks.Base().with(new List<SObject>{contact});
 
         System.assert(base.getSearchResults(getFieldValue(),QuerySearchGroup.ALL_FIELDS) instanceof List<SObject>);
     }

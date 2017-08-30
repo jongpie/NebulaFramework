@@ -27,8 +27,8 @@ public class SObjectRepositoryMocks {
             this.records = records;
         }
 
-        public Schema.SObjectType getSObjectType() {
-            return Schema.User.SObjectType;
+        public override Schema.SObjectType getSObjectType() {
+            return Schema.User.SObjectType; // TODO change to be dynamic?
         }
 
         public Base with(List<SObject> records) {

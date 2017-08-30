@@ -42,26 +42,11 @@ private class SObjectRepository_Tests {
         }
     }
 
-    static Account createAccount() {
-        Account account = new Account(
-            Name  = 'My Test Company'
-        );
-        return account;
-    }
-
-    static Contact createContact(Id accountId) {
-        Contact contact = new Contact(
-            AccountId = accountId,
-            LastName  = 'Gillespie'
-        );
-        return contact;
-    }
-
     @testSetup
     static void setupData() {
         List<Account> accountList = new List<Account>();
         for(Integer i = 0; i < 5; i++) {
-            accountList.add(createAccount());
+            accountList.add((Account)TestSObjectBuilder.getTestAccountBuilder().build());
         }
         insert accountList;
     }
@@ -176,7 +161,7 @@ private class SObjectRepository_Tests {
     static void it_should_return_account_and_contacts_as_children_records() {
         Account account = [SELECT Id FROM Account LIMIT 1];
 
-        Contact contact = createContact(account.Id);
+        Contact contact = (Contact)TestSObjectBuilder.getTestContactBuilder().set(Schema.Contact.AccountId, account.Id).build();
         contact.Email = 'test@email.com';
         insert contact;
         contact = [SELECT Id, AccountId FROM Contact WHERE Id = :contact.Id];
@@ -262,7 +247,7 @@ private class SObjectRepository_Tests {
 
     @isTest
     static void it_should_insert_a_single_record() {
-        Account account = createAccount();
+        Account account = (Account)TestSObjectBuilder.getTestAccountBuilder().build();
         System.assertEquals(null, account.Id);
 
         Test.startTest();
@@ -291,7 +276,7 @@ private class SObjectRepository_Tests {
 
     @isTest
     static void it_should_upsert_a_single_new_record() {
-        Account newAccount = createAccount();
+        Account newAccount = (Account)TestSObjectBuilder.getTestAccountBuilder().build();
         System.assertEquals(null, newAccount.Id);
 
         Test.startTest();

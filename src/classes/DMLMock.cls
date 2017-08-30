@@ -13,7 +13,9 @@
 @isTest
 public class DMLMock {
 
-    public virtual class Base implements IDML {
+    public abstract class Base implements IDML {
+
+        public abstract Schema.SObjectType getSObjectType();
 
         // TODO consider changing method name to singular, return type to single Database.SaveResult
         public List<Database.SaveResult> insertRecords(SObject record) {
@@ -86,6 +88,14 @@ public class DMLMock {
             this.deleteRecords(recordList);
             // TODO add logic to try to actually return real results, based on the record list provided
             return new List<Database.DeleteResult>();
+        }
+
+    }
+
+    public class ContactDMLMock extends DMLMock.Base {
+
+        public override Schema.SObjectType getSObjectType() {
+            return Schema.Contact.SObjectType;
         }
 
     }
