@@ -4,8 +4,9 @@
 *************************************************************************************************/
 public interface ITestSObjectBuilder {
 
-    // Setup methods
+    // Getter methods
     Schema.SObjectType getSObjectType();
+    Map<SObjectField, Object> getDefaultFieldsAndValues();
 
     // Setter methods
     ITestSObjectBuilder set(Schema.SObjectField field, Object value);

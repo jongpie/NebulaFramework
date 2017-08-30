@@ -3,17 +3,19 @@
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
 @isTest
-public class TestSObjectBuilder {
+public class TestSObjectBuilder  {
 
     public abstract class Base implements ITestSObjectBuilder {
 
         private Map<Schema.SObjectField, Object> fieldValueMap;
 
         public Base() {
-            this.fieldValueMap = new Map<Schema.SObjectField, Object>();
+            this.fieldValueMap = this.getDefaultFieldsAndValues();
         }
 
         public abstract Schema.SObjectType getSObjectType();
+        // The minimum fields needed to insert a test record
+        public abstract Map<SObjectField, Object> getDefaultFieldsAndValues();
 
         public ITestSObjectBuilder set(Schema.SObjectField field, Object value) {
             return this.set(new Map<Schema.SObjectField, Object>{field => value});
@@ -37,21 +39,72 @@ public class TestSObjectBuilder {
         }
 
         public List<SObject> build(Integer numberOfRecordsToCreate, Boolean insertRecords) {
-            List<SObject> sobjects = new List<SObject>();
+            List<SObject> records = new List<SObject>();
             for(Integer i = 0; i < numberOfRecordsToCreate; i++) {
-                SObject sobj = this.getSObjectType().newSObject();
+                SObject record = this.getSObjectType().newSObject();
+
                 for(Schema.SObjectField field : this.fieldValueMap.keySet()) {
                     Object value = this.fieldValueMap.get(field);
-                    sobj.put(field.getDescribe().getName(), value);
+                    record.put(field.getDescribe().getName(), value);
                 }
 
-                sobjects.add(sobj);
+                records.add(record);
             }
 
-            if(insertRecords) insert sobjects;
+            if(insertRecords) insert records;
 
-            return sobjects;
+            return records;
+        }
+
+        private void validateFields() {
+            for(Schema.SObjectField field : this.fieldValueMap.keySet()) {
+                // If the current field is a field for the SObject Type, then everythign is great!
+                Schema.SObjectType fieldSObjectType = new SObjectFieldDescriber(field).getSObjectType();
+                if(this.getSObjectType() == fieldSObjectType) continue;
+
+                // If a field is provided but it's for a different SObject Type, throw an exception
+                throw new TestSObjectBuilderException(field + ' belongs to SObject Type ' + fieldSObjectType + ', current SObject Type is ' + this.getSObjectType());
+            }
         }
     }
+
+    public class TestAccountBuilder extends TestSObjectBuilder.Base {
+        public override Schema.SObjectType getSObjectType() {
+            return Schema.Account.SObjectType;
+        }
+
+        public override Map<SObjectField, Object> getDefaultFieldsAndValues() {
+            return new Map<SObjectField, Object>{
+                Schema.Account.Name  => 'My Test Company'
+            };
+        }
+    }
+
+    public class TestContactBuilder extends TestSObjectBuilder.Base {
+        public override Schema.SObjectType getSObjectType() {
+            return Schema.Contact.SObjectType;
+        }
+
+        public override Map<SObjectField, Object> getDefaultFieldsAndValues() {
+            return new Map<SObjectField, Object>{
+                Schema.Contact.LastName  => 'Gillespie'
+            };
+        }
+    }
+
+    public class TestLeadBuilder extends TestSObjectBuilder.Base {
+        public override Schema.SObjectType getSObjectType() {
+            return Schema.Lead.SObjectType;
+        }
+
+        public override Map<SObjectField, Object> getDefaultFieldsAndValues() {
+            return new Map<SObjectField, Object>{
+                Schema.Lead.Company  => 'My Test Company',
+                Schema.Lead.LastName => 'Gillespie'
+            };
+        }
+    }
+
+    private class TestSObjectBuilderException extends Exception {}
 
 }
