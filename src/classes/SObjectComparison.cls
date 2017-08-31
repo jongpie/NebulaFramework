@@ -5,8 +5,6 @@
 
 /**
 *
-* @group TODO
-*
 * @description Compares 2 versions of the same record to see if any fields have changed
 *
 */
