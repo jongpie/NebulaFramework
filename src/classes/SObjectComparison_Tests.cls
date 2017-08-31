@@ -33,7 +33,7 @@ private class SObjectComparison_Tests {
     static void it_should_throw_an_exception_for_different_records() {
         Account account1 = createAccount();
         account1.Id = TestingUtils.generateId(Schema.Account.SObjectType);
-        Account account2 = (Account)TestSObjectBuilder.getTestAccountBuilder().build();
+        Account account2 = createAccount();
         account2.Id = TestingUtils.generateId(Schema.Account.SObjectType);
 
         // Verify that the test IDs have been set and are different
