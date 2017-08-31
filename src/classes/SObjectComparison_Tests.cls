@@ -1,19 +1,23 @@
 @isTest
 private class SObjectComparison_Tests {
 
-    @testSetup
-    static void setupData() {
-        Account account = (Account)TestSObjectBuilder.getTestAccountBuilder().build();
-        insert account;
+    static Account createAccount() {
+        return new Account(
+            Name  = 'My Test Company'
+        );
+    }
 
-        Contact contact = (Contact)TestSObjectBuilder.getTestContactBuilder().set(Schema.Contact.AccountId, account.Id).build();
-        insert contact;
+    static Contact createContact() {
+        return new Contact(
+            Email    = 'test@contact.com',
+            LastName = 'Gillespie'
+        );
     }
 
     @isTest
     static void it_should_throw_an_exception_for_different_sobject_types() {
-        Account account = [SELECT Id FROM Account];
-        Contact contact = [SELECT Id FROM Contact];
+        Account account = createAccount();
+        Contact contact = createContact();
 
         try {
             new SObjectComparison(account, contact);
@@ -27,9 +31,14 @@ private class SObjectComparison_Tests {
 
     @isTest
     static void it_should_throw_an_exception_for_different_records() {
-        Account account1 = [SELECT Id FROM Account];
+        Account account1 = createAccount();
+        account1.Id = TestingUtils.generateId(Schema.Account.SObjectType);
         Account account2 = (Account)TestSObjectBuilder.getTestAccountBuilder().build();
-        insert account2;
+        account2.Id = TestingUtils.generateId(Schema.Account.SObjectType);
+
+        // Verify that the test IDs have been set and are different
+        System.assertNotEquals(null, account1.Id);
+        System.assertNotEquals(null, account2.Id);
         System.assertNotEquals(account1.Id, account2.Id);
 
         try {
@@ -44,7 +53,7 @@ private class SObjectComparison_Tests {
 
     @isTest
     static void it_should_return_a_set_of_changed_fields_when_a_field_has_changed() {
-        Account account = [SELECT Id, Name FROM Account];
+        Account account = createAccount();
         Account originalAccount = account.clone(true, true, true, true);
 
         // Change the name
@@ -70,7 +79,7 @@ private class SObjectComparison_Tests {
 
     @isTest
     static void it_should_return_an_empty_set_of_changed_fields_when_no_field_has_changed() {
-        Account account = [SELECT Id, Name FROM Account];
+        Account account = createAccount();
         Account originalAccount = account.clone(true, true, true, true);
 
         SObjectComparison sobjectComparison = new SObjectComparison(account, originalAccount);
@@ -87,7 +96,7 @@ private class SObjectComparison_Tests {
 
     @isTest
     static void it_should_return_true_when_any_populated_field_has_changed() {
-        Account account = [SELECT Id, Name FROM Account];
+        Account account = createAccount();
         Account originalAccount = account.clone(true, true, true, true);
         account.Name = 'My New Name';
         System.assertNotEquals(account.Name, originalAccount.Name);
@@ -104,7 +113,7 @@ private class SObjectComparison_Tests {
 
     @isTest
     static void it_should_return_false_when_no_populated_field_has_changed() {
-        Account account = [SELECT Id, Name FROM Account];
+        Account account = createAccount();
         Account originalAccount = account.clone(true, true, true, true);
 
         SObjectComparison sobjectComparison = new SObjectComparison(account, originalAccount);
@@ -123,7 +132,7 @@ private class SObjectComparison_Tests {
             Schema.Account.AccountNumber, Schema.Account.AccountSource, Schema.Account.Name
         };
 
-        Account account = [SELECT Id, AccountNumber, AccountSource, Name FROM Account];
+        Account account = createAccount();
         Account originalAccount = account.clone(true, true, true, true);
 
         account.Name = 'My New Name';
@@ -148,7 +157,7 @@ private class SObjectComparison_Tests {
             Schema.Account.AccountNumber, Schema.Account.AccountSource, Schema.Account.Name
         };
 
-        Account account = [SELECT Id, AccountNumber, AccountSource, Name FROM Account];
+        Account account = createAccount();
         Account originalAccount = account.clone(true, true, true, true);
 
         SObjectComparison sobjectComparison = new SObjectComparison(account, originalAccount);
@@ -168,7 +177,7 @@ private class SObjectComparison_Tests {
             Schema.Account.AccountNumber, Schema.Account.AccountSource, Schema.Account.Name
         };
 
-        Account account = [SELECT Id, AccountNumber, AccountSource, Name FROM Account];
+        Account account = createAccount();
         Account originalAccount = account.clone(true, true, true, true);
 
         account.Name = 'My New Name';
@@ -190,7 +199,7 @@ private class SObjectComparison_Tests {
             Schema.Account.AccountNumber, Schema.Account.AccountSource, Schema.Account.Name
         };
 
-        Account account = [SELECT Id, AccountNumber, AccountSource, Name FROM Account];
+        Account account = createAccount();
         Account originalAccount = account.clone(true, true, true, true);
 
         SObjectComparison sobjectComparison = new SObjectComparison(account, originalAccount);
