@@ -47,7 +47,8 @@ public class SObjectComparison implements ISObjectComparison {
     public Boolean hasFieldChanged(Schema.SObjectField field) {
         if(field == null) return false;
 
-        return this.getChangedFields().contains(field);
+        String fieldName = field.getDescribe().getName();
+        return this.recordVersion1.get(fieldName) != this.recordVersion2.get(fieldName);
     }
 
     public Boolean hasAnyFieldChanged(Set<Schema.SObjectField> fields) {
