@@ -35,7 +35,6 @@ public without sharing class UUID {
     public String getValue() {
         return this.value;
     }
-    }
 
     private void setValue() {
         Blob generatedBlob = Crypto.GenerateAESKey(128);
