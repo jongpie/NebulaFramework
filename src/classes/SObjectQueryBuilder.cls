@@ -30,6 +30,11 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
         this.addCommonQueryFields();
     }
 
+    public ISObjectQueryBuilder cacheResults() {
+        super.doCacheResults();
+        return this;
+    }
+
     public ISObjectQueryBuilder addFields(List<IQueryField> queryFields) {
         for(IQueryField queryField : queryFields) this.addField(queryField);
         return this;
