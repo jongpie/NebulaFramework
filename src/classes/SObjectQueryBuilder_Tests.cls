@@ -60,6 +60,35 @@ private class SObjectQueryBuilder_Tests {
     }
 
     @isTest
+    static void it_should_be_usable_after_construction() {
+        // Query builders should be usable as soon as it's constructed - it should be able to execute a query with some default values
+        ISObjectQueryBuilder opportunityQueryBuilder = new SObjectQueryBuilder(Schema.Opportunity.SObjectType);
+
+        Test.startTest();
+
+        List<Opportunity> results = (List<Opportunity>)opportunityQueryBuilder.getQueryResults();
+
+        Test.stopTest();
+    }
+
+    @isTest
+    static void it_should_cache_results() {
+        ISObjectQueryBuilder opportunityQueryBuilder = new SObjectQueryBuilder(Schema.Opportunity.SObjectType);
+        opportunityQueryBuilder.cacheResults();
+
+        Test.startTest();
+
+        System.assertEquals(0, Limits.getQueries());
+        for(Integer i = 0; i < 10; i++) {
+            System.debug(opportunityQueryBuilder.getQueryResults());
+        }
+
+        System.assertEquals(1, Limits.getQueries());
+
+        Test.stopTest();
+    }
+
+    @isTest
     static void it_should_add_a_list_of_fields() {
         NebulaSettings.SObjectQueryBuilderSettings.IncludeCommonFields__c = false;
         upsert NebulaSettings.SObjectQueryBuilderSettings;
@@ -378,7 +407,7 @@ private class SObjectQueryBuilder_Tests {
 
         Test.startTest();
         SObjectQueryBuilder query = (SObjectQueryBuilder)new SObjectQueryBuilder(sobjectType).addFields(convertToQueryFields(fields));
-        query.setAsUpdate();
+        query.forUpdate();
         Test.stopTest();
 
         System.assert(query.getQuery().contains('FOR UPDATE'));
