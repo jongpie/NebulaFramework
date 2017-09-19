@@ -153,8 +153,7 @@ private class QueryArgumentFormatter_Tests {
 
     @isTest
     static void it_should_return_query_string_for_sobject() {
-        Lead providedValue = (Lead)TestSObjectBuilder.getTestLeadBuilder().build();
-        insert providedValue;
+        Lead providedValue = (Lead)TestSObjectBuilder.getTestLeadBuilder().build(true);
         String expectedString = '\'' + providedValue.Id + '\'';
 
         Test.startTest();
