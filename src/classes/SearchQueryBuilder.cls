@@ -38,17 +38,17 @@ public class SearchQueryBuilder extends QueryBuilder implements ISearchQueryBuil
         return this;
     }
 
-    public ISearchQueryBuilder setQuerySearchGroup(QuerySearchGroup searchGroup) {
+    public ISearchQueryBuilder inQuerySearchGroup(QuerySearchGroup searchGroup) {
         this.searchGroup = searchGroup;
         return this;
     }
 
-    public ISearchQueryBuilder setWithHighlight(Boolean withHighlight) {
+    public ISearchQueryBuilder withHighlight(Boolean withHighlight) {
         this.withHighlight = withHighlight;
         return this;
     }
 
-    public ISearchQueryBuilder setWithSpellCorrection(Boolean withSpellCorrection) {
+    public ISearchQueryBuilder withSpellCorrection(Boolean withSpellCorrection) {
         this.withHighlight = withSpellCorrection;
         return this;
     }
