@@ -23,6 +23,29 @@ The framework also provides several additional classes to make development easie
 3. **Environment.cls** - provides information about the current Salesforce environment
 4. **UUID.cls** - used to reate a randomly-generated unique ID in your code, using the Universally Unique Identifier (UUID) standard
 
+## Installation
+Because every org is different, it's best to install Nebula in a sandbox first, then deploy to your production org.
+1. Deploy Nebula to your sandbox
+2. If you have any custom required fields on Account, Contact or Lead, you will need to create 1 additional test class for each object. These classes will tell Nebula how to insert each SObject type in your org.
+    * These 3 classes must follow a naming convention of Test<SObject>Builder (TestAccountBuilder, TestContactBuilder or TestLeadBuilder)
+    * Example: if you have added a required field called MyTextField__c to the Lead object, create a class called TestLeadBuilder
+        ```    
+    	public class TestLeadBuilder extends TestSObjectBuilder.Base {
+            public override Schema.SObjectType getSObjectType() {
+                return Schema.Lead.SObjectType;
+            }
+
+            public override Map<SObjectField, Object> getDefaultFieldsAndValues() {
+                return new Map<SObjectField, Object>{
+                    Schema.Lead.Company        => 'My Test Company', // Required by Salesforce
+                    Schema.Lead.LastName       => 'Gillespie',  // Required by Salesforce
+                    Schema.Lead.MyTextField__c => 'Some Value' // Required in your org
+                };
+            }
+    	}
+        ```
+
+
 ## Usage
 Nebula uses interfaces, virtual & abstract classes and some Salesforce features (like custom settings) to provide a baseline for your own Apex development. You can deploy the latest version of Nebula to your org and build your implementation on top of it. If you want to customise how Nebula works, most classes & methods can be overridden with your own logic. Ideally, you should minimise any code changes to Nebula's classes so that you can easily upgrade in the future when new versions of Nebula are released.
 
