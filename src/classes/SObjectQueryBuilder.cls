@@ -15,7 +15,10 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
     private Set<String> queryFields;
     private List<String> childRelationshipQueries;
     private QueryFilterScope filterScope;
+    private Integer offset;
+    private Boolean forReference;
     private Boolean forUpdate;
+    private Boolean forView;
     private SObjectType sobjectType;
     private Map<String, Schema.SObjectField> sobjectTypeFieldMap;
 
@@ -25,7 +28,9 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
 
         this.queryFields              = new Set<String>();
         this.childRelationshipQueries = new List<String>();
+        this.forReference             = false;
         this.forUpdate                = false;
+        this.forView                = false;
 
         this.addCommonQueryFields();
     }
@@ -123,8 +128,23 @@ public class SObjectQueryBuilder extends QueryBuilder implements ISObjectQueryBu
         return this;
     }
 
-    public ISObjectQueryBuilder setAsUpdate() {
+    public ISObjectQueryBuilder offset(Integer numberOfRowsToSkip) {
+        this.offset = numberOfRowsToSkip;
+        return this;
+    }
+
+    public ISObjectQueryBuilder forReference() {
+        this.forReference = true;
+        return this;
+    }
+
+    public ISObjectQueryBuilder forUpdate() {
         this.forUpdate = true;
+        return this;
+    }
+
+    public ISObjectQueryBuilder forView() {
+        this.forView = true;
         return this;
     }
 
