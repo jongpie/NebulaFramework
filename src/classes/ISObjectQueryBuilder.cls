@@ -12,6 +12,8 @@
 */
 public interface ISObjectQueryBuilder {
 
+    ISObjectQueryBuilder cacheResults();
+
     // Field methods
     ISObjectQueryBuilder addAllFields();
     ISObjectQueryBuilder addAllStandardFields();
