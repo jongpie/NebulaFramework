@@ -2,7 +2,9 @@ public interface ISearchQueryBuilder {
 
     ISearchQueryBuilder cacheResults();
 
-    ISearchQueryBuilder setQuerySearchGroup(QuerySearchGroup searchGroup);
+    ISearchQueryBuilder inQuerySearchGroup(QuerySearchGroup searchGroup);
+    ISearchQueryBuilder withHighlight(Boolean withHighlight);
+    ISearchQueryBuilder withSpellCorrection(Boolean withSpellCorrection);
 
     String getQuery();
 
