@@ -33,7 +33,8 @@ public without sharing class UUID {
     }
 
     public String getValue() {
-        return value;
+        return this.value;
+    }
     }
 
     private void setValue() {

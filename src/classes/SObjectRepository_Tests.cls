@@ -161,9 +161,12 @@ private class SObjectRepository_Tests {
     static void it_should_return_account_and_contacts_as_children_records() {
         Account account = [SELECT Id FROM Account LIMIT 1];
 
-        Contact contact = (Contact)TestSObjectBuilder.getTestContactBuilder().set(Schema.Contact.AccountId, account.Id).build();
-        contact.Email = 'test@email.com';
-        insert contact;
+        Contact contact = (Contact)TestSObjectBuilder.getTestContactBuilder()
+            .set(Schema.Contact.AccountId, account.Id)
+            .set(Schema.Contact.Email, 'test@email.com')
+            .set(Schema.Contact.AccountId, account.Id)
+            .build(true);
+        
         contact = [SELECT Id, AccountId FROM Contact WHERE Id = :contact.Id];
         System.assertEquals(account.Id, contact.AccountId);
 

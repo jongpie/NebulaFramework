@@ -27,11 +27,7 @@ private class SObjectTriggerHandler_Tests {
 
     static void setupData() {
         for(Integer i = 0; i < 5; i++) {
-            Lead lead = new Lead(
-                Company  = 'My Test Company',
-                LastName = 'Gillespie',
-                Status = ''
-            );
+            Lead lead = (Lead)TestSObjectBuilder.getTestLeadBuilder().build();
             leadList.add(lead);
         }
         insert leadList;
