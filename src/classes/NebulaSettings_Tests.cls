@@ -6,18 +6,8 @@
 private class NebulaSettings_Tests {
 
     @isTest
-    static void it_should_return_record_types_settings() {
-        List<NebulaRecordTypesSettings__c> existingSettings = [SELECT Id FROM NebulaRecordTypesSettings__c];
-        System.assert(existingSettings.isEmpty());
-
-        Test.startTest();
-        System.assertNotEquals(null, NebulaSettings.RecordTypesSettings);
-        Test.stopTest();
-    }
-
-    @isTest
     static void it_should_return_logger_settings() {
-        List<NebulaLoggerSettings__c> existingSettings = [SELECT Id FROM NebulaLoggerSettings__c];
+        List<LoggerSettings__c> existingSettings = [SELECT Id FROM LoggerSettings__c];
         System.assert(existingSettings.isEmpty());
 
         Test.startTest();
@@ -26,18 +16,8 @@ private class NebulaSettings_Tests {
     }
 
     @isTest
-    static void it_should_return_SObjectQueryBuilder_settings() {
-        List<NebulaSObjectQueryBuilderSettings__c> existingSettings = [SELECT Id FROM NebulaSObjectQueryBuilderSettings__c];
-        System.assert(existingSettings.isEmpty());
-
-        Test.startTest();
-        System.assertNotEquals(null, NebulaSettings.SObjectQueryBuilderSettings);
-        Test.stopTest();
-    }
-
-    @isTest
     static void it_should_return_trigger_handler_settings() {
-        List<NebulaTriggerHandlerSettings__c> existingSettings = [SELECT Id FROM NebulaTriggerHandlerSettings__c];
+        List<TriggerHandlerSettings__c> existingSettings = [SELECT Id FROM TriggerHandlerSettings__c];
         System.assert(existingSettings.isEmpty());
 
         Test.startTest();
@@ -47,30 +27,20 @@ private class NebulaSettings_Tests {
 
     @isTest
     static void it_should_reset_all_settings_to_defaults() {
-        NebulaLoggerSettings__c nebulaLoggerSettings = NebulaLoggerSettings__c.getInstance();
-        upsert nebulaLoggerSettings;
-        Id originalLoggerSettingsId = NebulaLoggerSettings__c.getInstance().Id;
+        LoggerSettings__c loggerSettings = LoggerSettings__c.getInstance();
+        upsert loggerSettings;
+        Id originalLoggerSettingsId = LoggerSettings__c.getInstance().Id;
 
-        NebulaRecordTypesSettings__c nebulaRecordTypesSettings = NebulaRecordTypesSettings__c.getInstance();
-        upsert nebulaRecordTypesSettings;
-        Id originalRecordTypesSettingsId = NebulaRecordTypesSettings__c.getInstance().Id;
-
-        NebulaSObjectQueryBuilderSettings__c nebulaSObjectQueryBuilderSettings = NebulaSObjectQueryBuilderSettings__c.getInstance();
-        upsert nebulaSObjectQueryBuilderSettings;
-        Id originalSObjectQueryBuilderSettingsId = NebulaSObjectQueryBuilderSettings__c.getInstance().Id;
-
-        NebulaTriggerHandlerSettings__c nebulaTriggerHandlerSettings = NebulaTriggerHandlerSettings__c.getInstance();
-        upsert nebulaTriggerHandlerSettings;
-        Id originalTriggerHandlerSettingsId = NebulaTriggerHandlerSettings__c.getInstance().Id;
+        TriggerHandlerSettings__c triggerHandlerSettings = TriggerHandlerSettings__c.getInstance();
+        upsert triggerHandlerSettings;
+        Id originalTriggerHandlerSettingsId = TriggerHandlerSettings__c.getInstance().Id;
 
         Test.startTest();
         NebulaSettings.resetAllSettingsToDefaults();
         Test.stopTest();
 
-        System.assertNotEquals(originalLoggerSettingsId, NebulaLoggerSettings__c.getInstance().Id);
-        System.assertNotEquals(originalRecordTypesSettingsId, NebulaRecordTypesSettings__c.getInstance().Id);
-        System.assertNotEquals(originalSObjectQueryBuilderSettingsId, NebulaSObjectQueryBuilderSettings__c.getInstance().Id);
-        System.assertNotEquals(originalTriggerHandlerSettingsId, NebulaTriggerHandlerSettings__c.getInstance().Id);
+        System.assertNotEquals(originalLoggerSettingsId, LoggerSettings__c.getInstance().Id);
+        System.assertNotEquals(originalTriggerHandlerSettingsId, TriggerHandlerSettings__c.getInstance().Id);
     }
 
 }
