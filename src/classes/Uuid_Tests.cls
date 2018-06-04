@@ -3,7 +3,7 @@
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
 @isTest
-private class UUID_Tests {
+private class Uuid_Tests {
 
     @isTest
     static void it_should_consider_all_zeroes_string_to_be_empty() {

@@ -2,15 +2,7 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
-
-/**
-*
-* @group Utils
-*
-* @description TODO
-*
-*/
-public without sharing class UUID {
+public without sharing class Uuid {
 
     public static Boolean isEmpty(String uuid) {
         return String.isBlank(uuid) || uuid == '00000000-0000-0000-0000-000000000000';
@@ -28,12 +20,12 @@ public without sharing class UUID {
 
     private String value;
 
-    public UUID() {
+    public Uuid() {
         this.setValue();
     }
 
     public String getValue() {
-        return value;
+        return this.value;
     }
 
     private void setValue() {
