@@ -3,13 +3,13 @@
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
 @isTest
-private class SObjectRepositoryMocks_Tests {
+private class SobjectRepositoryMocks_Tests {
 
     @isTest
     static void it_should_fake_returning_by_id() {
         Id testId = getTestId();
 
-        SObject returnedObj = new SObjectRepositoryMocks.Base(null).getById(testId);
+        Sobject returnedObj = new SobjectRepositoryMocks.Base(null).getById(testId);
 
         System.assert(returnedObj.Id == testId);
     }
@@ -20,22 +20,22 @@ private class SObjectRepositoryMocks_Tests {
         QueryField field = getField();
 
         List<IQueryFilter> queryFilters = new List<IQueryFilter>{new QueryFilter().filterByField(field, QueryOperator.EQUALS, getFieldValue())};
-        SObject returnedObj = new SObjectRepositoryMocks.Base(null).getByIdAndQueryFilters(new Set<Id>{testId}, queryFilters)[0];
+        Sobject returnedObj = new SobjectRepositoryMocks.Base(null).getByIdAndQueryFilters(new Set<Id>{testId}, queryFilters)[0];
 
         System.assertEquals(getFieldValue(), returnedObj.get(String.valueOf(field)));
     }
 
     @isTest
     static void it_should_return_list_of_sobjects_when_mocking_sosl_search() {
-        System.assert(new SObjectRepositoryMocks.Base().getSearchResults(getFieldValue(), QuerySearchGroup.ALL_FIELDS) instanceof List<SObject>);
+        System.assert(new SobjectRepositoryMocks.Base().getSearchResults(getFieldValue(), QuerySearchGroup.ALL_FIELDS) instanceof List<Sobject>);
     }
 
     @isTest
     static void it_should_return_list_of_sobjects_when_mocking_sosl_search_with_passed_objects() {
-        Contact con = new Contact();
-        ISObjectRepository base = new SObjectRepositoryMocks.Base().with(new List<SObject>{con});
+        Contact contact = (Contact)TestSobjectBuilder.getTestContactBuilder().build();
+        ISobjectRepository base = new SobjectRepositoryMocks.Base().with(new List<Sobject>{contact});
 
-        System.assert(base.getSearchResults(getFieldValue(),QuerySearchGroup.ALL_FIELDS) instanceof List<SObject>);
+        System.assert(base.getSearchResults(getFieldValue(),QuerySearchGroup.ALL_FIELDS) instanceof List<Sobject>);
     }
 
     static QueryField getField() {
@@ -47,7 +47,7 @@ private class SObjectRepositoryMocks_Tests {
     }
 
     static Id getTestId() {
-        return TestingUtils.generateId(Schema.Lead.SObjectType);
+        return TestingUtils.generateId(Schema.Lead.SobjectType);
     }
 
 }

@@ -6,7 +6,7 @@
 private class DmlMock_Tests {
 
     static IDml contactDmlRepo = new DmlMock.ContactDmlMock();
-    static Schema.Contact contact = (Contact)TestSObjectBuilder.getTestContactBuilder().build();
+    static Schema.Contact contact = (Contact)new TestDataFactory(new Contact()).populateRequiredFields();
 
     @isTest
     static void it_should_fake_dml_insert() {
@@ -71,7 +71,7 @@ private class DmlMock_Tests {
         contactDmlRepo.updateRecords(l);
         Test.stoptest();
 
-        SObject record = TestingUtils.updatedRecords[0];
+        Sobject record = TestingUtils.updatedRecords[0];
         System.assert(record instanceof Schema.Lead);
         System.assert(record.get('IsConverted') != null);
     }

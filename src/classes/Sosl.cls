@@ -110,9 +110,9 @@ public class Sosl {
         if(!isCached) cachedSearchResultsByHashCode.put(hashCode, Search.query(query));
 
         // Always return a deep clone so the original cached version is never modified
-        List<List<SObject>> cachedResults = cachedSearchResultsByHashCode.get(hashCode);
-        List<List<SObject>> deepClonedResults = new List<List<SObject>>();
-        for(List<SObject> cachedListOfResults : cachedResults) {
+        List<List<Sobject>> cachedResults = cachedSearchResultsByHashCode.get(hashCode);
+        List<List<Sobject>> deepClonedResults = new List<List<Sobject>>();
+        for(List<Sobject> cachedListOfResults : cachedResults) {
             deepClonedResults.add(cachedListOfResults.deepClone(true, true, true));
         }
         return deepClonedResults;

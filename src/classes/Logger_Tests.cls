@@ -60,7 +60,7 @@ private class Logger_Tests {
         System.assert(existingLogs.isEmpty());
 
         // Enable logging
-        NebulaLoggerSettings__c nebulaLoggerSettings = NebulaLoggerSettings__c.getInstance();
+        LoggerSettings__c nebulaLoggerSettings = LoggerSettings__c.getInstance();
         nebulaLoggerSettings.EnableLogging__c = true;
         upsert nebulaLoggerSettings;
 
@@ -93,9 +93,9 @@ private class Logger_Tests {
         System.assert(existingLogs.isEmpty());
 
         // Disable logging
-        NebulaLoggerSettings__c nebulaLoggerSettings = NebulaLoggerSettings__c.getInstance();
-        nebulaLoggerSettings.EnableLogging__c = false;
-        upsert nebulaLoggerSettings;
+        LoggerSettings__c loggerSettings = LoggerSettings__c.getInstance();
+        loggerSettings.EnableLogging__c = false;
+        upsert loggerSettings;
 
         Logger.addEntry(moduleClass, message);
 

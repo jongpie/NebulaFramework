@@ -2,41 +2,35 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
-public abstract class SObjectTriggerHandler extends NebulaCore implements ISObjectTriggerHandler {
+public abstract class SobjectTriggerHandler extends NebulaCore implements ISobjectTriggerHandler {
 
-    private static Map<Integer, Set<TriggerContext>> hashCodesForProcessedRecords = new Map<Integer, Set<TriggerContext>>();
-
-    @testVisible private enum TriggerContext {
-        BEFORE_INSERT, BEFORE_UPDATE, BEFORE_DELETE,
-        AFTER_INSERT, AFTER_UPDATE, AFTER_DELETE, AFTER_UNDELETE
-    }
-    @testVisible private TriggerContext currentTriggerContext; // The current context of the trigger
+    private static Map<Integer, Set<TriggerOperation>> hashCodesForProcessedRecords = new Map<Integer, Set<TriggerOperation>>();
 
     private Integer hashCode; // The hash code for the current records
     private Boolean isTestMode;
     private Boolean isTriggerExecuting; // Checks if the code was called by a trigger
 
-    @testVisible private List<SObject> recordList, oldRecordList;
-    @testVisible private Map<Id, SObject> recordMap, oldRecordMap;
+    @testVisible private List<Sobject> recordList, oldRecordList;
+    @testVisible private Map<Id, Sobject> recordMap, oldRecordMap;
 
-    public SObjectTriggerHandler() {
+    public SobjectTriggerHandler() {
         this(false);
         this.currentModule = NebulaCore.Module.TRIGGER_HANDLER;
     }
 
-    protected SObjectTriggerHandler(Boolean isTestMode) {
+    protected SobjectTriggerHandler(Boolean isTestMode) {
         this.isTestMode         = isTestMode;
         this.isTriggerExecuting = Trigger.isExecuting;
 
-        this.recordList    = new List<SObject>();
-        this.recordMap     = new Map<Id, SObject>();
-        this.oldRecordList = new List<SObject>();
-        this.oldRecordMap  = new Map<Id, SObject>();
+        this.recordList    = new List<Sobject>();
+        this.recordMap     = new Map<Id, Sobject>();
+        this.oldRecordList = new List<Sobject>();
+        this.oldRecordMap  = new Map<Id, Sobject>();
 
         this.getClassName();
 
         Logger.addEntry(this, 'Initializing ' + this.getClassName());
-        this.setTriggerContext();
+        //this.setTriggerContext();
         this.validateTriggerContext();
         this.setTriggerRecords();
     }
@@ -55,13 +49,13 @@ public abstract class SObjectTriggerHandler extends NebulaCore implements ISObje
         this.setHashCode();
 
         String sobjectType;
-        if(this.isTestMode) sobjectType = String.valueOf(Schema.Lead.SObjectType);
-        else sobjectType = Trigger.new == null ? String.valueOf(Trigger.old.getSObjectType()) : String.valueOf(Trigger.new.getSObjectType());
+        if(this.isTestMode) sobjectType = String.valueOf(Schema.Lead.SobjectType);
+        else sobjectType = Trigger.new == null ? String.valueOf(Trigger.old.getSobjectType()) : String.valueOf(Trigger.new.getSobjectType());
 
         Logger.addEntry(this, 'Starting execute method for: ' + sobjectType);
         Logger.addEntry(this, 'Hash codes already processed: ' + hashCodesForProcessedRecords);
         Logger.addEntry(this, 'Hash code for current records: ' + this.hashCode);
-        Logger.addEntry(this, 'Trigger context for current records: ' + this.currentTriggerContext);
+        //Logger.addEntry(this, 'Trigger context for current records: ' + this.currentTriggerContext);
         Logger.addEntry(this, 'Number of current records: ' + Trigger.size);
 
         if(this.haveRecordsAlreadyBeenProcessed()) {
@@ -69,42 +63,40 @@ public abstract class SObjectTriggerHandler extends NebulaCore implements ISObje
             return;
         } else Logger.addEntry(this, 'Records have not been processed for this context, continuing');
 
-        if(this.currentTriggerContext == TriggerContext.BEFORE_INSERT) this.executeBeforeInsert(this.recordList);
-        else if(this.currentTriggerContext == TriggerContext.BEFORE_UPDATE) this.executeBeforeUpdate(this.recordList, this.recordMap, this.oldRecordList, this.oldRecordMap);
-        else if(this.currentTriggerContext == TriggerContext.BEFORE_DELETE) this.executeBeforeDelete(this.oldRecordList, this.oldRecordMap);
-        else if(this.currentTriggerContext == TriggerContext.AFTER_INSERT) this.executeAfterInsert(this.recordList, this.recordMap);
-        else if(this.currentTriggerContext == TriggerContext.AFTER_UPDATE) this.executeAfterUpdate(this.recordList, this.recordMap, this.oldRecordList, this.oldRecordMap);
-        else if(this.currentTriggerContext == TriggerContext.AFTER_DELETE) this.executeAfterDelete(this.oldRecordList, this.oldRecordMap);
-        else if(this.currentTriggerContext == TriggerContext.AFTER_UNDELETE) this.executeAfterUndelete(this.recordList, this.recordMap);
+        switch on Trigger.OperationType {
+            when BEFORE_INSERT {
+                this.executeBeforeInsert(this.recordList);
+            } when BEFORE_UPDATE {
+                this.executeBeforeUpdate(this.recordList, this.recordMap, this.oldRecordList, this.oldRecordMap);
+            } when BEFORE_DELETE {
+                this.executeBeforeDelete(this.oldRecordList, this.oldRecordMap);
+            } when AFTER_INSERT {
+                this.executeAfterInsert(this.recordList, this.recordMap);
+            } when AFTER_UPDATE {
+                this.executeAfterUpdate(this.recordList, this.recordMap, this.oldRecordList, this.oldRecordMap);
+            } when AFTER_DELETE {
+                this.executeAfterDelete(this.oldRecordList, this.oldRecordMap);
+            } when AFTER_UNDELETE {
+                this.executeAfterUndelete(this.recordList, this.recordMap);
+            }
+        }
 
         if(Trigger.isAfter) Logger.saveLogs();
     }
 
-    protected virtual void executeBeforeInsert(List<SObject> newRecordList) {}
-    protected virtual void executeBeforeUpdate(List<SObject> updatedRecordList, Map<Id, SObject> updatedRecordMap, List<SObject> oldRecordList, Map<Id, SObject> oldRecordMap) {}
-    protected virtual void executeBeforeDelete(List<SObject> deletedRecordList, Map<Id, SObject> deletedRecordMap) {}
-    protected virtual void executeAfterInsert(List<SObject> newRecordList, Map<Id, SObject> newRecordMap) {}
-    protected virtual void executeAfterUpdate(List<SObject> updatedRecordList, Map<Id, SObject> updatedRecordMap, List<SObject> oldRecordList, Map<Id, SObject> oldRecordMap) {}
-    protected virtual void executeAfterDelete(List<SObject> deletedRecordList, Map<Id, SObject> deletedRecordMap) {}
-    protected virtual void executeAfterUndelete(List<SObject> undeletedRecordList, Map<Id, SObject> undeletedRecordMap) {}
-
-    private void setTriggerContext() {
-        if(this.isTestMode || !this.isTriggerExecuting) return;
-
-        if(Trigger.isBefore && Trigger.isInsert) this.currentTriggerContext = TriggerContext.BEFORE_INSERT;
-        else if(Trigger.isBefore && Trigger.isUpdate) this.currentTriggerContext = TriggerContext.BEFORE_UPDATE;
-        else if(Trigger.isBefore && Trigger.isDelete) this.currentTriggerContext = TriggerContext.BEFORE_DELETE;
-        else if(Trigger.isAfter && Trigger.isInsert) this.currentTriggerContext = TriggerContext.AFTER_INSERT;
-        else if(Trigger.isAfter && Trigger.isUpdate) this.currentTriggerContext = TriggerContext.AFTER_UPDATE;
-        else if(Trigger.isAfter && Trigger.isDelete) this.currentTriggerContext = TriggerContext.AFTER_DELETE;
-        else if(Trigger.isAfter && Trigger.isUndelete) this.currentTriggerContext = TriggerContext.AFTER_UNDELETE;
-    }
+    protected virtual void executeBeforeInsert(List<Sobject> newRecordList) {}
+    protected virtual void executeBeforeUpdate(List<Sobject> updatedRecordList, Map<Id, Sobject> updatedRecordMap, List<Sobject> oldRecordList, Map<Id, Sobject> oldRecordMap) {}
+    protected virtual void executeBeforeDelete(List<Sobject> deletedRecordList, Map<Id, Sobject> deletedRecordMap) {}
+    protected virtual void executeAfterInsert(List<Sobject> newRecordList, Map<Id, Sobject> newRecordMap) {}
+    protected virtual void executeAfterUpdate(List<Sobject> updatedRecordList, Map<Id, Sobject> updatedRecordMap, List<Sobject> oldRecordList, Map<Id, Sobject> oldRecordMap) {}
+    protected virtual void executeAfterDelete(List<Sobject> deletedRecordList, Map<Id, Sobject> deletedRecordMap) {}
+    protected virtual void executeAfterUndelete(List<Sobject> undeletedRecordList, Map<Id, Sobject> undeletedRecordMap) {}
 
     private void validateTriggerContext() {
         if(this.isTestMode) return;
 
         String errorMessage = 'Trigger handler called outside of trigger execution ' + this.isTriggerExecuting;
-        if(!this.isTriggerExecuting || this.currentTriggerContext == null) throw new SObjectTriggerHandlerException(errorMessage);
+        if(!this.isTriggerExecuting || Trigger.OperationType == null) throw new SobjectTriggerHandlerException(errorMessage);
     }
 
     private void setTriggerRecords() {
@@ -127,12 +119,12 @@ public abstract class SObjectTriggerHandler extends NebulaCore implements ISObje
     }
 
     private void setHashCode() {
-        List<SObject> recordToParseList;
+        List<Sobject> recordToParseList;
         if(this.isTestMode) recordToParseList = this.recordList;
         else recordToParseList = Trigger.new != null ? Trigger.new : Trigger.old;
 
         List<String> parsedRecordsJson = new List<String>();
-        for(SObject record : recordToParseList) {
+        for(Sobject record : recordToParseList) {
             // Some fields can cause the hash code to change even when the record itself has not
             // To get a consistent hash code, we deserialize into JSON, remove the problematic fields, then get the hash code
             Map<String, Object> parsedRecordMap = (Map<String, Object>)JSON.deserializeUntyped(JSON.serialize(record));
@@ -161,21 +153,21 @@ public abstract class SObjectTriggerHandler extends NebulaCore implements ISObje
         // This method is a safeguard that checks to see if we have recursion problems and stops if we do
         // It allows each context to occur once for a given hash code
 
-        if(this.currentTriggerContext == TriggerContext.BEFORE_INSERT) {
+        if(Trigger.OperationType == TriggerOperation.BEFORE_INSERT) {
             // BEFORE_INSERT doesn't have record IDs yet, so the hash here will never match the other hashes
             // Since Salesforce makes it impossible to recursively run "insert record", we can let the platform handle it
             return false;
         } else if(!hashCodesForProcessedRecords.containsKey(this.hashCode)) {
-            hashCodesForProcessedRecords.put(this.hashCode, new Set<TriggerContext>{this.currentTriggerContext});
+            hashCodesForProcessedRecords.put(this.hashCode, new Set<TriggerOperation>{Trigger.OperationType});
             return false;
-        } else if(!hashCodesForProcessedRecords.get(this.hashCode).contains(this.currentTriggerContext)) {
-            hashCodesForProcessedRecords.get(this.hashCode).add(this.currentTriggerContext);
+        } else if(!hashCodesForProcessedRecords.get(this.hashCode).contains(Trigger.OperationType)) {
+            hashCodesForProcessedRecords.get(this.hashCode).add(Trigger.OperationType);
             return false;
         } else {
             return true;
         }
     }
 
-    private class SObjectTriggerHandlerException extends Exception {}
+    private class SobjectTriggerHandlerException extends Exception {}
 
 }

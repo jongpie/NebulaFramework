@@ -7,122 +7,122 @@ public class DmlMock {
 
     public abstract class Base implements IDml {
 
-        private List<SObject> insertRecordList = new List<SObject>();
-        private List<SObject> updateRecordList = new List<SObject>();
-        private List<SObject> upsertRecordList = new List<SObject>();
-        private List<SObject> deleteRecordList = new List<SObject>();
-        private List<SObject> undeleteRecordList = new List<SObject>();
+        private List<Sobject> insertRecordList = new List<Sobject>();
+        private List<Sobject> updateRecordList = new List<Sobject>();
+        private List<Sobject> upsertRecordList = new List<Sobject>();
+        private List<Sobject> deleteRecordList = new List<Sobject>();
+        private List<Sobject> undeleteRecordList = new List<Sobject>();
 
-        public abstract Schema.SObjectType getSObjectType();
+        public abstract Schema.SobjectType getSobjectType();
 
-        public void registerInsertRecords(List<SObject> recordList) {
+        public void registerInsertRecords(List<Sobject> recordList) {
             this.insertRecordList.addAll(recordList);
         }
 
-        public void registerUpdateRecords(List<SObject> recordList) {
+        public void registerUpdateRecords(List<Sobject> recordList) {
             this.updateRecordList.addAll(recordList);
         }
 
-        public void registerUpsertRecords(List<SObject> recordList) {
+        public void registerUpsertRecords(List<Sobject> recordList) {
             this.upsertRecordList.addAll(recordList);
         }
 
-        public void registerDeleteRecords(List<SObject> recordList) {
+        public void registerDeleteRecords(List<Sobject> recordList) {
             this.deleteRecordList.addAll(recordList);
         }
 
-        public void registerUndeleteRecords(List<SObject> recordList) {
+        public void registerUndeleteRecords(List<Sobject> recordList) {
             this.undeleteRecordList.addAll(recordList);
         }
 
-        public List<SObject> getInsertRecords() {
+        public List<Sobject> getInsertRecords() {
             return this.insertRecordList;
         }
 
-        public List<SObject> getUpdateRecords() {
+        public List<Sobject> getUpdateRecords() {
             return this.updateRecordList;
         }
 
-        public List<SObject> getUpsertRecords() {
+        public List<Sobject> getUpsertRecords() {
             return this.upsertRecordList;
         }
 
-        public List<SObject> getDeleteRecords() {
+        public List<Sobject> getDeleteRecords() {
             return this.deleteRecordList;
         }
 
-        public List<SObject> getUndeleteRecords() {
+        public List<Sobject> getUndeleteRecords() {
             return this.undeleteRecordList;
         }
 
         // TODO consider changing method name to singular, return type to single Database.SaveResult
-        public List<Database.SaveResult> insertRecords(SObject record) {
-            return this.insertRecords(new List<SObject>{record});
+        public List<Database.SaveResult> insertRecords(Sobject record) {
+            return this.insertRecords(new List<Sobject>{record});
         }
 
-        public List<Database.SaveResult> insertRecords(List<SObject> recordList) {
+        public List<Database.SaveResult> insertRecords(List<Sobject> recordList) {
             TestingUtils.generateIds(recordList);
             TestingUtils.insertedRecords.addAll(recordList);
             // TODO add logic to try to actually return real results, based on the record list provided
             return new List<Database.SaveResult>();
         }
 
-        public List<Database.SaveResult> updateRecords(SObject record) {
-            this.updateRecords(new List<SObject>{record});
+        public List<Database.SaveResult> updateRecords(Sobject record) {
+            this.updateRecords(new List<Sobject>{record});
             // TODO add logic to try to actually return real results, based on the record list provided
             return new List<Database.SaveResult>();
         }
 
-        public List<Database.SaveResult> updateRecords(List<SObject> recordList) {
+        public List<Database.SaveResult> updateRecords(List<Sobject> recordList) {
             TestingUtils.updatedRecords.addAll(recordList);
             // TODO add logic to try to actually return real results, based on the record list provided
             return new List<Database.SaveResult>();
         }
 
-        public List<Database.UpsertResult> upsertRecords(SObject record) {
-            this.upsertRecords(new List<SObject>{record});
+        public List<Database.UpsertResult> upsertRecords(Sobject record) {
+            this.upsertRecords(new List<Sobject>{record});
             // TODO add logic to try to actually return real results, based on the record list provided
             return new List<Database.UpsertResult>();
         }
 
-        public List<Database.UpsertResult> upsertRecords(List<SObject> recordList) {
+        public List<Database.UpsertResult> upsertRecords(List<Sobject> recordList) {
             TestingUtils.generateIds(recordList);
             TestingUtils.upsertedRecords.addAll(recordList);
             // TODO add logic to try to actually return real results, based on the record list provided
             return new List<Database.UpsertResult>();
         }
 
-        public List<Database.UndeleteResult> undeleteRecords(SObject record) {
-            this.undeleteRecords(new List<SObject>{record});
+        public List<Database.UndeleteResult> undeleteRecords(Sobject record) {
+            this.undeleteRecords(new List<Sobject>{record});
             // TODO add logic to try to actually return real results, based on the record list provided
             return new List<Database.UndeleteResult>();
         }
 
-        public List<Database.UndeleteResult> undeleteRecords(List<SObject> recordList) {
+        public List<Database.UndeleteResult> undeleteRecords(List<Sobject> recordList) {
             TestingUtils.undeletedRecords.addAll(recordList);
             // TODO add logic to try to actually return real results, based on the record list provided
             return new List<Database.UndeleteResult>();
         }
 
-        public List<Database.DeleteResult> deleteRecords(SObject record) {
-            this.deleteRecords(new List<SObject>{record});
+        public List<Database.DeleteResult> deleteRecords(Sobject record) {
+            this.deleteRecords(new List<Sobject>{record});
             // TODO add logic to try to actually return real results, based on the record list provided
             return new List<Database.DeleteResult>();
         }
 
-        public List<Database.DeleteResult> deleteRecords(List<SObject> recordList) {
+        public List<Database.DeleteResult> deleteRecords(List<Sobject> recordList) {
             if(recordList != null) TestingUtils.deletedRecords.addAll(recordList);
             // TODO add logic to try to actually return real results, based on the record list provided
             return new List<Database.DeleteResult>();
         }
 
-        public List<Database.DeleteResult> hardDeleteRecords(SObject record) {
-            this.hardDeleteRecords(new List<SObject>{record});
+        public List<Database.DeleteResult> hardDeleteRecords(Sobject record) {
+            this.hardDeleteRecords(new List<Sobject>{record});
             // TODO add logic to try to actually return real results, based on the record list provided
             return new List<Database.DeleteResult>();
         }
 
-        public List<Database.DeleteResult> hardDeleteRecords(List<SObject> recordList) {
+        public List<Database.DeleteResult> hardDeleteRecords(List<Sobject> recordList) {
             this.deleteRecords(recordList);
             // TODO add logic to try to actually return real results, based on the record list provided
             return new List<Database.DeleteResult>();
@@ -132,8 +132,8 @@ public class DmlMock {
 
     public class ContactDmlMock extends DmlMock.Base {
 
-        public override Schema.SObjectType getSObjectType() {
-            return Schema.Contact.SObjectType;
+        public override Schema.SobjectType getSobjectType() {
+            return Schema.Contact.SobjectType;
         }
 
     }
