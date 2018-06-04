@@ -2,14 +2,6 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
-
-/**
-*
-* @group Repository
-*
-* @description TODO
-*
-*/
 public abstract class SObjectRepository extends Dml implements ISObjectRepository, IDml {
 
     private List<Schema.SObjectField> sobjectFieldList;

@@ -2,14 +2,6 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
-
-/**
-*
-* @group Asynchronous Apex
-*
-* @description TODO
-*
-*/
 public class Scheduler {
 
     //CRON order - Seconds, Minutes, Hours, Day_of_month, Month, Day_of_week, Optional_year

@@ -2,17 +2,11 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
-
-/**
-*
-* @group Repository
-*
-*/
 @isTest
 public class DmlMock {
 
     public abstract class Base implements IDml {
-    
+
         private List<SObject> insertRecordList = new List<SObject>();
         private List<SObject> updateRecordList = new List<SObject>();
         private List<SObject> upsertRecordList = new List<SObject>();
@@ -20,43 +14,43 @@ public class DmlMock {
         private List<SObject> undeleteRecordList = new List<SObject>();
 
         public abstract Schema.SObjectType getSObjectType();
-        
+
         public void registerInsertRecords(List<SObject> recordList) {
             this.insertRecordList.addAll(recordList);
         }
-    
+
         public void registerUpdateRecords(List<SObject> recordList) {
             this.updateRecordList.addAll(recordList);
         }
-    
+
         public void registerUpsertRecords(List<SObject> recordList) {
             this.upsertRecordList.addAll(recordList);
         }
-    
+
         public void registerDeleteRecords(List<SObject> recordList) {
             this.deleteRecordList.addAll(recordList);
         }
-    
+
         public void registerUndeleteRecords(List<SObject> recordList) {
             this.undeleteRecordList.addAll(recordList);
         }
-    
+
         public List<SObject> getInsertRecords() {
             return this.insertRecordList;
         }
-    
+
         public List<SObject> getUpdateRecords() {
             return this.updateRecordList;
         }
-    
+
         public List<SObject> getUpsertRecords() {
             return this.upsertRecordList;
         }
-    
+
         public List<SObject> getDeleteRecords() {
             return this.deleteRecordList;
         }
-    
+
         public List<SObject> getUndeleteRecords() {
             return this.undeleteRecordList;
         }
