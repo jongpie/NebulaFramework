@@ -7,16 +7,65 @@
 *
 * @group Repository
 *
-* @description Provides methods with default behavior for DML actions (insert, upsert, etc)
+* @description Provides methods with default behavior for Dml actions (insert, upsert, etc)
 *
 */
-public abstract class DML extends NebulaCore implements IDML {
+public abstract class Dml extends NebulaCore implements IDml {
+
+    private List<SObject> insertRecordList = new List<SObject>();
+    private List<SObject> updateRecordList = new List<SObject>();
+    private List<SObject> upsertRecordList = new List<SObject>();
+    private List<SObject> deleteRecordList = new List<SObject>();
+    private List<SObject> undeleteRecordList = new List<SObject>();
+
+    public abstract Schema.SObjectType getSObjectType();
+
+    public void registerInsertRecords(List<SObject> recordList) {
+        this.insertRecordList.addAll(recordList);
+    }
+
+    public void registerUpdateRecords(List<SObject> recordList) {
+        this.updateRecordList.addAll(recordList);
+    }
+
+    public void registerUpsertRecords(List<SObject> recordList) {
+        this.upsertRecordList.addAll(recordList);
+    }
+
+    public void registerDeleteRecords(List<SObject> recordList) {
+        this.deleteRecordList.addAll(recordList);
+    }
+
+    public void registerUndeleteRecords(List<SObject> recordList) {
+        this.undeleteRecordList.addAll(recordList);
+    }
+
+    public List<SObject> getInsertRecords() {
+        return this.insertRecordList;
+    }
+
+    public List<SObject> getUpdateRecords() {
+        return this.updateRecordList;
+    }
+
+    public List<SObject> getUpsertRecords() {
+        return this.upsertRecordList;
+    }
+
+    public List<SObject> getDeleteRecords() {
+        return this.deleteRecordList;
+    }
+
+    public List<SObject> getUndeleteRecords() {
+        return this.undeleteRecordList;
+    }
 
     public virtual List<Database.SaveResult> insertRecords(SObject record) {
         return this.insertRecords(new List<SObject>{record});
     }
 
     public virtual List<Database.SaveResult> insertRecords(List<SObject> records) {
+        this.registerInsertRecords(records);
         return Database.insert(records);
     }
 
@@ -62,8 +111,16 @@ public abstract class DML extends NebulaCore implements IDML {
         return results;
     }
 
-    // Not all objects will have external ID fields, so these methods are protected (instead of public)
-    // Any object that needs an upsert by external ID can expose these methods in their repos
+    // Not all objects are mergeable or will have external ID fields, so these methods are protected (instead of public)
+    // Any object that needs these methods can expose these methods in their repos
+    protected virtual List<Database.MergeResult> mergeRecords(SObject masterRecord, Sobject recordToMerge) {
+        return this.mergeRecords(masterRecord, this.castRecords(recordToMerge));
+    }
+
+    protected virtual List<Database.MergeResult> mergeRecords(SObject masterRecord, List<Sobject> recordsToMerge) {
+        return Database.merge(masterRecord, recordsToMerge);
+    }
+
     protected virtual List<Database.UpsertResult> upsertRecords(SObject record, Schema.SObjectField externalIdField) {
         return this.upsertRecords(this.castRecords(record), externalIdField);
     }

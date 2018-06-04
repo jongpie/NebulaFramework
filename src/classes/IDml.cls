@@ -7,10 +7,21 @@
 *
 * @group Repository
 *
-* @description TODO
-*
 */
-public interface IDML {
+public interface IDml {
+
+    Schema.SObjectType getSObjectType();
+
+    void registerInsertRecords(List<SObject> recordList);
+    void registerUpdateRecords(List<SObject> recordList);
+    void registerUpsertRecords(List<SObject> recordList);
+    void registerDeleteRecords(List<SObject> recordList);
+    void registerUndeleteRecords(List<SObject> recordList);
+    List<SObject> getInsertRecords();
+    List<SObject> getUpdateRecords();
+    List<SObject> getUpsertRecords();
+    List<SObject> getDeleteRecords();
+    List<SObject> getUndeleteRecords();
 
     List<Database.SaveResult> insertRecords(SObject record);
     List<Database.SaveResult> insertRecords(List<SObject> recordList);
