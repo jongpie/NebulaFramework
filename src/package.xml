@@ -9,8 +9,8 @@
         <name>CustomApplication</name>
     </types>
     <types>
-        <members>NebulaLog__c</members>
         <members>LoggerSettings__c</members>
+        <members>NebulaLog__c</members>
         <members>TriggerHandlerSettings__c</members>
         <name>CustomObject</name>
     </types>
@@ -22,5 +22,5 @@
         <members>NebulaLog__c-Log Layout</members>
         <name>Layout</name>
     </types>
-    <version>43.0</version>
+	<version>43.0</version>
 </Package>
