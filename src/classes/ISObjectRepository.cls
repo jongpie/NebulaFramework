@@ -6,14 +6,16 @@ public interface ISobjectRepository {
 
     // Setup methods
     Schema.SobjectType getSobjectType();
+    Soql getSoql();
 
     // SOQL
-    Sobject getById(Id recordId);
-    List<Sobject> getById(List<Id> recordIdList);
+    Sobject get(Id recordId);
+    List<Sobject> get(Set<Id> recordIdList);
+    List<Sobject> get(List<Id> recordIdList);
     List<Sobject> get(Soql.QueryFilter queryFilter);
     List<Sobject> get(List<Soql.QueryFilter> queryFilters);
-    List<Sobject> getByIdAndQueryFilters(Set<Id> idSet, List<Soql.QueryFilter> queryFilters);
-    List<Sobject> getByIdAndQueryFilters(List<Id> idList, List<Soql.QueryFilter> queryFilters);
+    List<Sobject> get(Set<Id> idSet, List<Soql.QueryFilter> queryFilters);
+    List<Sobject> get(List<Id> idList, List<Soql.QueryFilter> queryFilters);
 
     // SOSL
     List<Sobject> getSearchResults(String searchTerm);
