@@ -18,37 +18,35 @@ public abstract class SobjectRepository extends Dml implements ISobjectRepositor
         return new Soql(this.getSobjectType());
     }
 
-    public virtual Sobject query(Id recordId) {
+    public virtual Sobject get(Id recordId) {
         return this.getSoql()
             .filterWhere(new Soql.QueryFilter(this.idQueryField, '=', recordId))
             .getFirstQueryResult();
     }
 
-    public virtual List<Sobject> query(Set<Id> recordIds) {
-        return this.query(new List<Id>(recordIds));
+    public virtual List<Sobject> get(Set<Id> recordIds) {
+        return this.get(new List<Id>(recordIds));
     }
 
-    public virtual List<Sobject> query(List<Id> recordIds) {
-        return this.getSoql()
-            .filterWhere(new Soql.QueryFilter(this.idQueryField, 'IN', recordIds))
-            .getQueryResults();
+    public virtual List<Sobject> get(List<Id> recordIds) {
+        return this.get(new Soql.QueryFilter(this.idQueryField, 'IN', recordIds));
     }
 
-    public virtual List<Sobject> query(Soql.QueryFilter queryFilter) {
-        return this.query(new List<Soql.QueryFilter>{queryFilter});
+    public virtual List<Sobject> get(Soql.QueryFilter queryFilter) {
+        return this.get(new List<Soql.QueryFilter>{queryFilter});
     }
 
-    public virtual List<Sobject> query(List<Soql.QueryFilter> queryFilters) {
+    public virtual List<Sobject> get(List<Soql.QueryFilter> queryFilters) {
         return this.getSoql()
             .filterWhere(queryFilters)
             .getQueryResults();
     }
 
-    public virtual List<Sobject> query(Set<Id> idSet, List<Soql.QueryFilter> queryFilters) {
-        return this.query(new List<Id>(idSet), queryFilters);
+    public virtual List<Sobject> get(Set<Id> idSet, List<Soql.QueryFilter> queryFilters) {
+        return this.get(new List<Id>(idSet), queryFilters);
     }
 
-    public virtual List<Sobject> query(List<Id> idList, List<Soql.QueryFilter> queryFilters) {
+    public virtual List<Sobject> get(List<Id> idList, List<Soql.QueryFilter> queryFilters) {
         return this.getSoql()
             .filterWhere(new Soql.QueryFilter(this.idQueryField, 'IN', idList))
             .filterWhere(queryFilters)
