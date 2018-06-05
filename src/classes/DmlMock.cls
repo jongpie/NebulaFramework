@@ -15,6 +15,10 @@ public class DmlMock {
 
         public abstract Schema.SobjectType getSobjectType();
 
+        public IDml setMode(Dml.CrudMode mode) {
+            return this;
+        }
+
         public void registerInsertRecords(List<Sobject> recordList) {
             this.insertRecordList.addAll(recordList);
         }
