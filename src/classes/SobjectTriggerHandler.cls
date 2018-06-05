@@ -55,7 +55,7 @@ public abstract class SobjectTriggerHandler extends NebulaCore implements ISobje
         Logger.addEntry(this, 'Starting execute method for: ' + sobjectType);
         Logger.addEntry(this, 'Hash codes already processed: ' + hashCodesForProcessedRecords);
         Logger.addEntry(this, 'Hash code for current records: ' + this.hashCode);
-        //Logger.addEntry(this, 'Trigger context for current records: ' + this.currentTriggerContext);
+        Logger.addEntry(this, 'Trigger operation type for current records: ' + Trigger.operationType);
         Logger.addEntry(this, 'Number of current records: ' + Trigger.size);
 
         if(this.haveRecordsAlreadyBeenProcessed()) {
@@ -63,7 +63,7 @@ public abstract class SobjectTriggerHandler extends NebulaCore implements ISobje
             return;
         } else Logger.addEntry(this, 'Records have not been processed for this context, continuing');
 
-        switch on Trigger.OperationType {
+        switch on Trigger.operationType {
             when BEFORE_INSERT {
                 this.executeBeforeInsert(this.recordList);
             } when BEFORE_UPDATE {
@@ -96,7 +96,7 @@ public abstract class SobjectTriggerHandler extends NebulaCore implements ISobje
         if(this.isTestMode) return;
 
         String errorMessage = 'Trigger handler called outside of trigger execution ' + this.isTriggerExecuting;
-        if(!this.isTriggerExecuting || Trigger.OperationType == null) throw new SobjectTriggerHandlerException(errorMessage);
+        if(!this.isTriggerExecuting || Trigger.operationType == null) throw new SobjectTriggerHandlerException(errorMessage);
     }
 
     private void setTriggerRecords() {
@@ -153,15 +153,15 @@ public abstract class SobjectTriggerHandler extends NebulaCore implements ISobje
         // This method is a safeguard that checks to see if we have recursion problems and stops if we do
         // It allows each context to occur once for a given hash code
 
-        if(Trigger.OperationType == TriggerOperation.BEFORE_INSERT) {
+        if(Trigger.operationType == TriggerOperation.BEFORE_INSERT) {
             // BEFORE_INSERT doesn't have record IDs yet, so the hash here will never match the other hashes
             // Since Salesforce makes it impossible to recursively run "insert record", we can let the platform handle it
             return false;
         } else if(!hashCodesForProcessedRecords.containsKey(this.hashCode)) {
-            hashCodesForProcessedRecords.put(this.hashCode, new Set<TriggerOperation>{Trigger.OperationType});
+            hashCodesForProcessedRecords.put(this.hashCode, new Set<TriggerOperation>{Trigger.operationType});
             return false;
-        } else if(!hashCodesForProcessedRecords.get(this.hashCode).contains(Trigger.OperationType)) {
-            hashCodesForProcessedRecords.get(this.hashCode).add(Trigger.OperationType);
+        } else if(!hashCodesForProcessedRecords.get(this.hashCode).contains(Trigger.operationType)) {
+            hashCodesForProcessedRecords.get(this.hashCode).add(Trigger.operationType);
             return false;
         } else {
             return true;
