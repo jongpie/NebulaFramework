@@ -9,37 +9,38 @@ private class SobjectRepositoryMocks_Tests {
     static void it_should_fake_returning_by_id() {
         Id testId = getTestId();
 
-        Sobject returnedObj = new SobjectRepositoryMocks.Base(null).getById(testId);
+        Sobject returnedRecord = new SobjectRepositoryMocks.Base(null).get(testId);
 
-        System.assert(returnedObj.Id == testId);
+        System.assert(returnedRecord.Id == testId);
     }
 
     @isTest
     static void it_should_fake_returning_by_field_and_value() {
         Id testId = getTestId();
-        QueryField field = getField();
+        Soql.QueryField field = getField();
 
-        List<IQueryFilter> queryFilters = new List<IQueryFilter>{new QueryFilter().filterByField(field, QueryOperator.EQUALS, getFieldValue())};
-        Sobject returnedObj = new SobjectRepositoryMocks.Base(null).getByIdAndQueryFilters(new Set<Id>{testId}, queryFilters)[0];
+        List<Soql.QueryFilter> queryFilters = new List<Soql.QueryFilter>{new Soql.QueryFilter(field, '=', getFieldValue())};
+        Sobject returnedRecord = new SobjectRepositoryMocks.Base(null).get(new Set<Id>{testId}, queryFilters)[0];
 
-        System.assertEquals(getFieldValue(), returnedObj.get(String.valueOf(field)));
+        System.assertEquals(getFieldValue(), returnedRecord.get(String.valueOf(field)));
     }
 
     @isTest
     static void it_should_return_list_of_sobjects_when_mocking_sosl_search() {
-        System.assert(new SobjectRepositoryMocks.Base().getSearchResults(getFieldValue(), QuerySearchGroup.ALL_FIELDS) instanceof List<Sobject>);
+        System.assert(new SobjectRepositoryMocks.Base().search(getFieldValue(), Sosl.SearchGroup.ALL_FIELDS) instanceOf List<Sobject>);
     }
 
     @isTest
     static void it_should_return_list_of_sobjects_when_mocking_sosl_search_with_passed_objects() {
-        Contact contact = (Contact)TestSobjectBuilder.getTestContactBuilder().build();
+        Contact contact = new Contact();
+        new TestDataFactory(contact).populateRequiredFields();
         ISobjectRepository base = new SobjectRepositoryMocks.Base().with(new List<Sobject>{contact});
 
-        System.assert(base.getSearchResults(getFieldValue(),QuerySearchGroup.ALL_FIELDS) instanceof List<Sobject>);
+        System.assert(base.search(getFieldValue(), Sosl.SearchGroup.ALL_FIELDS) instanceOf List<Sobject>);
     }
 
-    static QueryField getField() {
-        return new QueryField(Schema.Lead.LeadSource);
+    static Soql.QueryField getField() {
+        return new Soql.QueryField(Schema.Lead.LeadSource);
     }
 
     static String getFieldValue() {

@@ -47,7 +47,7 @@ private class SobjectRepository_Tests {
     static void setupData() {
         List<Account> accountList = new List<Account>();
         for(Integer i = 0; i < 5; i++) {
-            accountList.add((Account)TestSobjectBuilder.getTestAccountBuilder().build());
+            accountList.add((Account)new TestDataFactory(new Account()).populateRequiredFields());
         }
         insert accountList;
     }
@@ -69,7 +69,7 @@ private class SobjectRepository_Tests {
         Account expectedAccount = [SELECT Id FROM Account LIMIT 1];
 
         Test.startTest();
-        Account returnedAccount = (Account)new SobjectRepository_Tests.AccountRepository().getById(expectedAccount.Id);
+        Account returnedAccount = (Account)new SobjectRepository_Tests.AccountRepository().get(expectedAccount.Id);
         Test.stopTest();
 
         System.assertEquals(expectedAccount.Id, returnedAccount.Id);
@@ -104,7 +104,7 @@ private class SobjectRepository_Tests {
         Map<Id, Account> expectedAccountList = new Map<Id, Account>([SELECT Id FROM Account]);
 
         Test.startTest();
-        List<Account> returnedAccountList = (List<Account>)new SobjectRepository_Tests.AccountRepository().getById(new List<Id>(expectedAccountList.keySet()));
+        List<Account> returnedAccountList = (List<Account>)new SobjectRepository_Tests.AccountRepository().get(new List<Id>(expectedAccountList.keySet()));
         Test.stopTest();
 
         System.assertNotEquals(null, expectedAccountList);
@@ -131,9 +131,9 @@ private class SobjectRepository_Tests {
         ISobjectRepository repo = new SobjectRepository_Tests.AccountRepository();
 
         Test.startTest();
-        Soql.QueryFilter queryFilter = new Soql.QueryFilter(new Soql.QueryField(Schema.Account.Name), '=', 'My Test Company');
+        Soql.QueryFilter queryFilter = new Soql.QueryFilter(new Soql.QueryField(Schema.Account.Name), '=', 'Test string for String');
         List<Soql.QueryFilter> queryFilters = new List<Soql.QueryFilter>{queryFilter};
-        List<Account> returnedAccountList = (List<Account>)repo.getByIdAndQueryFilters(expectedAccountMap.keyset(), queryFilters);
+        List<Account> returnedAccountList = (List<Account>)repo.get(expectedAccountMap.keyset(), queryFilters);
         Test.stopTest();
 
         System.assertNotEquals(null, expectedAccountMap);
@@ -143,14 +143,14 @@ private class SobjectRepository_Tests {
 
     @isTest
     static void it_should_return_by_field_for_ids_in_list() {
-        Map<Id, Account> expectedAccountMap = new Map<Id, Account>([SELECT Id FROM Account]);
+        Map<Id, Account> expectedAccountMap = new Map<Id, Account>([SELECT Id FROM Account ]);
         List<Schema.SobjectField> accountFields = new List<Schema.SobjectField>{Schema.Account.Id, Schema.Account.Name};
         ISobjectRepository repo = new SobjectRepository_Tests.AccountRepository();
 
         Test.startTest();
-        Soql.QueryFilter queryFilter = new Soql.QueryFilter(new Soql.QueryField(Schema.Account.Name), '=', 'My Test Company');
+        Soql.QueryFilter queryFilter = new Soql.QueryFilter(Schema.Account.Name, '=', 'Test string for String');
         List<Soql.QueryFilter> queryFilters = new List<Soql.QueryFilter>{queryFilter};
-        List<Account> returnedAccountList = (List<Account>)repo.getByIdAndQueryFilters(new List<Id>(expectedAccountMap.keyset()), queryFilters);
+        List<Account> returnedAccountList = (List<Account>)repo.get(new List<Id>(expectedAccountMap.keyset()), queryFilters);
         Test.stopTest();
 
         System.assertNotEquals(null, expectedAccountMap);
@@ -203,7 +203,7 @@ private class SobjectRepository_Tests {
         System.assertNotEquals(0, expectedAccountList.size());
 
         Test.startTest();
-        List<Account> returnedAccountList = (List<Account>)new SobjectRepository_Tests.AccountRepository().getSearchResults(searchTerm);
+        List<Account> returnedAccountList = (List<Account>)new SobjectRepository_Tests.AccountRepository().search(searchTerm);
         Test.stopTest();
 
         System.assertNotEquals(null, expectedAccountList);
@@ -221,7 +221,7 @@ private class SobjectRepository_Tests {
         System.assertNotEquals(0, expectedAccountList.size());
 
         Test.startTest();
-        List<Account> returnedAccountList = (List<Account>)new SobjectRepository_Tests.AccountRepository().getSearchResults(searchTerm, Sosl.SearchGroup.NAME_FIELDS);
+        List<Account> returnedAccountList = (List<Account>)new SobjectRepository_Tests.AccountRepository().search(searchTerm, Sosl.SearchGroup.NAME_FIELDS);
         Test.stopTest();
 
         System.assertNotEquals(null, expectedAccountList);
@@ -239,9 +239,9 @@ private class SobjectRepository_Tests {
         System.assertNotEquals(0, expectedAccountList.size());
 
         Test.startTest();
-        Soql.QueryFilter queryFilter = new Soql.QueryFilter(new Soql.QueryField(Schema.Account.CreatedDate), '=', QueryDateLiteral.TODAY);
+        Soql.QueryFilter queryFilter = new Soql.QueryFilter(new Soql.QueryField(Schema.Account.CreatedDate), '=', new Soql.DateLiteral('TODAY'));
         List<Soql.QueryFilter> queryFilters = new List<Soql.QueryFilter>{queryFilter};
-        List<Account> returnedAccountList = (List<Account>)new SobjectRepository_Tests.AccountRepository().getSearchResults(searchTerm, Sosl.SearchGroup.NAME_FIELDS, queryFilters);
+        List<Account> returnedAccountList = (List<Account>)new SobjectRepository_Tests.AccountRepository().search(searchTerm, Sosl.SearchGroup.NAME_FIELDS, queryFilters);
         Test.stopTest();
 
         System.assertNotEquals(null, expectedAccountList);
@@ -251,7 +251,8 @@ private class SobjectRepository_Tests {
 
     @isTest
     static void it_should_insert_a_single_record() {
-        Account account = (Account)TestSobjectBuilder.getTestAccountBuilder().build();
+        Account account = new Account();
+        new TestDataFactory(account).populateRequiredFields();
         System.assertEquals(null, account.Id);
 
         Test.startTest();
@@ -280,14 +281,15 @@ private class SobjectRepository_Tests {
 
     @isTest
     static void it_should_upsert_a_single_new_record() {
-        Account newAccount = (Account)TestSobjectBuilder.getTestAccountBuilder().build();
-        System.assertEquals(null, newAccount.Id);
+        Account account = new Account();
+        new TestDataFactory(account).populateRequiredFields();
+        System.assertEquals(null, account.Id);
 
         Test.startTest();
-        new SobjectRepository_Tests.AccountRepository().upsertRecords(newAccount);
+        new SobjectRepository_Tests.AccountRepository().upsertRecords(account);
         Test.stopTest();
 
-        System.assertNotEquals(null, newAccount.Id);
+        System.assertNotEquals(null, account.Id);
     }
 
     @isTest

@@ -4,12 +4,12 @@
 *************************************************************************************************/
 public abstract class SobjectRepository extends Dml implements ISobjectRepository, IDml {
 
-    private Schema.SobjectField idQueryField;
+    protected Schema.SobjectField idField {get; private set;}
 
     public SobjectRepository() {
         this.currentModule = NebulaCore.Module.REPOSITORY;
 
-        this.idQueryField = this.getField('Id');
+        this.idField = this.getField('Id');
     }
 
     public override abstract Schema.SobjectType getSobjectType();
@@ -20,7 +20,7 @@ public abstract class SobjectRepository extends Dml implements ISobjectRepositor
 
     public virtual Sobject get(Id recordId) {
         return this.getSoql()
-            .filterWhere(new Soql.QueryFilter(this.idQueryField, '=', recordId))
+            .filterWhere(new Soql.QueryFilter(this.idField, '=', recordId))
             .getFirstQueryResult();
     }
 
@@ -29,7 +29,7 @@ public abstract class SobjectRepository extends Dml implements ISobjectRepositor
     }
 
     public virtual List<Sobject> get(List<Id> recordIds) {
-        return this.get(new Soql.QueryFilter(this.idQueryField, 'IN', recordIds));
+        return this.get(new Soql.QueryFilter(this.idField, 'IN', recordIds));
     }
 
     public virtual List<Sobject> get(Soql.QueryFilter queryFilter) {
@@ -48,7 +48,7 @@ public abstract class SobjectRepository extends Dml implements ISobjectRepositor
 
     public virtual List<Sobject> get(List<Id> idList, List<Soql.QueryFilter> queryFilters) {
         return this.getSoql()
-            .filterWhere(new Soql.QueryFilter(this.idQueryField, 'IN', idList))
+            .filterWhere(new Soql.QueryFilter(this.idField, 'IN', idList))
             .filterWhere(queryFilters)
             .getQueryResults();
     }

@@ -9,7 +9,7 @@ public class SobjectRepositoryMocks {
 
         protected List<Sobject> records;
         protected List<Id> recordIdList;
-        protected List<IQueryFilter> queryFilters;
+        protected List<Soql.QueryFilter> queryFilters;
 
         public Base() {
             this.records = new List<Sobject>();
@@ -23,26 +23,34 @@ public class SobjectRepositoryMocks {
             return Schema.User.SobjectType; // TODO change to be dynamic?
         }
 
+        public virtual Soql getSoql() {
+            return new Soql(this.getSobjectType());
+        }
+
         public Base with(List<Sobject> records) {
             this.records = records;
             return this;
         }
 
-        public virtual ISobjectRepository filterBy(IQueryFilter queryFilter) {
-            return this.filterBy(new List<IQueryFilter>{queryFilter});
+        public virtual ISobjectRepository filterBy(Soql.QueryFilter queryFilter) {
+            return this.filterBy(new List<Soql.QueryFilter>{queryFilter});
         }
 
-        public virtual ISobjectRepository filterBy(List<IQueryFilter> queryFilters) {
+        public virtual ISobjectRepository filterBy(List<Soql.QueryFilter> queryFilters) {
             this.queryFilters = queryFilters;
             return this;
         }
 
         // SOQL
-        public virtual Sobject getById(Id recordId) {
-            return this.getById(new List<Id>{recordId})[0];
+        public virtual Sobject get(Id recordId) {
+            return this.get(new List<Id>{recordId})[0];
         }
 
-        public virtual List<Sobject> getById(List<Id> recordIdList) {
+        public virtual List<Sobject> get(Set<Id> recordIdSet) {
+            return this.get(new List<Id>(recordIdSet));
+        }
+
+        public virtual List<Sobject> get(List<Id> recordIdList) {
             this.recordIdList = recordIdList;
 
             if(this.records == null) this.createMockObjects();
@@ -50,36 +58,36 @@ public class SobjectRepositoryMocks {
             return this.records;
         }
 
-        public virtual List<Sobject> get(List<IQueryFilter> queryFilters) {
+        public virtual List<Sobject> get(List<Soql.QueryFilter> queryFilters) {
             this.queryFilters = queryFilters;
             return this.records;
         }
 
-        public List<Sobject> get(IQueryFilter queryFilter) {
-            return this.get(new List<IQueryFilter>{queryFilter});
+        public List<Sobject> get(Soql.QueryFilter queryFilter) {
+            return this.get(new List<Soql.QueryFilter>{queryFilter});
         }
 
-        public List<Sobject> get(IQueryFilter queryFilterOne, IQueryFilter queryFilterTwo) {
-            return this.get(new List<IQueryFilter>{queryFilterOne, queryFilterTwo});
+        public List<Sobject> get(Soql.QueryFilter queryFilterOne, Soql.QueryFilter queryFilterTwo) {
+            return this.get(new List<Soql.QueryFilter>{queryFilterOne, queryFilterTwo});
         }
 
-        public List<Sobject> get(IQueryFilter queryFilterOne, IQueryFilter queryFilterTwo, IQueryFilter queryFilterThree) {
-            return this.get(new List<IQueryFilter>{queryFilterOne, queryFilterTwo, queryFilterThree});
+        public List<Sobject> get(Soql.QueryFilter queryFilterOne, Soql.QueryFilter queryFilterTwo, Soql.QueryFilter queryFilterThree) {
+            return this.get(new List<Soql.QueryFilter>{queryFilterOne, queryFilterTwo, queryFilterThree});
         }
 
-        public virtual List<IQueryFilter> getQueryFilters() {
+        public virtual List<Soql.QueryFilter> getQueryFilters() {
             return queryFilters;
         }
 
-        public virtual List<Sobject> getByIdAndQueryFilters(Set<Id> idList, List<IQueryFilter> queryFilters) {
-            return this.getByIdAndQueryFilters(new List<Id>(idList), queryFilters);
+        public virtual List<Sobject> get(Set<Id> idList, List<Soql.QueryFilter> queryFilters) {
+            return this.get(new List<Id>(idList), queryFilters);
         }
 
-        public virtual List<Sobject> getByIdAndQueryFilters(List<Id> idList, List<IQueryFilter> queryFilters) {
-            List<Sobject> records = this.getById(idList);
+        public virtual List<Sobject> get(List<Id> idList, List<Soql.QueryFilter> queryFilters) {
+            List<Sobject> records = this.get(idList);
             // TODO need to revisit - QueryFilter no longer has the methods needed below, so need a new solution
             // for(Sobject record : records) {
-            //     for(IQueryFilter queryFilter : queryFilters) {
+            //     for(Soql.QueryFilter queryFilter : queryFilters) {
             //         if(queryFilter.getSobjectField() == null) continue;
             //
             //         record.put(queryFilter.getSobjectField(), queryFilter.getProvidedValue());
@@ -90,15 +98,15 @@ public class SobjectRepositoryMocks {
         }
 
         // SOSL
-        public virtual List<Sobject> getSearchResults(String searchTerm) {
+        public virtual List<Sobject> search(String searchTerm) {
             return this.returnListOfSobjects();
         }
 
-        public virtual List<Sobject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup) {
+        public virtual List<Sobject> search(String searchTerm, Sosl.SearchGroup searchGroup) {
             return this.returnListOfSobjects();
         }
 
-        public virtual List<Sobject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup, List<IQueryFilter> queryFilters) {
+        public virtual List<Sobject> search(String searchTerm, Sosl.SearchGroup searchGroup, List<Soql.QueryFilter> queryFilters) {
             return this.returnListOfSobjects();
         }
 
