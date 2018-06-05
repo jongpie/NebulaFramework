@@ -48,7 +48,7 @@ private class SobjectRepositoryMocks_Tests {
     }
 
     static Id getTestId() {
-        return TestingUtils.generateId(Schema.Lead.SobjectType);
+        return TestUtils.generateId(Schema.Lead.SobjectType);
     }
 
 }

@@ -14,7 +14,7 @@ private class DmlMock_Tests {
         contactDmlRepo.insertRecords(contact);
         Test.stopTest();
 
-        System.assert(TestingUtils.insertedRecords.size() > 0);
+        System.assert(TestUtils.insertedRecords.size() > 0);
     }
 
     @isTest
@@ -23,7 +23,7 @@ private class DmlMock_Tests {
         contactDmlRepo.updateRecords(contact);
         Test.stopTest();
 
-        System.assert(!TestingUtils.updatedRecords.isEmpty());
+        System.assert(!TestUtils.updatedRecords.isEmpty());
     }
 
     @isTest
@@ -32,7 +32,7 @@ private class DmlMock_Tests {
         contactDmlRepo.upsertRecords(contact);
         Test.stopTest();
 
-        System.assert(!TestingUtils.upsertedRecords.isEmpty());
+        System.assert(!TestUtils.upsertedRecords.isEmpty());
     }
 
     @isTest
@@ -41,7 +41,7 @@ private class DmlMock_Tests {
         contactDmlRepo.deleteRecords(contact);
         Test.stopTest();
 
-        System.assert(!TestingUtils.deletedRecords.isEmpty());
+        System.assert(!TestUtils.deletedRecords.isEmpty());
     }
 
     @isTest
@@ -50,7 +50,7 @@ private class DmlMock_Tests {
         contactDmlRepo.hardDeleteRecords(contact);
         Test.stopTest();
 
-        System.assert(!TestingUtils.deletedRecords.isEmpty());
+        System.assert(!TestUtils.deletedRecords.isEmpty());
     }
 
     @isTest
@@ -59,20 +59,20 @@ private class DmlMock_Tests {
         contactDmlRepo.undeleteRecords(contact);
         Test.stopTest();
 
-        System.assert(!TestingUtils.undeletedRecords.isEmpty());
+        System.assert(!TestUtils.undeletedRecords.isEmpty());
     }
 
     @isTest
     static void it_should_mock_updating_read_only_fields_when_updating_data() {
         Schema.Lead l = new Schema.Lead();
-        l = (Lead)TestingUtils.setReadOnlyField(l, Schema.Lead.IsConverted, true);
+        l = (Lead)TestUtils.setReadOnlyField(l, Schema.Lead.IsConverted, true);
 
         Test.startTest();
         contactDmlRepo.updateRecords(l);
         Test.stoptest();
 
-        Sobject record = TestingUtils.updatedRecords[0];
-        System.assert(record instanceOf Schema.Lead);
+        Sobject record = TestUtils.updatedRecords[0];
+        System.assert(record instanceof Schema.Lead);
         System.assert(record.get('IsConverted') != null);
     }
 

@@ -65,8 +65,8 @@ public class DmlMock {
         }
 
         public List<Database.SaveResult> insertRecords(List<Sobject> recordList) {
-            TestingUtils.generateIds(recordList);
-            TestingUtils.insertedRecords.addAll(recordList);
+            TestUtils.generateIds(recordList);
+            TestUtils.insertedRecords.addAll(recordList);
             // TODO add logic to try to actually return real results, based on the record list provided
             return new List<Database.SaveResult>();
         }
@@ -78,7 +78,7 @@ public class DmlMock {
         }
 
         public List<Database.SaveResult> updateRecords(List<Sobject> recordList) {
-            TestingUtils.updatedRecords.addAll(recordList);
+            TestUtils.updatedRecords.addAll(recordList);
             // TODO add logic to try to actually return real results, based on the record list provided
             return new List<Database.SaveResult>();
         }
@@ -90,8 +90,8 @@ public class DmlMock {
         }
 
         public List<Database.UpsertResult> upsertRecords(List<Sobject> recordList) {
-            TestingUtils.generateIds(recordList);
-            TestingUtils.upsertedRecords.addAll(recordList);
+            TestUtils.generateIds(recordList);
+            TestUtils.upsertedRecords.addAll(recordList);
             // TODO add logic to try to actually return real results, based on the record list provided
             return new List<Database.UpsertResult>();
         }
@@ -103,7 +103,7 @@ public class DmlMock {
         }
 
         public List<Database.UndeleteResult> undeleteRecords(List<Sobject> recordList) {
-            TestingUtils.undeletedRecords.addAll(recordList);
+            TestUtils.undeletedRecords.addAll(recordList);
             // TODO add logic to try to actually return real results, based on the record list provided
             return new List<Database.UndeleteResult>();
         }
@@ -115,7 +115,7 @@ public class DmlMock {
         }
 
         public List<Database.DeleteResult> deleteRecords(List<Sobject> recordList) {
-            if(recordList != null) TestingUtils.deletedRecords.addAll(recordList);
+            if(recordList != null) TestUtils.deletedRecords.addAll(recordList);
             // TODO add logic to try to actually return real results, based on the record list provided
             return new List<Database.DeleteResult>();
         }

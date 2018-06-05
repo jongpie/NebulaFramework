@@ -3,7 +3,7 @@
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
 @isTest
-public class TestingUtils {
+public class TestUtils{
 
     public static List<Sobject> insertedRecords  = new List<Sobject>();
     public static List<Sobject> upsertedRecords  = new List<Sobject>();
