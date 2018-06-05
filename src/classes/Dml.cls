@@ -4,11 +4,28 @@
 *************************************************************************************************/
 public abstract class Dml extends NebulaCore implements IDml {
 
-    private List<Sobject> insertRecordList = new List<Sobject>();
-    private List<Sobject> updateRecordList = new List<Sobject>();
-    private List<Sobject> upsertRecordList = new List<Sobject>();
-    private List<Sobject> deleteRecordList = new List<Sobject>();
+    public enum CrudMode { SYSTEM_MODE, USER_MODE }
+
+    private enum DmlOperation {
+        INSERT_RECORDS, UPDATE_RECORDS, UPSERT_RECORDS,
+        DELETE_RECORDS, UNDELETE_RECORDS, HARD_DELETE_RECORDS, MERGE_RECORDS
+    }
+
+    private CrudMode currentMode;
+    private List<Sobject> insertRecordList   = new List<Sobject>();
+    private List<Sobject> updateRecordList   = new List<Sobject>();
+    private List<Sobject> upsertRecordList   = new List<Sobject>();
+    private List<Sobject> deleteRecordList   = new List<Sobject>();
     private List<Sobject> undeleteRecordList = new List<Sobject>();
+
+    public Dml() {
+        this.currentMode = CrudMode.USER_MODE;
+    }
+
+    public IDml setMode(Dml.CrudMode mode) {
+        this.currentMode = mode;
+        return this;
+    }
 
     public abstract Schema.SobjectType getSobjectType();
 
@@ -57,6 +74,8 @@ public abstract class Dml extends NebulaCore implements IDml {
     }
 
     public virtual List<Database.SaveResult> insertRecords(List<Sobject> records) {
+        if(this.currentMode == CrudMode.USER_MODE) this.validateUserPermissions(records, DmlOperation.INSERT_RECORDS);
+
         this.registerInsertRecords(records);
         return Database.insert(records);
     }
@@ -66,6 +85,8 @@ public abstract class Dml extends NebulaCore implements IDml {
     }
 
     public virtual List<Database.SaveResult> updateRecords(List<Sobject> records) {
+        if(this.currentMode == CrudMode.USER_MODE) this.validateUserPermissions(records, DmlOperation.UPDATE_RECORDS);
+
         return Database.update(records);
     }
 
@@ -74,6 +95,8 @@ public abstract class Dml extends NebulaCore implements IDml {
     }
 
     public virtual List<Database.UpsertResult> upsertRecords(List<Sobject> records) {
+        if(this.currentMode == CrudMode.USER_MODE) this.validateUserPermissions(records, DmlOperation.UPSERT_RECORDS);
+
         return Database.upsert(records);
     }
 
@@ -82,6 +105,8 @@ public abstract class Dml extends NebulaCore implements IDml {
     }
 
     public virtual List<Database.UndeleteResult> undeleteRecords(List<Sobject> records) {
+        if(this.currentMode == CrudMode.USER_MODE) this.validateUserPermissions(records, DmlOperation.UNDELETE_RECORDS);
+
         return Database.undelete(records);
     }
 
@@ -90,6 +115,8 @@ public abstract class Dml extends NebulaCore implements IDml {
     }
 
     public virtual List<Database.DeleteResult> deleteRecords(List<Sobject> records) {
+        if(this.currentMode == CrudMode.USER_MODE) this.validateUserPermissions(records, DmlOperation.DELETE_RECORDS);
+
         return Database.delete(records);
     }
 
@@ -98,6 +125,8 @@ public abstract class Dml extends NebulaCore implements IDml {
     }
 
     public virtual List<Database.DeleteResult> hardDeleteRecords(List<Sobject> records) {
+        if(this.currentMode == CrudMode.USER_MODE) this.validateUserPermissions(records, DmlOperation.HARD_DELETE_RECORDS);
+
         List<Database.DeleteResult> results = this.deleteRecords(records);
         if(!records.isEmpty()) Database.emptyRecycleBin(records);
         return results;
@@ -110,6 +139,8 @@ public abstract class Dml extends NebulaCore implements IDml {
     }
 
     protected virtual List<Database.MergeResult> mergeRecords(Sobject masterRecord, List<Sobject> recordsToMerge) {
+        if(this.currentMode == CrudMode.USER_MODE) this.validateUserPermissions(recordsToMerge, DmlOperation.MERGE_RECORDS);
+
         return Database.merge(masterRecord, recordsToMerge);
     }
 
@@ -118,6 +149,8 @@ public abstract class Dml extends NebulaCore implements IDml {
     }
 
     protected virtual List<Database.UpsertResult> upsertRecords(List<Sobject> records, Schema.SobjectField externalIdField) {
+        if(this.currentMode == CrudMode.USER_MODE) this.validateUserPermissions(records, DmlOperation.UPSERT_RECORDS);
+
         return Database.upsert(records, externalIdField);
     }
 
@@ -132,5 +165,29 @@ public abstract class Dml extends NebulaCore implements IDml {
 
         return castRecords;
     }
+
+    private void validateUserPermissions(List<Sobject> records, DmlOperation operation) {
+        Schema.SobjectType sobjectType = records.getSobjectType();
+        DescribeSobjectResult sobjectDescribe = sobjectType.getDescribe();
+
+        switch on operation {
+            when INSERT_RECORDS {
+                if(!sobjectDescribe.isCreateable()) throw new DmlPermissionException('No insert access for ' + sobjectType);
+            }
+            when UPDATE_RECORDS {
+                if(!sobjectDescribe.isUpdateable()) throw new DmlPermissionException('No update access for ' + sobjectType);
+            }
+            when UPSERT_RECORDS {
+                if(!sobjectDescribe.isCreateable() || !sobjectDescribe.isUpdateable()) {
+                    throw new DmlPermissionException('No upsert access for ' + sobjectType);
+                }
+            }
+            when DELETE_RECORDS, UNDELETE_RECORDS, HARD_DELETE_RECORDS, MERGE_RECORDS {
+                if(!sobjectDescribe.isDeletable()) throw new DmlPermissionException('No delete access for ' + sobjectType);
+            }
+        }
+    }
+
+    public class DmlPermissionException extends Exception {}
 
 }

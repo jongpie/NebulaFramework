@@ -5,6 +5,7 @@
 public interface IDml {
 
     Schema.SobjectType getSobjectType();
+    IDml setMode(Dml.CrudMode mode);
 
     void registerInsertRecords(List<Sobject> recordList);
     void registerUpdateRecords(List<Sobject> recordList);
