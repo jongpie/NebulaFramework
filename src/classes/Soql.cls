@@ -504,7 +504,7 @@ public class Soql implements Comparable {
 
     }
 
-    public virtual class QueryArgument {
+    public class QueryArgument {
 
         private String value;
 
@@ -659,21 +659,6 @@ public class Soql implements Comparable {
 
         public override String toString() {
             return this.value;
-        }
-
-    }
-
-    public class Results {
-
-        @AuraEnabled public Integer pageSize {get;set;}
-        @AuraEnabled public Integer currentPage {get;set;}
-        @AuraEnabled public Integer totalPages {get;set;}
-        @AuraEnabled public Integer matchCount {get;set;}
-        @AuraEnabled public Integer totalMatchCount {get;set;}
-        @AuraEnabled public List<Sobject> matches {get;set;}
-
-        public Results(){
-            matches = new List<Sobject>();
         }
 
     }
