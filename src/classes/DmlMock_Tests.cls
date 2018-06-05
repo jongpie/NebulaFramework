@@ -72,7 +72,7 @@ private class DmlMock_Tests {
         Test.stoptest();
 
         Sobject record = TestingUtils.updatedRecords[0];
-        System.assert(record instanceof Schema.Lead);
+        System.assert(record instanceOf Schema.Lead);
         System.assert(record.get('IsConverted') != null);
     }
 
