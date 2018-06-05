@@ -5,7 +5,7 @@
 public class Soql implements Comparable {
 
     public enum Aggregate { AVG, COUNT, COUNT_DISTINCT, MAX, MIN, SUM }
-    public enum FieldCategory { ACCESSIBLE, UPDATEABLE, STANDARD, CUSTOM }
+    public enum FieldCategory { ACCESSIBLE, UPDATEABLE, STANDARD, CUSTOM, IGNORE_FLS }
     public enum Scope { EVERYTHING, DELEGATED, TEAM, MINE, MY_TERRITORY, MY_TEAM_TERRITORY }
     public enum SortOrder { ASCENDING, DESCENDING }
 
@@ -339,7 +339,6 @@ public class Soql implements Comparable {
 
     private List<String> getFieldsToQuery(QueryField queryField, FieldCategory fieldCat) {
         List<String> fieldsToReturn = new List<String>();
-        //Schema.SobjectField field = this.sobjectDescribe.fields.getMap().get(fieldApiName);
 
         if(fieldCat == null) return fieldsToReturn;
         else if(fieldCat == FieldCategory.ACCESSIBLE && !queryField.getDescribe().isAccessible()) return fieldsToReturn;
@@ -642,6 +641,10 @@ public class Soql implements Comparable {
     public class QueryFilter implements Comparable {
 
         private String value;
+
+        public QueryFilter(Schema.SobjectField field, String operator, Object value) {
+            this(new QueryField(field), operator, value);
+        }
 
         public QueryFilter(QueryField queryField, String operator, Object value) {
             this.value = queryField + ' ' + operator + ' ' + new QueryArgument(value);
