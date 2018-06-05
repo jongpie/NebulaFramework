@@ -3,9 +3,9 @@
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
 @isTest
-public class DmlMock {
+public class SobjectDmlMock {
 
-    public abstract class Base implements IDml {
+    public abstract class Base implements ISobjectDml {
 
         private List<Sobject> insertRecordList = new List<Sobject>();
         private List<Sobject> updateRecordList = new List<Sobject>();
@@ -15,7 +15,7 @@ public class DmlMock {
 
         public abstract Schema.SobjectType getSobjectType();
 
-        public IDml setMode(Dml.CrudMode mode) {
+        public ISobjectDml setMode(SobjectDml.CrudMode mode) {
             return this;
         }
 
@@ -134,7 +134,7 @@ public class DmlMock {
 
     }
 
-    public class ContactDmlMock extends DmlMock.Base {
+    public class ContactDmlMock extends SobjectDmlMock.Base {
 
         public override Schema.SobjectType getSobjectType() {
             return Schema.Contact.SobjectType;

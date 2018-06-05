@@ -2,7 +2,7 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
-public abstract class Dml extends NebulaCore implements IDml {
+public abstract class SobjectDml extends NebulaCore implements ISobjectDml {
 
     public enum CrudMode { SYSTEM_MODE, USER_MODE }
 
@@ -18,11 +18,11 @@ public abstract class Dml extends NebulaCore implements IDml {
     private List<Sobject> deleteRecordList   = new List<Sobject>();
     private List<Sobject> undeleteRecordList = new List<Sobject>();
 
-    public Dml() {
+    public SobjectDml () {
         this.currentMode = CrudMode.USER_MODE;
     }
 
-    public IDml setMode(Dml.CrudMode mode) {
+    public ISobjectDml setMode(CrudMode mode) {
         this.currentMode = mode;
         return this;
     }

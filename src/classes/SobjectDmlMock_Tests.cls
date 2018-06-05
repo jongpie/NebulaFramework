@@ -3,9 +3,9 @@
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
 @isTest
-private class DmlMock_Tests {
+private class SobjectDmlMock_Tests {
 
-    static IDml contactDmlRepo = new DmlMock.ContactDmlMock();
+    static ISobjectDml contactDmlRepo = new SobjectDmlMock.ContactDmlMock();
     static Schema.Contact contact = (Contact)new TestDataFactory(new Contact()).populateRequiredFields();
 
     @isTest
