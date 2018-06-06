@@ -3,7 +3,7 @@
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
 @isTest
-public class TestUtils{
+public class TestUtils {
 
     public static List<Sobject> insertedRecords  = new List<Sobject>();
     public static List<Sobject> upsertedRecords  = new List<Sobject>();
@@ -15,7 +15,7 @@ public class TestUtils{
 
     public static String generateId(Schema.SobjectType sobjectType) {
         String result = String.valueOf(startingNumber++);
-        return sobjectType.getDescribe().getKeyPrefix() + '0'.repeat(12-result.length()) + result;
+        return sobjectType.getDescribe().getKeyPrefix() + '0'.repeat(12 - result.length()) + result;
    }
 
     public static void generateIds(List<Sobject> records) {
@@ -30,13 +30,13 @@ public class TestUtils{
         return Integer.valueOf(Math.rint(Math.pow(10, n) * Math.random()));
     }
 
-    public static Sobject setReadOnlyField(Sobject sobj, Schema.SobjectField fieldName, Object value) {
-        return setReadOnlyField(sobj, new Map<Schema.SobjectField, Object>{fieldName => value});
+    public static Sobject setReadOnlyField(Sobject record, Schema.SobjectField fieldName, Object value) {
+        return setReadOnlyField(record, new Map<Schema.SobjectField, Object>{fieldName => value});
     }
 
-    public static Sobject setReadOnlyField(Sobject sobj, Map<Schema.SobjectField, Object> changesToFields) {
-        String serializedRecord = JSON.serialize(sobj);
-        Map<String, Object> deserializedRecordMap = (Map<String, Object>)JSON.deserializeUntyped(serializedRecord);
+    public static Sobject setReadOnlyField(Sobject record, Map<Schema.SobjectField, Object> changesToFields) {
+        String serializedRecord = Json.serialize(record);
+        Map<String, Object> deserializedRecordMap = (Map<String, Object>)Json.deserializeUntyped(serializedRecord);
 
         // Loop through the deserialized record map and put the field & value
         // Since it's a map, if the field already exists on the Sobject, it's updated (or added if it wasn't there already)
@@ -45,8 +45,8 @@ public class TestUtils{
             deserializedRecordMap.put(fieldName, changesToFields.get(sobjectField));
         }
 
-        serializedRecord = JSON.serialize(deserializedRecordMap);
-        return (Sobject)JSON.deserialize(serializedRecord, Sobject.class);
+        serializedRecord = Json.serialize(deserializedRecordMap);
+        return (Sobject)Json.deserialize(serializedRecord, Sobject.class);
     }
 
 }
