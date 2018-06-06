@@ -4,27 +4,28 @@
 *************************************************************************************************/
 public class Scheduler {
 
-    //CRON order - Seconds, Minutes, Hours, Day_of_month, Month, Day_of_week, Optional_year
-    public final static String DAILY_CRON = '0 {0} {1} * * ?';
+    // CRON order - Seconds, Minutes, Hours, Day_of_month, Month, Day_of_week, Optional_year
+    public final static String DAILY_CRON  = '0 {0} {1} * * ?';
     public final static String HOURLY_CRON = '0 {0} * * * ?';
-    private final Schedulable scheduledClass;
 
-    public Scheduler (Schedulable scheduledClass)  {
-        this.scheduledClass = scheduledClass;
+    private final Schedulable schedulableClass;
+
+    public Scheduler(Schedulable schedulableClass) {
+        this.schedulableClass = schedulableClass;
     }
 
-    public String scheduleHourly(String jobName, String startingMinuteInHour) {
-        String hourlyCRON = String.format(HOURLY_CRON, new List<String>{startingMinuteInHour});
-        return this.schedule(jobName, hourlyCRON);
+    public Id scheduleHourly(String jobName, String startingMinuteInHour) {
+        String hourlyCron = String.format(HOURLY_CRON, new List<String>{startingMinuteInHour});
+        return this.schedule(jobName, hourlyCron);
     }
 
-    public String scheduleDaily(String jobName, String startingHour, String startingMinute) {
-        String dailyCRON = String.format(DAILY_CRON, new List<String>{startingHour, startingMinute});
-        return this.schedule(jobName, dailyCRON);
+    public Id scheduleDaily(String jobName, String startingHour, String startingMinute) {
+        String dailyCron = String.format(DAILY_CRON, new List<String>{startingHour, startingMinute});
+        return this.schedule(jobName, dailyCron);
     }
 
-    public String schedule(String jobName, String cronExpression) {
-        return System.schedule(jobName, cronExpression, this.scheduledClass);
+    public Id schedule(String jobName, String cronExpression) {
+        return System.schedule(jobName, cronExpression, this.schedulableClass);
     }
 
 }
