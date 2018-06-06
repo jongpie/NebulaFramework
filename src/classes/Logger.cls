@@ -23,10 +23,19 @@ public without sharing class Logger {
     }
 
     public static void saveLogs() {
-        if(!NebulaSettings.LoggerSettings.EnableLogging__c) return;
+        if(!getSettings().EnableLogging__c) return;
 
         saveTransactionLog();
         saveSingleLogFile();
+    }
+
+    private static LoggerSettings__c getSettings() {
+        LoggerSettings__c loggerSettings = LoggerSettings__c.getInstance();
+
+        if(loggerSettings.Id != null) return loggerSettings;
+
+        upsert LoggerSettings__c.getOrgDefaults();
+        return LoggerSettings__c.getInstance();
     }
 
     private static void saveTransactionLog() {
