@@ -5,7 +5,7 @@
 @isTest
 public class SobjectRepositoryMocks {
 
-    public virtual class Base extends DmlMock.Base implements ISobjectRepository {
+    public virtual class Base extends SobjectDmlMock.Base implements ISobjectRepository {
 
         protected List<Sobject> records;
         protected List<Id> recordIdList;
