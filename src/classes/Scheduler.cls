@@ -5,8 +5,8 @@
 public class Scheduler {
 
     // CRON order - Seconds, Minutes, Hours, Day_of_month, Month, Day_of_week, Optional_year
-    public final static String DAILY_CRON  = '0 {0} {1} * * ?';
-    public final static String HOURLY_CRON = '0 {0} * * * ?';
+    private final static String DAILY_CRON  = '0 {0} {1} * * ?';
+    private final static String HOURLY_CRON = '0 {0} * * * ?';
 
     private final Schedulable schedulableClass;
 
