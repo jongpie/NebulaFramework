@@ -10,7 +10,7 @@ public abstract class NebulaCore implements INebulaCore {
     public static String TRANSACTION_ID {get; private set;}
 
     static {
-        NebulaCore.TRANSACTION_ID = new UUID().getValue();
+        NebulaCore.TRANSACTION_ID = new Uuid().getValue();
         System.debug('NebulaCore.TRANSACTION_ID=' + NebulaCore.TRANSACTION_ID);
     }
 
