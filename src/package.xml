@@ -7,7 +7,7 @@
     <types>
         <members>LoggerSettings__c</members>
         <members>NebulaLog__c</members>
-        <members>TriggerHandlerSettings__c</members>
+        <members>SobjectTriggerHandlerSettings__c</members>
         <name>CustomObject</name>
     </types>
     <types>
@@ -18,5 +18,5 @@
         <members>NebulaLog__c-Log Layout</members>
         <name>Layout</name>
     </types>
-	<version>43.0</version>
+    <version>43.0</version>
 </Package>

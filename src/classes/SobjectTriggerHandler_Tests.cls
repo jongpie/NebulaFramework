@@ -4,11 +4,13 @@
 *************************************************************************************************/
 @isTest
 private class SobjectTriggerHandler_Tests {
-/*
+
     private class LeadTriggerHandlerTest extends SobjectTriggerHandler {
+
         public LeadTriggerHandlerTest() {
             super(true);
         }
+
         public override void executeBeforeInsert(List<Sobject> newRecordList) {
             List<Lead> newLeadList = (List<Lead>)this.recordList;
 
@@ -21,11 +23,15 @@ private class SobjectTriggerHandler_Tests {
             // Add logic here. Methods should be simple & independent from each other (except for overloaded methods)
             lead.Status = 'Open - Not Contacted';
         }
+
     }
 
     static List<Lead> leadList = new List<Lead>();
 
+    @testSetup
     static void setupData() {
+        upsert SobjectTriggerHandlerSettings__c.getInstance();
+
         for(Integer i = 0; i < 5; i++) {
             Lead lead = (Lead)new TestDataFactory(new Lead()).populateRequiredFields();
             leadList.add(lead);
@@ -34,13 +40,13 @@ private class SobjectTriggerHandler_Tests {
     }
 
     @isTest
-    static void shouldNotExecuteTriggers() {
-        NebulaTriggerHandlerSettings__c triggerHandlerSettings = NebulaTriggerHandlerSettings__c.getInstance();
+    static void it_should_not_execute_triggers_when_disabled() {
+        SobjectTriggerHandlerSettings__c triggerHandlerSettings = SobjectTriggerHandlerSettings__c.getInstance();
         triggerHandlerSettings.ExecuteTriggers__c = false;
         upsert triggerHandlerSettings;
 
         LeadTriggerHandlerTest leadTriggerHandler = new LeadTriggerHandlerTest();
-        leadTriggerHandler.currentTriggerContext  = SobjectTriggerHandler.TriggerContext.BEFORE_INSERT;
+        leadTriggerHandler.currentTriggerOperation = TriggerOperation.BEFORE_INSERT;
         leadTriggerHandler.recordList = leadList;
 
         Test.startTest();
@@ -50,49 +56,18 @@ private class SobjectTriggerHandler_Tests {
         Test.stopTest();
     }
 
-    // @isTest
-    // static void executeAllContexts() {
-    //     setupData();
-    //     LeadTriggerHandlerTest leadTriggerHandler = new LeadTriggerHandlerTest();
-    //     leadTriggerHandler.recordList = leadList;
+    @isTest
+    static void it_should_execute_all_trigger_operations_when_enabled() {
+        setupData();
+        LeadTriggerHandlerTest leadTriggerHandler = new LeadTriggerHandlerTest();
+        leadTriggerHandler.recordList = leadList;
 
-    //     Test.startTest();
-    //     for(SobjectTriggerHandler.TriggerContext context : SobjectTriggerHandler.TriggerContext.values()) {
-    //         leadTriggerHandler.currentTriggerContext = context;
-    //         leadTriggerHandler.execute();
-    //     }
-    //     Test.stopTest();
-    // }
+        Test.startTest();
+        for(TriggerOperation triggerOperation : TriggerOperation.values()) {
+            leadTriggerHandler.currentTriggerOperation = triggerOperation;
+            leadTriggerHandler.execute();
+        }
+        Test.stopTest();
+    }
 
-    // @isTest
-    // static void executeBeforeInsert() {
-    //     LeadTriggerHandlerTest leadTriggerHandler = new LeadTriggerHandlerTest();
-    //     // Set the variables for the relevant context
-    //     leadTriggerHandler.currentTriggerContext = SobjectTriggerHandler.TriggerContext.BEFORE_INSERT;
-    //     leadTriggerHandler.recordList = leadList;
-
-    //     Test.startTest();
-
-    //     leadTriggerHandler.execute();
-
-    //     Test.stopTest();
-    // }
-
-    // @isTest
-    // static void executeBeforeUpdate() {
-    //     LeadTriggerHandlerTest leadTriggerHandler = new LeadTriggerHandlerTest();
-    //     // Set the variables for the relevant context
-    //     leadTriggerHandler.currentTriggerContext = SobjectTriggerHandler.TriggerContext.BEFORE_UPDATE;
-    //     leadTriggerHandler.recordList            = leadList;
-    //     leadTriggerHandler.recordMap             = new Map<Id, Lead>(leadList);
-    //     leadTriggerHandler.oldRecordList         = leadList;
-    //     leadTriggerHandler.oldRecordMap          = new Map<Id, Lead>(leadList);
-
-    //     Test.startTest();
-
-    //     leadTriggerHandler.execute();
-
-    //     Test.stopTest();
-    // }
-*/
 }

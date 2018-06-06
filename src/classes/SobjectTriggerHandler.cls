@@ -2,49 +2,40 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
-public abstract class SobjectTriggerHandler extends NebulaCore implements ISobjectTriggerHandler {
+public abstract class SobjectTriggerHandler implements ISobjectTriggerHandler {
 
     private static Map<Integer, Set<TriggerOperation>> hashCodesForProcessedRecords = new Map<Integer, Set<TriggerOperation>>();
 
     private Integer hashCode; // The hash code for the current records
     private Boolean isTestMode;
     private Boolean isTriggerExecuting; // Checks if the code was called by a trigger
+    @testVisible private TriggerOperation currentTriggerOperation;
 
     @testVisible private List<Sobject> recordList, oldRecordList;
     @testVisible private Map<Id, Sobject> recordMap, oldRecordMap;
 
     public SobjectTriggerHandler() {
         this(false);
-        this.currentModule = NebulaCore.Module.TRIGGER_HANDLER;
     }
 
     protected SobjectTriggerHandler(Boolean isTestMode) {
-        this.isTestMode         = isTestMode;
-        this.isTriggerExecuting = Trigger.isExecuting;
+        this.isTestMode              = isTestMode;
+        this.isTriggerExecuting      = Trigger.isExecuting;
+        this.currentTriggerOperation = Trigger.operationType;
 
         this.recordList    = new List<Sobject>();
         this.recordMap     = new Map<Id, Sobject>();
         this.oldRecordList = new List<Sobject>();
         this.oldRecordMap  = new Map<Id, Sobject>();
 
-        this.getClassName();
-
-        Logger.addEntry(this, 'Initializing ' + this.getClassName());
-        //this.setTriggerContext();
         this.validateTriggerContext();
         this.setTriggerRecords();
     }
 
     public void execute() {
-        Logger.addEntry(this, 'Execute method called for ' + this.getClassName());
         // Check the custom setting. If it's disabled, stop everything, show's over
         // You don't have to go home but you can't stay here
-        if(!shouldExecuteTriggers()) {
-            Logger.addEntry(this, 'Skipping execution of class ' + this.getClassName());
-            return;
-        }
-
-        Logger.addEntry(this, this.getClassName() + ' is enabled, proceeding with execution');
+        if(!this.shouldExecuteTriggers()) return;
 
         this.setHashCode();
 
@@ -52,16 +43,7 @@ public abstract class SobjectTriggerHandler extends NebulaCore implements ISobje
         if(this.isTestMode) sobjectType = String.valueOf(Schema.Lead.SobjectType);
         else sobjectType = Trigger.new == null ? String.valueOf(Trigger.old.getSobjectType()) : String.valueOf(Trigger.new.getSobjectType());
 
-        Logger.addEntry(this, 'Starting execute method for: ' + sobjectType);
-        Logger.addEntry(this, 'Hash codes already processed: ' + hashCodesForProcessedRecords);
-        Logger.addEntry(this, 'Hash code for current records: ' + this.hashCode);
-        Logger.addEntry(this, 'Trigger operation type for current records: ' + Trigger.operationType);
-        Logger.addEntry(this, 'Number of current records: ' + Trigger.size);
-
-        if(this.haveRecordsAlreadyBeenProcessed()) {
-            Logger.addEntry(this, 'Records already processed for this context, skipping');
-            return;
-        } else Logger.addEntry(this, 'Records have not been processed for this context, continuing');
+        if(this.haveRecordsAlreadyBeenProcessed()) return;
 
         switch on Trigger.operationType {
             when BEFORE_INSERT {
@@ -80,8 +62,6 @@ public abstract class SobjectTriggerHandler extends NebulaCore implements ISobje
                 this.executeAfterUndelete(this.recordList, this.recordMap);
             }
         }
-
-        if(Trigger.isAfter) Logger.saveLogs();
     }
 
     protected virtual void executeBeforeInsert(List<Sobject> newRecordList) {}
@@ -92,11 +72,24 @@ public abstract class SobjectTriggerHandler extends NebulaCore implements ISobje
     protected virtual void executeAfterDelete(List<Sobject> deletedRecordList, Map<Id, Sobject> deletedRecordMap) {}
     protected virtual void executeAfterUndelete(List<Sobject> undeletedRecordList, Map<Id, Sobject> undeletedRecordMap) {}
 
+    private SobjectTriggerHandlerSettings__c getSettings() {
+        SobjectTriggerHandlerSettings__c triggerHandlerSettings = SobjectTriggerHandlerSettings__c.getInstance();
+
+        if(triggerHandlerSettings.Id != null) return triggerHandlerSettings;
+
+        upsert SobjectTriggerHandlerSettings__c.getOrgDefaults();
+        return SobjectTriggerHandlerSettings__c.getInstance();
+    }
+
     private void validateTriggerContext() {
         if(this.isTestMode) return;
 
-        String errorMessage = 'Trigger handler called outside of trigger execution ' + this.isTriggerExecuting;
+        String errorMessage = 'Trigger handler called outside of trigger execution';
         if(!this.isTriggerExecuting || Trigger.operationType == null) throw new SobjectTriggerHandlerException(errorMessage);
+    }
+
+    private String getClassName() {
+        return String.valueOf(this).split(':')[0];
     }
 
     private void setTriggerRecords() {
@@ -107,18 +100,17 @@ public abstract class SobjectTriggerHandler extends NebulaCore implements ISobje
     }
 
     private Boolean shouldExecuteTriggers() {
-        Logger.addEntry(this, 'nebulaSettings.triggerHandlerSettings.ExecuteTriggers__c=' + NebulaSettings.triggerHandlerSettings.ExecuteTriggers__c);
-
-        String handlerClassesToSkipString = NebulaSettings.triggerHandlerSettings.HandlerClassesToSkip__c;
+        String handlerClassesToSkipString = this.getSettings().HandlerClassesToSkip__c;
         if(handlerClassesToSkipString == null) handlerClassesToSkipString = '';
         Set<String> handlerClassesToSkip = new Set<String>(handlerClassesToSkipString.toLowerCase().split('\n'));
-        Logger.addEntry(this, 'nebulaSettings.triggerHandlerSettings.HandlerClassesToSkip__c=' + NebulaSettings.triggerHandlerSettings.HandlerClassesToSkip__c);
 
         // If ExecuteTriggers == true and the current class isn't in the list of handlers to skip, then execute
-        return NebulaSettings.triggerHandlerSettings.ExecuteTriggers__c && !handlerClassesToSkip.contains(this.getClassName().toLowerCase());
+        return this.getSettings().ExecuteTriggers__c && !handlerClassesToSkip.contains(this.getClassName().toLowerCase());
     }
 
     private void setHashCode() {
+        if(!this.getSettings().PreventRecursion__c) return;
+
         List<Sobject> recordToParseList;
         if(this.isTestMode) recordToParseList = this.recordList;
         else recordToParseList = Trigger.new != null ? Trigger.new : Trigger.old;
@@ -148,7 +140,7 @@ public abstract class SobjectTriggerHandler extends NebulaCore implements ISobje
     }
 
     private Boolean haveRecordsAlreadyBeenProcessed() {
-        if(!NebulaSettings.triggerHandlerSettings.PreventRecursion__c) return false;
+        if(!this.getSettings().PreventRecursion__c) return false;
 
         // This method is a safeguard that checks to see if we have recursion problems and stops if we do
         // It allows each context to occur once for a given hash code
