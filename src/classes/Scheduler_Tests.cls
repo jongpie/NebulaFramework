@@ -7,6 +7,7 @@ private class Scheduler_Tests {
 
     private static final String SCHEDULABLE_JOB_ID = '7';
     private static final String DAILY_CRON_EXP = '0 59 23 * * ?';
+    private final static String HOURLY_CRON = '0 {0} * * * ?';
 
     private class TestSchedulable implements Schedulable {
         public void execute(SchedulableContext sc) {}
