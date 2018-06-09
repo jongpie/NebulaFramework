@@ -23,7 +23,7 @@ private class Scheduler_Tests {
     static void it_should_successfully_schedule_hourly() {
         String jobId = new Scheduler(new TestSchedulable()).scheduleHourly(SCHEDULABLE_JOB_ID, '59');
         CronTrigger ct = [SELECT Id, CronExpression, TimesTriggered, NextFireTime FROM CronTrigger WHERE Id = :jobId];
-        System.assertEquals(String.format(Scheduler.HOURLY_CRON, new List<String>{'59'}), ct.CronExpression);
+        System.assertEquals(String.format(HOURLY_CRON, new List<String>{'59'}), ct.CronExpression);
     }
 
 }
