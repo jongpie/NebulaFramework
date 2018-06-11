@@ -1,8 +1,9 @@
 # Nebula Framework for Salesforce Apex
-[![Deploy to Salesforce](https://img.shields.io/badge/salesforce-deploy-blue.svg)](https://githubsfdeploy.herokuapp.com)
-[![License: MIT](https://img.shields.io/badge/license-MIT-d742f4.svg)](https://opensource.org/licenses/MIT)
 [![Travis CI](https://img.shields.io/travis/jongpie/NebulaFramework/master.svg)](https://travis-ci.org/jongpie/NebulaFramework)
-[![Code Climate](https://img.shields.io/codeclimate/github/jongpie/NebulaFramework.svg)](https://codeclimate.com/github/jongpie/NebulaFramework)
+
+<a href="https://githubsfdeploy.herokuapp.com">
+    <img alt="Deploy to Salesforce" src="https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/src/main/webapp/resources/img/deploy.png">
+</a>
 
 Nebula is a development framework for Salesforce's Apex language on the Force.com platform. It aims to...
 1. Provide a foundation for Apex development, with the flexibility to be easily adapted to meet your implementation needs
@@ -34,7 +35,7 @@ Nebula also leverages custom settings to give you control over how the framework
     * Select if you want to include managed record types
 3. **Repository Settings (API Name: NebulaRepositorySettings__c)**
     * Automatically include common fields in your queries, like record ID, audit fields (CreatedById, CreatedDate, etc), Name field (or Subject field, where applicable) and more
-4. **Trigger Handler Settings (API Name: NebulaTriggerHandlerSettings__c)**   
+4. **Trigger Handler Settings (API Name: NebulaTriggerHandlerSettings__c)**
     * Easily disable all triggers & handlers (great for data migration and other admin tasks),
     * Enable or disable recursion prevention
 
