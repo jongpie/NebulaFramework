@@ -7,8 +7,6 @@ public abstract class SobjectRepository extends SobjectDml implements ISobjectRe
     protected Schema.SobjectField idField {get; private set;}
 
     public SobjectRepository() {
-        this.currentModule = NebulaCore.Module.REPOSITORY;
-
         this.idField = this.getField('Id');
     }
 
