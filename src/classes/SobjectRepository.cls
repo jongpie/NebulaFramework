@@ -62,7 +62,8 @@ public abstract class SobjectRepository extends SobjectDml implements ISobjectRe
     }
 
     public virtual List<Sobject> search(String searchTerm, Sosl.SearchGroup searchGroup, List<Soql.QueryFilter> queryFilters) {
-        return new Sosl(searchTerm, this.getSoql().filterWhere(queryFilters))
+        return new Sosl(searchTerm, this.getSoql()
+            .filterWhere(queryFilters))
             .inSearchGroup(searchGroup)
             .getFirstSearchResults();
     }
