@@ -1,111 +1,256 @@
 /*************************************************************************************************
-* This file is part of the Nebula Framework project, released under the MIT License.             *
-* See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
+* This file is part of the Nebula Logger project, released under the MIT License.                *
+* See LICENSE file or go to https://github.com/jongpie/NebulaLogger for full license details.    *
 *************************************************************************************************/
 @isTest
 private class Logger_Tests {
 
-    private class FakeNebulaClass extends NebulaCore {}
+    private class Logger_TestsException extends Exception {}
 
-    @isTest
-    static void it_should_add_entry_for_a_message_string() {
-        String message = 'my test message';
-        System.assert(Logger.logMessages.isEmpty());
-
-        Test.startTest();
-        Logger.addEntry(message);
-        Test.stopTest();
-
-        System.assertEquals(null, Logger.logMessages[0].ClassModule);
-        System.assertEquals(null, Logger.logMessages[0].ClassName);
-        System.assertEquals(message, Logger.logMessages[0].Message);
+    static LogEntry__c getLogEntry() {
+        List<String> fields = new List<String>(Schema.LogEntry__c.SobjectType.getDescribe().fields.getMap().keySet());
+        String query = 'SELECT ' + String.join(fields, ', ') + ' FROM ' + Schema.LogEntry__c.SobjectType;
+        return (LogEntry__c)Database.query(query);
     }
 
     @isTest
-    static void it_should_add_entry_for_a_module_class_and_a_message_string() {
-        FakeNebulaClass moduleClass = new FakeNebulaClass();
-        String message = 'my test message';
-        System.assert(Logger.logMessages.isEmpty());
+    static void it_should_return_transaction_id() {
+        String transactionId = Logger.getTransactionId();
+        System.assert(!String.isBlank(transactionId));
 
         Test.startTest();
-        Logger.addEntry(moduleClass, message);
+        System.assertEquals(transactionId, Logger.getTransactionId());
         Test.stopTest();
 
-        System.assertEquals(moduleClass.getClassModule(), Logger.logMessages[0].ClassModule);
-        System.assertEquals(moduleClass.getClassName(), Logger.logMessages[0].ClassName);
-        System.assertEquals(message, Logger.logMessages[0].Message);
+        System.assertEquals(transactionId, Logger.getTransactionId());
     }
 
     @isTest
-    static void it_should_add_entry_for_a_module_class_and_an_exception_and_a_message_string() {
-        FakeNebulaClass moduleClass = new FakeNebulaClass();
+    static void it_should_add_entry_for_a_class_method_message() {
         String message = 'my test message';
-        System.assert(Logger.logMessages.isEmpty());
+        String className = 'MyClass';
+        String methodName = 'myMethod()';
 
         Test.startTest();
-        Logger.addEntry(moduleClass, message);
+        Logger.addDebugEntry(message, className, methodName);
+        Logger.saveLog();
         Test.stopTest();
 
-        System.assertEquals(moduleClass.getClassModule(), Logger.logMessages[0].ClassModule);
-        System.assertEquals(moduleClass.getClassName(), Logger.logMessages[0].ClassName);
-        System.assertEquals(message, Logger.logMessages[0].Message);
+        LogEntry__c logEntry = getLogEntry();
+        System.assertEquals(message, logEntry.Message__c);
+        System.assertEquals(className, logEntry.ClassName__c);
+        System.assertEquals(methodName, logEntry.MethodName__c);
+        System.assertEquals('Apex', logEntry.SourceType__c);
     }
 
     @isTest
-    static void it_should_save_logs_when_logging_is_enabled() {
-        FakeNebulaClass moduleClass = new FakeNebulaClass();
+    static void it_should_add_entry_for_a_class_method_message_with_logging_level() {
+        LoggingLevel logLevel = LoggingLevel.WARN;
         String message = 'my test message';
-        System.assert(Logger.logMessages.isEmpty());
-        List<NebulaLog__c> existingLogs = [SELECT Id FROM NebulaLog__c];
-        System.assert(existingLogs.isEmpty());
-
-        // Enable logging
-        LoggerSettings__c nebulaLoggerSettings = LoggerSettings__c.getInstance();
-        nebulaLoggerSettings.EnableLogging__c = true;
-        upsert nebulaLoggerSettings;
-
-        Logger.addEntry(moduleClass, message);
+        String className = 'MyClass';
+        String methodName = 'myMethod()';
 
         Test.startTest();
-        String transactionId = NebulaCore.TRANSACTION_ID;
-        Logger.saveLogs();
+        Logger.addDebugEntry(logLevel, message, className, methodName);
+        Logger.saveLog();
         Test.stopTest();
 
-        List<NebulaLog__c> logs = [SELECT Id, TransactionId__c FROM NebulaLog__c];
-        System.assertEquals(1, logs.size());
-        System.assertEquals(transactionId, logs[0].TransactionId__c);
-
-        List<Attachment> logAttachments = [SELECT Id, Name, ParentId, ContentType, IsPrivate, Body FROM Attachment WHERE ParentId = :logs[0].Id];
-        System.assertEquals(1, logAttachments.size());
-        System.assertEquals(transactionId, logAttachments[0].Name);
-        System.assertEquals('text/plain', logAttachments[0].ContentType);
-        System.assertEquals(false, logAttachments[0].IsPrivate);
-        String attachmentBody = logAttachments[0].Body.toString();
-        System.assert(attachmentBody.contains(message), attachmentBody);
+        LogEntry__c logEntry = getLogEntry();
+        System.assertEquals(logLevel.name(), logEntry.LoggingLevel__c);
+        System.assertEquals(message, logEntry.Message__c);
+        System.assertEquals(className, logEntry.ClassName__c);
+        System.assertEquals(methodName, logEntry.MethodName__c);
+        System.assertEquals('Apex', logEntry.SourceType__c);
     }
 
     @isTest
-    static void it_should_not_save_logs_when_logging_is_disabled() {
-        FakeNebulaClass moduleClass = new FakeNebulaClass();
+    static void it_should_add_entry_for_a_class_method_message_with_parent_id() {
         String message = 'my test message';
-        System.assert(Logger.logMessages.isEmpty());
-        List<NebulaLog__c> existingLogs = [SELECT Id FROM NebulaLog__c];
-        System.assert(existingLogs.isEmpty());
-
-        // Disable logging
-        LoggerSettings__c loggerSettings = LoggerSettings__c.getInstance();
-        loggerSettings.EnableLogging__c = false;
-        upsert loggerSettings;
-
-        Logger.addEntry(moduleClass, message);
+        String className = 'MyClass';
+        String methodName = 'myMethod()';
+        Id parentId = UserInfo.getUserId();
 
         Test.startTest();
-        String transactionId = NebulaCore.TRANSACTION_ID;
-        Logger.saveLogs();
+        Logger.addDebugEntry(message, className, methodName, parentId);
+        Logger.saveLog();
         Test.stopTest();
 
-        List<NebulaLog__c> logs = [SELECT Id, TransactionId__c FROM NebulaLog__c];
-        System.assertEquals(0, logs.size());
+        LogEntry__c logEntry = getLogEntry();
+        System.assertEquals(message, logEntry.Message__c);
+        System.assertEquals(className, logEntry.ClassName__c);
+        System.assertEquals(methodName, logEntry.MethodName__c);
+        System.assertEquals(parentId, logEntry.ParentId__c);
+        System.assertEquals('Apex', logEntry.SourceType__c);
+    }
+
+    @isTest
+    static void it_should_add_entry_for_a_class_method_message_with_logging_level_and_parent_id() {
+        LoggingLevel logLevel = LoggingLevel.WARN;
+        String message = 'my test message';
+        String className = 'MyClass';
+        String methodName = 'myMethod()';
+        Id parentId = UserInfo.getUserId();
+
+        Test.startTest();
+        Logger.addDebugEntry(logLevel, message, className, methodName, parentId);
+        Logger.saveLog();
+        Test.stopTest();
+
+        LogEntry__c logEntry = getLogEntry();
+        System.assertEquals(logLevel.name(), logEntry.LoggingLevel__c);
+        System.assertEquals(message, logEntry.Message__c);
+        System.assertEquals(className, logEntry.ClassName__c);
+        System.assertEquals(methodName, logEntry.MethodName__c);
+        System.assertEquals(parentId, logEntry.ParentId__c);
+        System.assertEquals('Apex', logEntry.SourceType__c);
+    }
+
+    @isTest
+    static void it_should_add_entry_for_a_class_method_exception() {
+        Exception exceptionResult;
+        String className = 'MyClass';
+        String methodName = 'myMethod()';
+
+        Test.startTest();
+        try {
+            insert new Lead();
+        } catch(Exception ex) {
+            exceptionResult = ex;
+            Logger.addExceptionEntry(ex, className, methodName);
+            Logger.saveLog();
+        }
+        Test.stopTest();
+
+        LogEntry__c logEntry = getLogEntry();
+        System.assertEquals(exceptionResult.getMessage(), logEntry.Message__c);
+        System.assertEquals(className, logEntry.ClassName__c);
+        System.assertEquals(methodName, logEntry.MethodName__c);
+        System.assertEquals('Apex', logEntry.SourceType__c);
+    }
+
+    @isTest
+    static void it_should_add_entry_for_a_class_method_exception_with_logging_level() {
+        LoggingLevel logLevel = LoggingLevel.WARN;
+        Exception exceptionResult;
+        String className = 'MyClass';
+        String methodName = 'myMethod()';
+
+        Test.startTest();
+        try {
+            insert new Lead();
+        } catch(Exception ex) {
+            exceptionResult = ex;
+            Logger.addExceptionEntry(logLevel, ex, className, methodName);
+            Logger.saveLog();
+        }
+        Test.stopTest();
+
+        LogEntry__c logEntry = getLogEntry();
+        System.assertEquals(logLevel.name(), logEntry.LoggingLevel__c);
+        System.assertEquals(exceptionResult.getMessage(), logEntry.Message__c);
+        System.assertEquals(className, logEntry.ClassName__c);
+        System.assertEquals(methodName, logEntry.MethodName__c);
+        System.assertEquals('Apex', logEntry.SourceType__c);
+    }
+
+    @isTest
+    static void it_should_add_entry_for_an_exception_with_logging_level_and_parent_id() {
+        LoggingLevel logLevel = LoggingLevel.WARN;
+        Exception exceptionResult;
+        String className = 'MyClass';
+        String methodName = 'myMethod()';
+        Id parentId = UserInfo.getUserId();
+
+        Test.startTest();
+        try {
+            insert new Lead();
+        } catch(Exception ex) {
+            exceptionResult = ex;
+            Logger.addExceptionEntry(logLevel, ex, className, methodName, parentId);
+            Logger.saveLog();
+        }
+        Test.stopTest();
+
+        LogEntry__c logEntry = getLogEntry();
+        System.assertEquals(logLevel.name(), logEntry.LoggingLevel__c);
+        System.assertEquals(exceptionResult.getMessage(), logEntry.Message__c);
+        System.assertEquals(className, logEntry.ClassName__c);
+        System.assertEquals(methodName, logEntry.MethodName__c);
+        System.assertEquals(parentId, logEntry.ParentId__c);
+        System.assertEquals('Apex', logEntry.SourceType__c);
+    }
+
+    @isTest
+    static void it_should_add_entry_for_a_class_method_exception_with_parent_id() {
+        Exception exceptionResult;
+        String className = 'MyClass';
+        String methodName = 'myMethod()';
+        Id parentId = UserInfo.getUserId();
+
+        Test.startTest();
+        try {
+            insert new Lead();
+        } catch(Exception ex) {
+            exceptionResult = ex;
+            Logger.addExceptionEntry(ex, className, methodName, parentId);
+            Logger.saveLog();
+        }
+        Test.stopTest();
+
+        LogEntry__c logEntry = getLogEntry();
+        System.assertEquals(exceptionResult.getMessage(), logEntry.Message__c);
+        System.assertEquals(className, logEntry.ClassName__c);
+        System.assertEquals(methodName, logEntry.MethodName__c);
+        System.assertEquals(parentId, logEntry.ParentId__c);
+        System.assertEquals('Apex', logEntry.SourceType__c);
+    }
+
+    @isTest
+    static void it_should_add_entry_for_a_class_method_exception_with_logging_level_and_parent_id() {
+        LoggingLevel logLevel = LoggingLevel.WARN;
+        Exception exceptionResult;
+        String className = 'MyClass';
+        String methodName = 'myMethod()';
+        Id parentId = UserInfo.getUserId();
+
+        Test.startTest();
+        try {
+            insert new Lead();
+        } catch(Exception ex) {
+            exceptionResult = ex;
+            Logger.addExceptionEntry(logLevel, ex, className, methodName, parentId);
+            Logger.saveLog();
+        }
+        Test.stopTest();
+
+        LogEntry__c logEntry = getLogEntry();
+        System.assertEquals(logLevel.name(), logEntry.LoggingLevel__c);
+        System.assertEquals(exceptionResult.getMessage(), logEntry.Message__c);
+        System.assertEquals(className, logEntry.ClassName__c);
+        System.assertEquals(methodName, logEntry.MethodName__c);
+        System.assertEquals(parentId, logEntry.ParentId__c);
+        System.assertEquals('Apex', logEntry.SourceType__c);
+    }
+
+
+    @isTest
+    static void it_should_add_entries_for_a_list_of_flow_messages() {
+        String message = 'my test message';
+        String flowName = 'MyFlowOrProcessBuilder';
+        List<FlowLogEntry> flowLogEntries = new List<FlowLogEntry>();
+
+        Test.startTest();
+        FlowLogEntry flowLogEntry = new FlowLogEntry();
+        flowLogEntry.FlowName = flowName;
+        flowLogEntry.Message = message;
+        Logger.addFlowEntries(new List<FlowLogEntry>{flowLogEntry});
+        Logger.saveLog();
+        Test.stopTest();
+
+        LogEntry__c logEntry = getLogEntry();
+        System.assertEquals(message, logEntry.Message__c);
+        System.assertEquals(flowName, logEntry.FlowName__c);
+        System.assertEquals('Process Builder/Flow', logEntry.SourceType__c);
     }
 
 }

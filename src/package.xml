@@ -5,18 +5,33 @@
         <name>ApexClass</name>
     </types>
     <types>
+        <members>*</members>
+        <name>ApexTrigger</name>
+    </types>
+    <types>
+        <members>LogEntryEvent__e</members>
+        <members>LogEntry__c</members>
+        <members>Log__c</members>
         <members>LoggerSettings__c</members>
-        <members>NebulaLog__c</members>
         <members>SobjectTriggerHandlerSettings__c</members>
         <name>CustomObject</name>
     </types>
     <types>
-        <members>NebulaLog__c</members>
+        <members>Log__c</members>
         <name>CustomTab</name>
     </types>
     <types>
-        <members>NebulaLog__c-Log Layout</members>
+        <members>*</members>
+        <name>GlobalValueSet</name>
+    </types>
+    <types>
+        <members>LogEntry__c-Log Entry Layout</members>
+        <members>Log__c-Log Layout</members>
         <name>Layout</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>PermissionSet</name>
     </types>
     <version>43.0</version>
 </Package>
