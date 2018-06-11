@@ -167,7 +167,9 @@ public abstract class SobjectDml extends NebulaCore implements ISobjectDml {
     }
 
     private void validateUserPermissions(List<Sobject> records, DmlOperation operation) {
-        Schema.SobjectType sobjectType = records.getSobjectType();
+        if(records == null || records.isEmpty()) return;
+
+        Schema.SobjectType sobjectType = records[0].getSobjectType();
         DescribeSobjectResult sobjectDescribe = sobjectType.getDescribe();
 
         switch on operation {

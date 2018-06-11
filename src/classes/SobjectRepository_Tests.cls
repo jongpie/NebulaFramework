@@ -307,16 +307,17 @@ private class SobjectRepository_Tests {
 
     @isTest
     static void it_should_upsert_a_single_existing_record_with_external_id() {
-        User existingUser = [SELECT Id, LastModifiedDate, Username FROM User WHERE Id = :UserInfo.getUserId()];
-        Datetime originalLastModifiedDate = existingUser.LastModifiedDate;
+        User existingUser = [SELECT Id, LastName, LastModifiedDate, Username FROM User WHERE Id = :UserInfo.getUserId()];
+        String newLastName = existingUser.LastName + 'test';
         System.assertNotEquals(null, existingUser.Username);
 
         Test.startTest();
+        existingUser.LastName = newLastName;
         new SobjectRepository_Tests.UserRepository().upsertRecords(existingUser, Schema.User.Username);
         Test.stopTest();
 
-        existingUser = [SELECT Id, LastModifiedDate FROM User LIMIT 1];
-        System.assert(existingUser.LastModifiedDate > originalLastModifiedDate, existingUser);
+        existingUser = [SELECT Id, LastName FROM User WHERE Id = :UserInfo.getUserId()];
+        System.assertEquals(newLastName, existingUser.LastName);
     }
 
     @isTest
