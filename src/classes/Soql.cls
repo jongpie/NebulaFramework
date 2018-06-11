@@ -158,6 +158,8 @@ public class Soql implements Comparable {
     }
 
     public Soql filterWhere(List<QueryFilter> filters) {
+        if(filters == null) return this;
+
         for(QueryFilter filter : filters) this.whereFilters.add(filter.toString());
         return this.setHasChanged();
     }
