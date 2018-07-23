@@ -16,6 +16,10 @@ public abstract class SobjectRepository extends SobjectDml implements ISobjectRe
         return new SobjectQueryBuilder(this.getSobjectType());
     }
 
+    public virtual SearchBuilder getSobjectSearchBuilder(String searchTerm) {
+        return new SearchBuilder(searchTerm, this.getSobjectQueryBuilder());
+    }
+
     public virtual Sobject get(Id recordId) {
         return this.getSobjectQueryBuilder()
             .filterWhere(new Soql.QueryFilter(this.idField, Soql.Operator.EQUALS, recordId))

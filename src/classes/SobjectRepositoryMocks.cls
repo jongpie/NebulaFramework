@@ -27,6 +27,10 @@ public class SobjectRepositoryMocks {
             return new SobjectQueryBuilder(this.getSobjectType());
         }
 
+        public virtual SearchBuilder getSobjectSearchBuilder(String searchTerm) {
+            return new SearchBuilder(searchTerm, this.getSobjectQueryBuilder());
+        }
+
         public Base with(List<Sobject> records) {
             this.records = records;
             return this;
