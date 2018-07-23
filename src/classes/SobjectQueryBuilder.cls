@@ -12,7 +12,6 @@ public class SobjectQueryBuilder extends Soql {
         super(sobjectType, true);
 
         this.displayFieldApiName        = this.getDisplayFieldApiName(this.sobjectType);
-        this.polymorphicFieldStatements = new List<String>();
         this.childRelationshipQueries   = new List<String>();
         this.forReference               = false;
         this.forUpdate                  = false;
