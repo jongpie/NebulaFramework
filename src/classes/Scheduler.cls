@@ -14,13 +14,13 @@ public class Scheduler {
         this.schedulableClass = schedulableClass;
     }
 
-    public Id scheduleHourly(String jobName, String startingMinuteInHour) {
-        String hourlyCron = String.format(HOURLY_CRON, new List<String>{startingMinuteInHour});
+    public Id scheduleHourly(String jobName, Integer startingMinuteInHour) {
+        String hourlyCron = String.format(HOURLY_CRON, new List<String>{String.valueOf(startingMinuteInHour)});
         return this.schedule(jobName, hourlyCron);
     }
 
-    public Id scheduleDaily(String jobName, String startingHour, String startingMinute) {
-        String dailyCron = String.format(DAILY_CRON, new List<String>{startingHour, startingMinute});
+    public Id scheduleDaily(String jobName, Integer startingHour, Integer startingMinute) {
+        String dailyCron = String.format(DAILY_CRON, new List<String>{String.valueOf(startingHour), String.valueOf(startingMinute)});
         return this.schedule(jobName, dailyCron);
     }
 
