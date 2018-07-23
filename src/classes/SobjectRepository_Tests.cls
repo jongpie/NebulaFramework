@@ -12,11 +12,11 @@ private class SobjectRepository_Tests {
         }
 
         public List<Account> getMyRecentAccounts(Integer limitCount) {
-            return (List<Account>)new Soql(this.getSobjectType())
+            return (List<Account>)new SobjectQueryBuilder(this.getSobjectType())
                 .usingScope(Soql.Scope.MINE)
-                .limitCount(limitCount)
-                .orderBy(new Soql.QueryField(Schema.Account.LastActivityDate))
-                .getQueryResults();
+                .limitTo(limitCount)
+                .orderByField(new Soql.QueryField(Schema.Account.LastActivityDate))
+                .getResults();
         }
 
         // TODO reintroduce includeChildrenRecords method
@@ -78,7 +78,7 @@ private class SobjectRepository_Tests {
     @isTest
     static void it_should_get_by_id_using_query_filter() {
         Account expectedAccount = [SELECT Id FROM Account LIMIT 1];
-        Soql.QueryFilter queryFilter = new Soql.QueryFilter(new Soql.QueryField(Schema.Account.Id), '=', expectedAccount.Id);
+        Soql.QueryFilter queryFilter = new Soql.QueryFilter(new Soql.QueryField(Schema.Account.Id), Soql.Operator.EQUALS, expectedAccount.Id);
 
         Test.startTest();
         Account returnedAccount = ((List<Account>)new SobjectRepository_Tests.AccountRepository().get(queryFilter))[0];
@@ -90,7 +90,7 @@ private class SobjectRepository_Tests {
     @isTest
     static void it_should_get_by_id_using_list_of_query_filters() {
         Account expectedAccount = [SELECT Id FROM Account LIMIT 1];
-        Soql.QueryFilter queryFilter = new Soql.QueryFilter(new Soql.QueryField(Schema.Account.Id), '=', expectedAccount.Id);
+        Soql.QueryFilter queryFilter = new Soql.QueryFilter(new Soql.QueryField(Schema.Account.Id), Soql.Operator.EQUALS, expectedAccount.Id);
 
         Test.startTest();
         Account returnedAccount = ((List<Account>)new SobjectRepository_Tests.AccountRepository().get(new List<Soql.QueryFilter>{queryFilter}))[0];
@@ -131,7 +131,7 @@ private class SobjectRepository_Tests {
         ISobjectRepository repo = new SobjectRepository_Tests.AccountRepository();
 
         Test.startTest();
-        Soql.QueryFilter queryFilter = new Soql.QueryFilter(new Soql.QueryField(Schema.Account.Name), '=', 'Test string for String');
+        Soql.QueryFilter queryFilter = new Soql.QueryFilter(new Soql.QueryField(Schema.Account.Name), Soql.Operator.EQUALS, 'Test string for String');
         List<Soql.QueryFilter> queryFilters = new List<Soql.QueryFilter>{queryFilter};
         List<Account> returnedAccountList = (List<Account>)repo.get(expectedAccountMap.keyset(), queryFilters);
         Test.stopTest();
@@ -148,7 +148,7 @@ private class SobjectRepository_Tests {
         ISobjectRepository repo = new SobjectRepository_Tests.AccountRepository();
 
         Test.startTest();
-        Soql.QueryFilter queryFilter = new Soql.QueryFilter(Schema.Account.Name, '=', 'Test string for String');
+        Soql.QueryFilter queryFilter = new Soql.QueryFilter(Schema.Account.Name, Soql.Operator.EQUALS, 'Test string for String');
         List<Soql.QueryFilter> queryFilters = new List<Soql.QueryFilter>{queryFilter};
         List<Account> returnedAccountList = (List<Account>)repo.get(new List<Id>(expectedAccountMap.keyset()), queryFilters);
         Test.stopTest();
@@ -239,7 +239,7 @@ private class SobjectRepository_Tests {
         System.assertNotEquals(0, expectedAccountList.size());
 
         Test.startTest();
-        Soql.QueryFilter queryFilter = new Soql.QueryFilter(new Soql.QueryField(Schema.Account.CreatedDate), '=', new Soql.DateLiteral('TODAY'));
+        Soql.QueryFilter queryFilter = new Soql.QueryFilter(new Soql.QueryField(Schema.Account.CreatedDate), Soql.Operator.EQUALS, new Soql.DateLiteral(Soql.FixedDateLiteral.TODAY));
         List<Soql.QueryFilter> queryFilters = new List<Soql.QueryFilter>{queryFilter};
         List<Account> returnedAccountList = (List<Account>)new SobjectRepository_Tests.AccountRepository().search(searchTerm, Sosl.SearchGroup.NAME_FIELDS, queryFilters);
         Test.stopTest();

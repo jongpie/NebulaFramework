@@ -12,14 +12,14 @@ public abstract class SobjectRepository extends SobjectDml implements ISobjectRe
 
     public override abstract Schema.SobjectType getSobjectType();
 
-    public virtual Soql getSoql() {
-        return new Soql(this.getSobjectType());
+    public virtual SobjectQueryBuilder getSobjectQueryBuilder() {
+        return new SobjectQueryBuilder(this.getSobjectType());
     }
 
     public virtual Sobject get(Id recordId) {
-        return this.getSoql()
-            .filterWhere(new Soql.QueryFilter(this.idField, '=', recordId))
-            .getFirstQueryResult();
+        return this.getSobjectQueryBuilder()
+            .filterWhere(new Soql.QueryFilter(this.idField, Soql.Operator.EQUALS, recordId))
+            .getFirstResult();
     }
 
     public virtual List<Sobject> get(Set<Id> recordIds) {
@@ -27,7 +27,7 @@ public abstract class SobjectRepository extends SobjectDml implements ISobjectRe
     }
 
     public virtual List<Sobject> get(List<Id> recordIds) {
-        return this.get(new Soql.QueryFilter(this.idField, 'IN', recordIds));
+        return this.get(new Soql.QueryFilter(this.idField, Soql.Operator.IS_IN, recordIds));
     }
 
     public virtual List<Sobject> get(Soql.QueryFilter queryFilter) {
@@ -35,9 +35,9 @@ public abstract class SobjectRepository extends SobjectDml implements ISobjectRe
     }
 
     public virtual List<Sobject> get(List<Soql.QueryFilter> queryFilters) {
-        return this.getSoql()
+        return this.getSobjectQueryBuilder()
             .filterWhere(queryFilters)
-            .getQueryResults();
+            .getResults();
     }
 
     public virtual List<Sobject> get(Set<Id> idSet, List<Soql.QueryFilter> queryFilters) {
@@ -45,10 +45,10 @@ public abstract class SobjectRepository extends SobjectDml implements ISobjectRe
     }
 
     public virtual List<Sobject> get(List<Id> idList, List<Soql.QueryFilter> queryFilters) {
-        return this.getSoql()
-            .filterWhere(new Soql.QueryFilter(this.idField, 'IN', idList))
+        return this.getSobjectQueryBuilder()
+            .filterWhere(new Soql.QueryFilter(this.idField, Soql.Operator.IS_IN, idList))
             .filterWhere(queryFilters)
-            .getQueryResults();
+            .getResults();
     }
 
     public virtual List<Sobject> search(String searchTerm) {
@@ -60,10 +60,11 @@ public abstract class SobjectRepository extends SobjectDml implements ISobjectRe
     }
 
     public virtual List<Sobject> search(String searchTerm, Sosl.SearchGroup searchGroup, List<Soql.QueryFilter> queryFilters) {
-        return new Sosl(searchTerm, this.getSoql()
-            .filterWhere(queryFilters))
+        SobjectQueryBuilder queryBuilder = this.getSobjectQueryBuilder().filterWhere(queryFilters);
+
+        return new SearchBuilder(searchTerm, queryBuilder)
             .inSearchGroup(searchGroup)
-            .getFirstSearchResults();
+            .getFirstResults();
     }
 
     private Schema.SobjectField getField(String fieldName) {

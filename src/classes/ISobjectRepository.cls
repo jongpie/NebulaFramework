@@ -6,7 +6,7 @@ public interface ISobjectRepository {
 
     // Setup methods
     Schema.SobjectType getSobjectType();
-    Soql getSoql();
+    SobjectQueryBuilder getSobjectQueryBuilder();
 
     // SOQL methods
     Sobject get(Id recordId);
