@@ -1,289 +1,104 @@
 /******************************************************************************************************
-* This file is part of the Nebula Framework project, released under the MIT License.                  *
+* This file is part of the Nebula Query & Search project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaQueryAndSearch for full license details. *
 ******************************************************************************************************/
-public class Soql implements Comparable {
+public abstract class Soql implements Comparable {
 
     public enum Aggregate { AVG, COUNT, COUNT_DISTINCT, MAX, MIN, SUM }
+    public enum GroupingDimension { CUBE, ROLLUP }
     public enum FieldCategory { ACCESSIBLE, UPDATEABLE, STANDARD, CUSTOM, IGNORE_FLS }
+    public enum Operator {
+        EQUALS, NOT_EQUAL_TO,
+        GREATER_THAN, GREATER_THAN_OR_EQUAL_TO,
+        LESS_THAN, LESS_THAN_OR_EQUAL_TO,
+        IS_IN, IS_NOT_IN,
+        INCLUDES, EXCLUDES,
+        IS_LIKE, IS_NOT_LIKE
+    }
     public enum Scope { EVERYTHING, DELEGATED, TEAM, MINE, MY_TERRITORY, MY_TEAM_TERRITORY }
     public enum SortOrder { ASCENDING, DESCENDING }
+    public enum DateFunction {
+        HOUR_IN_DAY,
+        DAY_ONLY, DAY_IN_MONTH, DAY_IN_WEEK, DAY_IN_YEAR,
+        WEEK_IN_MONTH, WEEK_IN_YEAR,
+        FISCAL_MONTH, FISCAL_QUARTER, FISCAL_YEAR,
+        CALENDAR_MONTH, CALENDAR_QUARTER, CALENDAR_YEAR
+    }
+    public enum FixedDateLiteral {
+        YESTERDAY, TODAY, TOMORROW,
+        LAST_WEEK, THIS_WEEK, NEXT_WEEK,
+        LAST_MONTH, THIS_MONTH, NEXT_MONTH,
+        LAST_90_DAYS, NEXT_90_DAYS,
+        LAST_QUARTER, THIS_QUARTER, NEXT_QUARTER,
+        LAST_FISCAL_QUARTER, THIS_FISCAL_QUARTER, NEXT_FISCAL_QUARTER,
+        LAST_YEAR, THIS_YEAR, NEXT_YEAR,
+        LAST_FISCAL_YEAR, THIS_FISCAL_YEAR, NEXT_FISCAL_YEAR
+    }
+    public enum RelativeDateLiteral {
+        N_DAYS_AGO, LAST_N_DAYS, NEXT_N_DAYS,
+        LAST_N_WEEKS, NEXT_N_WEEKS,
+        LAST_N_MONTHS, NEXT_N_MONTHS,
+        LAST_N_QUARTERS, NEXT_N_QUARTERS,
+        LAST_N_FISCAL_QUARTERS, NEXT_N_FISCAL_QUARTERS,
+        LAST_N_YEARS, NEXT_N_YEARS,
+        LAST_N_FISCAL_YEARS, NEXT_N_FISCAL_YEARS
+    }
 
-    private static final FieldCategory DEFAULT_FIELD_CATEGORY   = FieldCategory.ACCESSIBLE;
-    private static final SortOrder DEFAULT_SORT_ORDER           = SortOrder.ASCENDING;
-    private static final Boolean DEFAULT_NULLS_SORT_ORDER_FIRST = true;
+    private static final Soql.FieldCategory DEFAULT_FIELD_CATEGORY = Soql.FieldCategory.ACCESSIBLE;
+    private static final Soql.SortOrder DEFAULT_SORT_ORDER         = Soql.SortOrder.ASCENDING;
+    private static final Boolean DEFAULT_NULLS_SORT_ORDER_FIRST    = true;
 
-    private static Map<Integer, List<Sobject>> cachedQueryResultsByHashCode = new Map<Integer, List<Sobject>>();
+    private static Map<Integer, List<Sobject>> cachedResultsByHashCode = new Map<Integer, List<Sobject>>();
 
-    private Schema.SobjectType sobjectType;
-    private Schema.DescribeSobjectResult sobjectDescribe;
-    private String displayFieldApiName, query;
-    private Map<Soql.QueryField, FieldCategory> includedQueryFieldsAndCategory;
-    private List<Soql.AggregateField> aggregatedFields;
-    private Set<Soql.QueryField> excludedQueryFields;
-    private Scope scope;
-    private List<String> whereFilters, orderByFieldApiNames;
-    private Integer limitCount;
-    private Integer offset;
-    private Boolean hasChanged, forReference, forUpdate, forView, cacheResults, includeLabels, includeFormattedValues;
+    public static String getOperatorValue(Soql.Operator operator) {
+        switch on operator {
+            when EQUALS                   { return '='; }
+            when NOT_EQUAL_TO             { return '!='; }
+            when GREATER_THAN             { return '>'; }
+            when GREATER_THAN_OR_EQUAL_TO { return '>='; }
+            when LESS_THAN                { return '<'; }
+            when LESS_THAN_OR_EQUAL_TO    { return '<='; }
+            when IS_IN                    { return 'IN'; }
+            when IS_NOT_IN                { return 'NOT IN'; }
+            when INCLUDES                 { return 'INCLUDES'; }
+            when EXCLUDES                 { return 'EXCLUDES'; }
+            when IS_LIKE                  { return 'LIKE'; }
+            when IS_NOT_LIKE              { return 'NOT LIKE'; }
+            when else                     { return null; }
+        }
+    }
 
-    public Soql(Schema.SobjectType sobjectType) {
-        this.sobjectType         = sobjectType;
-        this.displayFieldApiName = this.getDisplayFieldApiName(this.sobjectType);
+    protected String query;
+    protected Schema.SobjectType sobjectType;
+    protected Schema.DescribeSobjectResult sobjectDescribe;
+    protected Map<Soql.QueryField, Soql.FieldCategory> includedQueryFieldsAndCategory;
+    protected Set<Soql.QueryField> excludedQueryFields;
+    protected Scope scope;
+    protected List<String> whereFilters, orderByFieldApiNames;
+    protected Integer limitCount;
+    protected Integer offset;
+    protected Boolean hasChanged, sortQueryFields;
+
+    protected Boolean cacheResults;
+
+    protected Soql(Schema.SobjectType sobjectType, Boolean sortQueryFields) {
+        this.sobjectType     = sobjectType;
+        this.sortQueryFields = sortQueryFields;
 
         this.sobjectDescribe                = this.sobjectType.getDescribe();
-        this.includedQueryFieldsAndCategory = new Map<Soql.QueryField, FieldCategory>();
-        this.aggregatedFields               = new List<Soql.AggregateField>();
+        this.includedQueryFieldsAndCategory = new Map<Soql.QueryField, Soql.FieldCategory>();
         this.excludedQueryFields            = new Set<Soql.QueryField>();
         this.whereFilters                   = new List<String>();
         this.orderByFieldApiNames           = new List<String>();
-        this.forReference                   = false;
-        this.forUpdate                      = false;
-        this.forView                        = false;
         this.cacheResults                   = false;
-        this.includeLabels                  = false;
-        this.includeFormattedValues         = false;
         this.hasChanged                     = false;
-    }
-
-    public Soql addField(Schema.SobjectField field) {
-        return this.addField(field, DEFAULT_FIELD_CATEGORY);
-    }
-
-    public Soql addField(Schema.SobjectField field, Soql.FieldCategory fieldCategory) {
-        return this.addFields(new List<Schema.SobjectField>{field}, fieldCategory);
-    }
-
-    public Soql addField(Soql.QueryField queryField) {
-        return this.addField(queryField, DEFAULT_FIELD_CATEGORY);
-    }
-
-    public Soql addField(Soql.QueryField queryField, Soql.FieldCategory fieldCategory) {
-        return this.addFields(new List<Soql.QueryField>{queryField}, fieldCategory);
-    }
-
-    public Soql addFields(Schema.FieldSet fieldSet) {
-        return this.addFields(FieldSet, DEFAULT_FIELD_CATEGORY);
-    }
-
-    public Soql addFields(Schema.FieldSet fieldSet, FieldCategory fieldCategory) {
-        List<Soql.QueryField> queryFields = new List<Soql.QueryField>();
-        for(Schema.FieldSetMember fieldSetMember : fieldSet.getFields()) {
-            queryFields.add(new Soql.QueryField(this.sobjectType, fieldSetMember.getFieldPath()));
-        }
-        return this.addFields(queryFields, fieldCategory);
-    }
-
-    public Soql addFields(List<Schema.SobjectField> fields) {
-        return this.addFields(fields, DEFAULT_FIELD_CATEGORY);
-    }
-
-    public Soql addFields(List<Schema.SobjectField> fields, Soql.FieldCategory fieldCategory) {
-        List<Soql.QueryField> queryFields = new List<Soql.QueryField>();
-        for(Schema.SobjectField field : fields) {
-            queryFields.add(new Soql.QueryField(field));
-        }
-        return this.addFields(queryFields, fieldCategory);
-    }
-
-    public Soql addFields(List<Soql.QueryField> queryFields) {
-        return this.addFields(queryFields, DEFAULT_FIELD_CATEGORY);
-    }
-
-    public Soql addFields(List<Soql.QueryField> queryFields, Soql.FieldCategory fieldCategory) {
-        for(Soql.QueryField queryField : queryFields) {
-            this.includedQueryFieldsAndCategory.put(queryField, fieldCategory);
-        }
-        return this;
-    }
-
-    public Soql addFields(Soql.FieldCategory fieldCategory) {
-        List<Soql.QueryField> queryFields = new List<Soql.QueryField>();
-        for(Schema.SobjectField field : this.sobjectDescribe.fields.getMap().values()) {
-            queryFields.add(new Soql.QueryField(field));
-        }
-        return this.addFields(queryFields, DEFAULT_FIELD_CATEGORY);
-    }
-
-    public Soql aggregateField(Schema.SobjectField field, Soql.Aggregate aggregateFunction) {
-        this.aggregatedFields.add(new Soql.AggregateField(field, aggregateFunction));
-        return this.setHasChanged();
-    }
-
-    public Soql removeField(Schema.SobjectField field) {
-        return this.removeFields(new List<Schema.SobjectField>{field});
-    }
-
-    public Soql removeField(Soql.QueryField queryField) {
-        return this.removeFields(new List<Soql.QueryField>{queryField});
-    }
-
-    public Soql removeFields(Schema.FieldSet fieldSet) {
-        List<Soql.QueryField> queryFields = new List<Soql.QueryField>();
-        for(Schema.FieldSetMember fieldSetMember : fieldSet.getFields()) {
-            queryFields.add(new Soql.QueryField(this.sobjectType, fieldSetMember.getFieldPath()));
-        }
-        return this.removeFields(queryFields);
-    }
-
-    public Soql removeFields(List<Schema.SobjectField> fields) {
-        List<Soql.QueryField> queryFields = new List<Soql.QueryField>();
-        for(Schema.SobjectField field : fields) {
-            queryFields.add(new Soql.QueryField(field));
-        }
-        return this.removeFields(queryFields);
-    }
-
-    public Soql removeFields(List<Soql.QueryField> queryFields) {
-        this.excludedQueryFields.addAll(queryFields);
-        return this.setHasChanged();
-    }
-
-    public Soql usingScope(Scope scope) {
-        this.scope = scope;
-        return this.setHasChanged();
-    }
-
-    public Soql filterWhere(Schema.SobjectField field, String operator, Object value) {
-        Soql.QueryField queryField = new QueryField(new List<Schema.SobjectField>{field});
-        return this.filterWhere(queryField, operator, value);
-    }
-
-    public Soql filterWhere(Soql.QueryField queryField, String operator, Object value) {
-        return this.filterWhere(new QueryFilter(queryField, operator, value));
-    }
-
-    public Soql filterWhere(QueryFilter filter) {
-        return this.filterWhere(new List<QueryFilter>{filter});
-    }
-
-    public Soql filterWhere(List<QueryFilter> filters) {
-        if(filters == null) return this;
-
-        for(QueryFilter filter : filters) this.whereFilters.add(filter.toString());
-        return this.setHasChanged();
-    }
-
-    public Soql orderBy(Schema.SobjectField field) {
-        return this.orderBy(field, DEFAULT_SORT_ORDER, DEFAULT_NULLS_SORT_ORDER_FIRST);
-    }
-
-    public Soql orderBy(Schema.SobjectField field, SortOrder sortOrder) {
-        return this.orderBy(field, sortOrder, DEFAULT_NULLS_SORT_ORDER_FIRST);
-    }
-
-    public Soql orderBy(Schema.SobjectField field, SortOrder sortOrder, Boolean sortNullsFirst) {
-        return this.orderBy(new QueryField(field), sortOrder, sortNullsFirst);
-    }
-
-    public Soql orderBy(Soql.QueryField queryField) {
-        return this.orderBy(queryField, DEFAULT_SORT_ORDER, DEFAULT_NULLS_SORT_ORDER_FIRST);
-    }
-
-    public Soql orderBy(Soql.QueryField queryField, SortOrder sortOrder) {
-        return this.orderBy(queryField, sortOrder, DEFAULT_NULLS_SORT_ORDER_FIRST);
-    }
-
-    public Soql orderBy(Soql.QueryField queryField, SortOrder sortOrder, Boolean sortNullsFirst) {
-        String sortOrderString = sortOrder == Soql.SortOrder.ASCENDING ? 'ASC' : 'DESC';
-        String nullsSortOrder = sortNullsFirst ? 'FIRST' : 'LAST';
-        this.orderByFieldApiNames.add(queryField + ' ' + sortOrderString + ' NULLS ' + nullsSortOrder);
-        return this.setHasChanged();
-    }
-
-    public Soql limitCount(Integer limitCount) {
-        this.limitCount = limitCount;
-        return this.setHasChanged();
-    }
-
-    public Soql offset(Integer offset) {
-        this.offset = offset;
-        return this.setHasChanged();
-    }
-
-    public Soql forReference() {
-        this.forReference = true;
-        return this.setHasChanged();
-    }
-
-    public Soql forUpdate() {
-        this.forUpdate = true;
-        return this.setHasChanged();
-    }
-
-    public Soql forView() {
-        this.forView = true;
-        return this.setHasChanged();
-    }
-
-    public Soql includeLabels() {
-        this.includeLabels = true;
-        return this.setHasChanged();
-    }
-
-    public Soql includeFormattedValues() {
-        this.includeFormattedValues = true;
-        return this.setHasChanged();
-    }
-
-    public Soql cacheResults() {
-        this.cacheResults = true;
-        return this.setHasChanged();
-    }
-
-    public virtual String getQuery() {
-        if(this.query != null && !this.hasChanged) return this.query;
-
-        String queryFieldString = this.getQueryFieldString();
-        String aggregateQueryFieldString = this.getAggregateQueryFieldString();
-        String fieldDelimiter = !String.isEmpty(queryFieldString) && !String.isEmpty(aggregateQueryFieldString) ? ', ' : '';
-
-        this.query = 'SELECT ' + queryFieldString + fieldDelimiter + aggregateQueryFieldString
-            + ' FROM ' + this.sobjectType
-            + this.getUsingScopeString()
-            + this.getWhereClauseString()
-            + this.getGroupByString()
-            + this.getOrderByString()
-            + this.getLimitCountString()
-            + this.getOffetString()
-            + this.getForReferenceString()
-            + this.getForUpdateString()
-            + this.getForViewString();
-
-        // Change hasChanged to false so that subsequent calls to getQuery() use the cached query string
-        // If additional builder methods are later called, the builder methods will set hasChanged = true
-        this.hasChanged = false;
-
-        System.debug(LoggingLevel.FINEST, this.query);
-        return this.query;
-    }
-
-    public String getSearchQuery() {
-        String sobjectTypeOptions = this.getQueryFieldString()
-            + this.getWhereClauseString()
-            + this.getOrderByString()
-            + this.getLimitCountString();
-
-        // If we have any sobject-specific options, then wrap the options in parentheses
-        sobjectTypeOptions = String.isEmpty(sobjectTypeOptions) ? '' : '(' + sobjectTypeOptions + ')';
-
-        String searchQuery = this.getSobjectType() + sobjectTypeOptions;
-        System.debug(LoggingLevel.FINEST, searchQuery);
-        return searchQuery;
-    }
-
-    public Sobject getFirstQueryResult() {
-        return this.getQueryResults()[0];
-    }
-
-    public List<Sobject> getQueryResults() {
-        if(this.cacheResults) return this.getCachedQuery();
-        else return Database.query(this.getQuery());
     }
 
     public Schema.SobjectType getSobjectType() {
         return this.sobjectType;
     }
+
+    public abstract String getQuery();
 
     public Integer compareTo(Object compareTo) {
         String currentSobjectApiName   = String.valueOf(this.getSobjectType());
@@ -295,102 +110,98 @@ public class Soql implements Comparable {
         else return -1;
     }
 
-    private Soql setHasChanged() {
-        this.hasChanged = true;
-        return this;
+    protected void doCacheResults() {
+        this.cacheResults = true;
     }
 
-    private String getDisplayFieldApiName(Schema.SobjectType sobjectType) {
-        // There are several commonly used names for the display field name - typically, Name
-        // The order of the field names has been sorted based on number of objects in a new dev org with that field
-        List<String> possibleDisplayFieldApiNames = new List<String>{
-            'Name', 'DeveloperName', 'ApiName', 'Title', 'Subject', 'AssetRelationshipNumber',
-            'CaseNumber', 'ContractNumber', 'Domain', 'FriendlyName', 'FunctionName', 'Label', 'LocalPart',
-            'OrderItemNumber', 'OrderNumber', 'SolutionName', 'TestSuiteName'
-        };
-        Map<String, Schema.SobjectField> fieldMap = sobjectType.getDescribe().fields.getMap();
-        for(String fieldApiName : possibleDisplayFieldApiNames) {
-            Schema.SobjectField field = fieldMap.get(fieldApiName);
-
-            if(field == null) continue;
-
-            Schema.DescribeFieldResult fieldDescribe = field.getDescribe();
-            if(fieldDescribe.isNameField()) return fieldDescribe.getName();
+    protected void doAddFields(List<Soql.QueryField> queryFields, Soql.FieldCategory fieldCategory) {
+        if(fieldCategory == null) fieldCategory = DEFAULT_FIELD_CATEGORY;
+        for(Soql.QueryField queryField : queryFields) {
+            this.includedQueryFieldsAndCategory.put(queryField, fieldCategory);
         }
-
-        return null;
+        this.doSetHasChanged();
     }
 
-    private String getParentObjectNameField(Schema.DescribeFieldResult fieldDescribe) {
-        String relationshipName = fieldDescribe.getRelationshipName();
-        Schema.SobjectType parentSobjectType = fieldDescribe.getReferenceTo()[0];
-        String nameField = this.getDisplayFieldApiName(parentSobjectType);
-
-        if(relationshipName == null) return null;
-        else if(nameField == null) return null;
-        else return relationshipName + '.' + nameField;
+    protected void doRemoveFields(List<Soql.QueryField> queryFields) {
+        this.excludedQueryFields.addAll(queryFields);
     }
 
-    private String getFieldToLabel(String fieldApiName) {
-        return 'toLabel(' + fieldApiName + ') ' + fieldApiName.replace('.', '_') + '__Label';
+    protected void doUsingScope(Scope scope) {
+        this.scope = scope;
     }
 
-    private String getFieldFormattedValue(String fieldApiName) {
-        return 'format(' + fieldApiName + ') ' + fieldApiName.replace('.', '_') + '__Formatted';
+    protected void doFilterWhere(List<Soql.QueryFilter> filters) {
+        if(filters == null || filters.isEmpty()) return;
+
+        for(Soql.QueryFilter filter : filters) this.whereFilters.add(filter.toString());
+        this.doSetHasChanged();
     }
 
-    private List<String> getFieldsToQuery(QueryField queryField, FieldCategory fieldCat) {
+    protected void doOrFilterWhere(List<Soql.QueryFilter> filters) {
+        if(filters == null || filters.isEmpty()) return;
+
+        filters.sort();
+
+        List<String> orFilterPieces = new List<String>();
+        for(Soql.QueryFilter filter : filters) orFilterPieces.add(filter.toString());
+        this.whereFilters.add('(' + String.join(orFilterPieces, ' OR ') + ')');
+        this.doSetHasChanged();
+    }
+
+    protected void doOrderBy(Soql.QueryField queryField, Soql.SortOrder sortOrder, Boolean sortNullsFirst) {
+        this.doOrderBy(queryField.toString(), sortOrder, sortNullsFirst);
+    }
+
+    protected void doOrderBy(String fieldPath, Soql.SortOrder sortOrder, Boolean sortNullsFirst) {
+        if(sortOrder == null) sortOrder = DEFAULT_SORT_ORDER;
+        if(sortNullsFirst == null) sortNullsFirst = DEFAULT_NULLS_SORT_ORDER_FIRST;
+
+        String sortOrderString = sortOrder == Soql.SortOrder.ASCENDING ? 'ASC' : 'DESC';
+        String nullsSortOrder = sortNullsFirst ? 'FIRST' : 'LAST';
+        this.orderByFieldApiNames.add(fieldPath + ' ' + sortOrderString + ' NULLS ' + nullsSortOrder);
+    }
+
+    protected void doLimitTo(Integer numberOfRecords) {
+        this.limitCount = numberOfRecords;
+    }
+
+    protected void doOffsetBy(Integer offset) {
+        this.offset = offset;
+    }
+
+    protected Sobject doGetFirstResult() {
+        List<Sobject> results = this.doGetResults();
+        return results == null || results.isEmpty() ? null : results[0];
+    }
+
+    protected List<Sobject> doGetResults() {
+        if(this.cacheResults) return this.getCachedResults();
+        else return Database.query(this.getQuery());
+    }
+
+    protected List<String> doGetFieldsToQuery(Soql.QueryField queryField, Soql.FieldCategory fieldCat) {
         List<String> fieldsToReturn = new List<String>();
 
         if(fieldCat == null) return fieldsToReturn;
-        else if(fieldCat == FieldCategory.ACCESSIBLE && !queryField.getDescribe().isAccessible()) return fieldsToReturn;
-        else if(fieldCat == FieldCategory.UPDATEABLE && !queryField.getDescribe().isUpdateable()) return fieldsToReturn;
-        else if(fieldCat == FieldCategory.STANDARD && queryField.getDescribe().isCustom()) return fieldsToReturn;
-        else if(fieldCat == FieldCategory.CUSTOM && !queryField.getDescribe().isCustom()) return fieldsToReturn;
+        else if(fieldCat == Soql.FieldCategory.ACCESSIBLE && !queryField.getDescribe().isAccessible()) return fieldsToReturn;
+        else if(fieldCat == Soql.FieldCategory.UPDATEABLE && !queryField.getDescribe().isUpdateable()) return fieldsToReturn;
+        else if(fieldCat == Soql.FieldCategory.STANDARD && queryField.getDescribe().isCustom()) return fieldsToReturn;
+        else if(fieldCat == Soql.FieldCategory.CUSTOM && !queryField.getDescribe().isCustom()) return fieldsToReturn;
 
         fieldsToReturn.add(queryField.toString());
-
-        // If the field has picklist options, then it can be translated
-        if(this.includeLabels && !queryField.getDescribe().getPickListValues().isEmpty()) {
-            fieldsToReturn.add(this.getFieldToLabel(queryField.getDescribe().getName()));
-        }
-
-        // If the field is a number, date, time, or currency, it can be formatted
-        List<Schema.DisplayType> supportedTypesForFormat = new List<Schema.DisplayType>{
-            Schema.DisplayType.CURRENCY, Schema.DisplayType.DATE, Schema.DisplayType.DATETIME, Schema.DisplayType.DOUBLE,
-            Schema.DisplayType.INTEGER, Schema.DisplayType.PERCENT, Schema.DisplayType.TIME
-        };
-        if(this.includeFormattedValues && supportedTypesForFormat.contains(queryField.getDescribe().getType())) {
-            fieldsToReturn.add(this.getFieldFormattedValue(queryField.getDescribe().getName()));
-        }
-
-        // If the field is a lookup, then we need to get the name field from the parent object
-        if(queryField.getDescribe().getType().name() == 'Reference') {
-            String parentNameField = this.getParentObjectNameField(queryField.getDescribe());
-            if(parentNameField != null) {
-                fieldsToReturn.add(parentNameField);
-                // Record type names can be translated, so include the translation
-                if(this.includeLabels && queryField.toString() == 'RecordTypeId') fieldsToReturn.add(this.getFieldToLabel(parentNameField));
-            }
-        }
 
         return fieldsToReturn;
     }
 
-    private String getQueryFieldString() {
+    protected String doGetQueryFieldString() {
         Set<String> distinctFieldApiNamesToQuery = new Set<String>();
-        for(QueryField queryField : this.includedQueryFieldsAndCategory.keySet()) {
-            FieldCategory fieldCategory = this.includedQueryFieldsAndCategory.get(queryField);
+        for(Soql.QueryField queryField : this.includedQueryFieldsAndCategory.keySet()) {
+            Soql.FieldCategory fieldCategory = this.includedQueryFieldsAndCategory.get(queryField);
 
-            List<String> fieldsToQuery = this.getFieldsToQuery(queryField, fieldCategory);
+            List<String> fieldsToQuery = this.doGetFieldsToQuery(queryField, fieldCategory);
             if(!fieldsToQuery.isEmpty()) distinctFieldApiNamesToQuery.addAll(fieldsToQuery);
         }
 
-        // If the query is NOT an aggregate query, then add the Id & display name fields automatically
-        if(this.aggregatedFields.isEmpty()) {
-            distinctFieldApiNamesToQuery.add('Id');
-            distinctFieldApiNamesToQuery.add(this.displayFieldApiName);
-        }
 
         // Remove an excluded field paths
         for(Soql.QueryField excludedQueryField : this.excludedQueryFields) {
@@ -398,91 +209,56 @@ public class Soql implements Comparable {
         }
 
         List<String> fieldApiNamesToQuery = new List<String>(distinctFieldApiNamesToQuery);
-        if(this.aggregatedFields.isEmpty()) fieldApiNamesToQuery.sort();
+        if(this.sortQueryFields) fieldApiNamesToQuery.sort();
         return String.join(fieldApiNamesToQuery, ', ');
     }
 
-    private String getAggregateQueryFieldString() {
-        if(this.aggregatedFields.isEmpty()) return '';
-
-        List<String> aggregatedFieldStrings = new List<String>();
-        for(Soql.AggregateField aggregatedField : this.aggregatedFields) {
-            aggregatedFieldStrings.add(aggregatedField.toString());
-        }
-        return String.join(aggregatedFieldStrings, ', ');
-    }
-
-    private String getUsingScopeString() {
+    protected String doGetUsingScopeString() {
         return this.scope == null ? '' : ' USING SCOPE ' + this.scope.name();
     }
 
-    private String getWhereClauseString() {
+    protected String doGetWhereClauseString() {
+        this.whereFilters.sort();
         return this.whereFilters.isEmpty() ? '' : ' WHERE ' + String.join(this.whereFilters, ' AND ');
     }
 
-    private String getGroupByString() {
-        // TODO might need a better way to track if the query is a standard query or aggregate
-        String queryFieldString = this.getQueryFieldString();
-        return String.isEmpty(queryFieldString) || this.aggregatedFields.isEmpty() ? '' : ' GROUP BY ' + queryFieldString;
-    }
-
-    private String getOrderByString() {
+    protected String doGetOrderByString() {
         return this.orderByFieldApiNames.isEmpty() ? '' : ' ORDER BY ' + String.join(this.orderByFieldApiNames, ', ');
     }
 
-    private String getLimitCountString() {
+    protected String doGetLimitCountString() {
         return this.limitCount == null ? '' : ' LIMIT ' + this.limitCount;
     }
 
-    private String getOffetString() {
+    protected String doGetOffetString() {
         return this.offset == null ? '' : ' OFFSET ' + this.offset;
     }
 
-    private String getForReferenceString() {
-        return !this.forReference ? '' : ' FOR REFERENCE';
+    private void doSetHasChanged() {
+        this.hasChanged = true;
     }
 
-    private String getForUpdateString() {
-        return !this.forUpdate ? '' : ' FOR UPDATE';
-    }
-
-    private String getForViewString() {
-        return !this.forView ? '' : ' FOR VIEW';
-    }
-
-    private List<Sobject> getCachedQuery() {
+    private List<Sobject> getCachedResults() {
         String query     = this.getQuery();
         Integer hashCode = query.hashCode();
 
-        Boolean isCached = cachedQueryResultsByHashCode.containsKey(hashCode);
-        if(!isCached) cachedQueryResultsByHashCode.put(hashCode, Database.query(query));
+        Boolean isCached = cachedResultsByHashCode.containsKey(hashCode);
+        if(!isCached) cachedResultsByHashCode.put(hashCode, Database.query(query));
 
         // Always return a deep clone so the original cached version is never modified
-        return cachedQueryResultsByHashCode.get(hashCode).deepClone(true, true, true);
+        return cachedResultsByHashCode.get(hashCode).deepClone(true, true, true);
     }
-
-    private class AggregateField {
-        private String aggregateField;
-        public AggregateField(Schema.SobjectField field, Soql.Aggregate aggregateFunction) {
-            String fieldApiName = field.getDescribe().getName();
-            String fieldAlias   = fieldApiName + '__' + aggregateFunction.name();
-
-            // Alias: MIN(Schema.Lead.MyField__c) is auto-aliased to MyField__c__MIN
-            this.aggregateField = aggregateFunction.name() + '(' + fieldApiName + ') ' + fieldAlias;
-        }
-        public override String toString() {
-            return this.aggregateField;
-        }
-    }
-
-    public class SoqlException extends Exception {}
 
     public class DateLiteral {
 
         private String dateLiteral;
 
-        public DateLiteral(String dateLiteral) {
-            this.dateLiteral = String.escapeSingleQuotes(dateLiteral);
+        public DateLiteral(FixedDateLiteral fixedDateLiteral) {
+            this.dateLiteral = fixedDateLiteral.name();
+        }
+
+        public DateLiteral(RelativeDateLiteral relativeDateLiteral, Integer n) {
+            this.dateLiteral = relativeDateLiteral.name() + ':' + n;
         }
 
         public override String toString() {
@@ -506,103 +282,72 @@ public class Soql implements Comparable {
 
     }
 
-    public class QueryArgument {
-
-        private String value;
-
-        public QueryArgument(Object valueToFormat) {
-            this.value = this.formatObjectForQueryString(valueToFormat);
-        }
-
-        public override String toString() {
-            return this.value;
-        }
-
-        private String formatObjectForQueryString(Object valueToFormat) {
-            if(valueToFormat == null) return null;
-            else if(valueToFormat instanceOf List<Object>) return this.convertListToQueryString((List<Object>)valueToFormat);
-            else if(valueToFormat instanceOf Set<Object>) return this.convertSetToQueryString(valueToFormat);
-            else if(valueToFormat instanceOf Map<Object, Object>) return this.convertMapToQueryString(valueToFormat);
-            else if(valueToFormat instanceOf Date) return String.valueOf((Date)valueToFormat).left(10);
-            else if(valueToFormat instanceOf Datetime) {
-                Datetime datetimeValue = (Datetime)valueToFormat;
-                return datetimeValue.format('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'', 'Greenwich Mean Time');
-            }
-            else if(valueToFormat instanceOf Sobject) {
-                Sobject record = (Sobject)valueToFormat;
-                return this.wrapInSingleQuotes(((Sobject)valueToFormat).Id);
-            }
-            else if(valueToFormat instanceOf String) {
-                // Escape single quotes to prevent SOQL/SOSL injection
-                String stringArgument = String.escapeSingleQuotes((String)valueToFormat);
-                return this.wrapInSingleQuotes(stringArgument);
-            }
-            else return String.valueOf(valueToFormat);
-        }
-
-        private String wrapInSingleQuotes(String input) {
-            input = input.trim();
-            if(input.left(1) != '\'') input = '\'' + input;
-            if(input.right(1) != '\'') input = input + '\'';
-            return input;
-        }
-
-        private String convertListToQueryString(List<Object> valueList) {
-            List<String> parsedValueList = new List<String>();
-            for(Object value : valueList) {
-                parsedValueList.add(this.formatObjectForQueryString(value));
-            }
-            return '(' + String.join(parsedValueList, ', ') + ')';
-        }
-
-        private String convertSetToQueryString(Object valueSet) {
-            String unformattedString = String.valueOf(valueSet).replace('{', '').replace('}', '');
-            List<String> parsedValueList = new List<String>();
-            for(String collectionItem : unformattedString.split(',')) {
-                parsedValueList.add(this.formatObjectForQueryString(collectionItem));
-            }
-            return '(' + String.join(parsedValueList, ', ') + ')';
-        }
-
-        private String convertMapToQueryString(Object valueMap) {
-            Map<String, Object> m = (Map<String, Object>)JSON.deserializeUntyped(JSON.serialize(valueMap));
-            return this.convertSetToQueryString(m.keySet());
-        }
-
-    }
-
     public class QueryField {
 
-        private final String queryField;
+        private final String queryFieldPath;
         private final Schema.DescribeFieldResult fieldDescribe;
 
-        public QueryField(Schema.SobjectType sobjectType, String queryField) {
-            this.fieldDescribe = this.getLastFieldDescribe(sobjectType, queryField);
-            this.queryField    = queryField;
+        public QueryField(Schema.SobjectType sobjectType, String queryFieldPath) {
+            this.fieldDescribe  = this.getLastFieldDescribe(sobjectType, queryFieldPath);
+            this.queryFieldPath = queryFieldPath;
         }
 
         public QueryField(Schema.SobjectField field) {
             this(new List<Schema.SobjectField>{field});
         }
 
-        public QueryField(List<Schema.SobjectField> fields) {
-            this.fieldDescribe = this.getLastFieldDescribe(fields);
-            this.queryField    = this.getQueryField(fields);
+        public QueryField(List<Schema.SobjectField> fieldChain) {
+            this.fieldDescribe  = this.getLastFieldDescribe(fieldChain);
+            this.queryFieldPath = this.getQueryField(fieldChain);
+        }
+
+        public QueryField(Soql.DateFunction dateFunction, Schema.SobjectField field) {
+            this(dateFunction, field, false);
+        }
+
+        public QueryField(Soql.DateFunction dateFunction, Schema.SobjectField field, Boolean convertTimeZone) {
+            this(dateFunction, new List<Schema.SobjectField>{field}, convertTimeZone);
+        }
+
+        public QueryField(Soql.DateFunction dateFunction, List<Schema.SobjectField> fieldChain) {
+            this(dateFunction, fieldChain, false);
+        }
+
+        public QueryField(Soql.DateFunction dateFunction, List<Schema.SobjectField> fieldChain, Boolean convertTimeZone) {
+            this.fieldDescribe  = this.getLastFieldDescribe(fieldChain);
+            this.queryFieldPath = this.getDateFunctionFieldPath(dateFunction, fieldChain, convertTimeZone);
+        }
+//https://help.salesforce.com/articleView?id=custom_field_geolocate_overview.htm&type=5
+        public QueryField(List<Schema.SobjectField> fieldChain, Decimal latitude, Decimal longitude) {
+            this.fieldDescribe  = this.getLastFieldDescribe(fieldChain);
+            //this.queryFieldPath = 'DISTANCE(' + this.getQueryField(fieldChain), GEOLOCATION(10,10), :units)
         }
 
         public override String toString() {
-            return this.queryField;
+            return this.queryFieldPath;
         }
 
         public Schema.DescribeFieldResult getDescribe() {
             return this.fieldDescribe;
         }
 
+        public String getFieldPath() {
+            return this.queryFieldPath;
+        }
+
+        private String getDateFunctionFieldPath(Soql.DateFunction dateFunction, List<Schema.SobjectField> fieldChain, Boolean convertTimeZone) {
+            String fieldPath = !convertTimeZone ? this.getQueryField(fieldChain) : 'convertTimeZone(' + this.getQueryField(fieldChain) + ')';
+
+            return dateFunction.name() + '(' + fieldPath + ')';
+        }
+
         private Schema.DescribeFieldResult getLastFieldDescribe(Schema.SobjectType sobjectType, String queryField) {
             Schema.SobjectType currentSobjectType = sobjectType;
+
             List<Schema.SobjectField> fields = new List<Schema.SobjectField>();
             List<String> queryFieldPieces = queryField.split('\\.');
-            Integer lastFieldIndex = queryFieldPieces.size() - 1;
+            Integer lastFieldIndex = queryFieldPieces.size() <= 1 ? 0 : queryFieldPieces.size() - 1;
+
             for(Integer i = 0; i < queryFieldPieces.size(); i++) {
                 String queryFieldPiece = queryFieldPieces[i];
 
@@ -642,25 +387,119 @@ public class Soql implements Comparable {
 
     public class QueryFilter implements Comparable {
 
-        private String value;
+        private Soql.QueryField queryField;
+        private Soql.Operator operator;
+        private Object value;
+        private String formattedValue;
+        private String filterString;
 
-        public QueryFilter(Schema.SobjectField field, String operator, Object value) {
+        public QueryFilter(Schema.SobjectField field, Soql.Operator operator, Object value) {
             this(new QueryField(field), operator, value);
         }
 
-        public QueryFilter(QueryField queryField, String operator, Object value) {
-            this.value = queryField + ' ' + operator + ' ' + new QueryArgument(value);
+        public QueryFilter(QueryField queryField, Soql.Operator operator, Object value) {
+            this.queryField     = queryField;
+            this.operator       = operator;
+            this.value          = value;
+            this.formattedValue = new QueryArgument(value).toString();
+
+            this.filterString = queryField + ' ' + Soql.getOperatorValue(operator) + ' ' + formattedValue;
         }
 
         public Integer compareTo(Object compareTo) {
             QueryFilter compareToQueryFilter = (QueryFilter)compareTo;
+
             if(this.toString() == compareToQueryFilter.toString()) return 0;
             else if(this.toString() > compareToQueryFilter.toString()) return 1;
             else return -1;
         }
 
+        public Soql.QueryField getQueryField() {
+            return this.queryField;
+        }
+
+        public Soql.Operator getOperator() {
+            return this.operator;
+        }
+
+        public Object getValue() {
+            return this.value;
+        }
+
+        public Object getFormattedValue() {
+            return this.formattedValue;
+        }
+
+        public override String toString() {
+            return this.filterString;
+        }
+
+    }
+
+    public class SoqlException extends Exception {}
+
+    private class QueryArgument {
+
+        private String value;
+
+        public QueryArgument(Object valueToFormat) {
+            this.value = this.formatObjectForQueryString(valueToFormat);
+        }
+
         public override String toString() {
             return this.value;
+        }
+
+        private String formatObjectForQueryString(Object valueToFormat) {
+            if(valueToFormat == null) return null;
+            else if(valueToFormat instanceOf List<Object>) return this.convertListToQueryString((List<Object>)valueToFormat);
+            else if(valueToFormat instanceOf Set<Object>) return this.convertSetToQueryString(valueToFormat);
+            else if(valueToFormat instanceOf Map<Object, Object>) return this.convertMapToQueryString(valueToFormat);
+            else if(valueToFormat instanceOf Date) return String.valueOf((Date)valueToFormat).left(10);
+            else if(valueToFormat instanceOf Datetime) {
+                Datetime datetimeValue = (Datetime)valueToFormat;
+                return datetimeValue.format('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'', 'Greenwich Mean Time');
+            }
+            else if(valueToFormat instanceOf Sobject) {
+                Sobject record = (Sobject)valueToFormat;
+                return this.wrapInSingleQuotes(((Sobject)valueToFormat).Id);
+            }
+            else if(valueToFormat instanceOf String) {
+                // Escape single quotes to prevent SOQL/SOSL injection
+                String unformattedString = (String)valueToFormat;
+                String stringArgument = String.escapeSingleQuotes(unformattedString.trim());
+                return this.wrapInSingleQuotes(stringArgument);
+            }
+            else return String.valueOf(valueToFormat);
+        }
+
+        private String wrapInSingleQuotes(String input) {
+            input = input.trim();
+            if(input.left(1) != '\'') input = '\'' + input;
+            if(input.right(1) != '\'') input = input + '\'';
+            return input;
+        }
+
+        private String convertListToQueryString(List<Object> valueList) {
+            List<String> parsedValueList = new List<String>();
+            for(Object value : valueList) {
+                parsedValueList.add(this.formatObjectForQueryString(value));
+            }
+            return '(' + String.join(parsedValueList, ', ') + ')';
+        }
+
+        private String convertSetToQueryString(Object valueSet) {
+            String unformattedString = String.valueOf(valueSet).replace('{', '').replace('}', '');
+            List<String> parsedValueList = new List<String>();
+            for(String collectionItem : unformattedString.split(',')) {
+                parsedValueList.add(this.formatObjectForQueryString(collectionItem));
+            }
+            return '(' + String.join(parsedValueList, ', ') + ')';
+        }
+
+        private String convertMapToQueryString(Object valueMap) {
+            Map<String, Object> untypedMap = (Map<String, Object>)Json.deserializeUntyped(Json.serialize(valueMap));
+            return this.convertSetToQueryString(untypedMap.keySet());
         }
 
     }

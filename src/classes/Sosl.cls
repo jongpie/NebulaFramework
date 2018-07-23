@@ -1,143 +1,81 @@
 /******************************************************************************************************
-* This file is part of the Nebula Framework project, released under the MIT License.                  *
+* This file is part of the Nebula Query & Search project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaQueryAndSearch for full license details. *
 ******************************************************************************************************/
-public class Sosl {
+public abstract class Sosl {
 
     public enum ArticleReporting { TRACKING, VIEWSTAT }
-    public enum Clause { HIGHLIGHT, SPELL_CORRECTION }
     public enum DataCategoryLocation { AT, ABOVE, BELOW, ABOVE_OR_BELOW }
     public enum SearchGroup { ALL_FIELDS, NAME_FIELDS, EMAIL_FIELDS, PHONE_FIELDS, SIDEBAR_FIELDS }
 
     private static Map<Integer, List<List<Sobject>>> cachedSearchResultsByHashCode = new Map<Integer, List<List<Sobject>>>();
 
-    private String searchQuery, searchTerm;
-    private ArticleReporting articleReporting;
-    private List<String> withClauses, withDataCategoryClauses;
-    private SearchGroup searchGroup;
-    private List<Soql> searchQueries;
-    private Boolean cacheResults, hasChanged;
+    protected String searchQuery, searchTerm;
+    protected List<SobjectQueryBuilder> sobjectQueries;
+    protected Set<Schema.SobjectType> sobjectTypes;
+    protected Boolean cacheResults, hasChanged;
+    protected Sosl.ArticleReporting articleReporting;
+    protected List<String> withClauses, withDataCategoryClauses;
+    protected Sosl.SearchGroup searchGroup;
 
-    public Sosl(String searchTerm, Soql query) {
-        this(searchTerm, new List<Soql>{query});
+    protected Sosl(String searchTerm, SobjectQueryBuilder sobjectQuery) {
+        this(searchTerm, new List<SobjectQueryBuilder>{sobjectQuery});
     }
 
-    public Sosl(String searchTerm, List<Soql> queries) {
-        this.searchTerm    = searchTerm;
-        this.searchQueries = queries;
+    protected Sosl(String searchTerm, List<SobjectQueryBuilder> sobjectQueries) {
+        this.searchTerm     = String.escapeSingleQuotes(searchTerm);
+        this.sobjectQueries = sobjectQueries;
 
         this.cacheResults            = false;
+        this.hasChanged              = false;
         this.searchGroup             = Sosl.SearchGroup.ALL_FIELDS;
         this.withClauses             = new List<String>();
         this.withDataCategoryClauses = new List<String>();
     }
 
-    public Sosl inSearchGroup(SearchGroup searchGroup) {
-        this.searchGroup = searchGroup;
-        return this.setHasChanged();
-    }
+    public Set<Schema.SobjectType> getSobjectTypes() {
+        if(this.sobjectTypes != null) return this.sobjectTypes;
 
-    public Sosl withDataCategory(Schema.DataCategory dataCategory, Sosl.DataCategoryLocation dataCategoryLocation, Schema.DataCategory childDataCategory) {
-        return this.withDataCategory(dataCategory, dataCategoryLocation, new List<Schema.DataCategory>{childDataCategory});
-    }
-
-    public Sosl withDataCategory(Schema.DataCategory dataCategory, Sosl.DataCategoryLocation dataCategoryLocation, List<Schema.DataCategory> childDataCategories) {
-        List<String> childDataCategoryApiNames = new List<String>();
-        for(Schema.DataCategory childDataCategory : childDataCategories) {
-            childDataCategoryApiNames.add(childDataCategory.getName());
+        this.sobjectTypes = new Set<Schema.SobjectType>();
+        for(SobjectQueryBuilder query : this.sobjectQueries) {
+            this.sobjectTypes.add(query.getSobjectType());
         }
-        this.withDataCategoryClauses.add(dataCategory.getName() + ' ' + dataCategoryLocation + ' (' + String.join(childDataCategoryApiNames, ', ') + ')');
-        return this.setHasChanged();
+        return this.sobjectTypes;
     }
 
-    public Sosl withHighlight() {
-        this.withClauses.add('HIGHLIGHT');
-        return this.setHasChanged();
+    public abstract String getSearch();
+
+    protected Sobject doGetFirstResult() {
+        List<List<Sobject>> results = this.doGetResults();
+        return results.isEmpty() || results[0].isEmpty() ? null : results[0][0];
     }
 
-    public Sosl withSnippet(Integer targetLength) {
-        this.withClauses.add('SNIPPET (target_length=' + targetLength + ')');
-        return this.setHasChanged();
+    protected List<Sobject> doGetFirstResults() {
+        List<List<Sobject>> results = this.doGetResults();
+        return results.isEmpty() ? null : results[0];
     }
 
-    public Sosl withSpellCorrection() {
-        this.withClauses.add('SPELL_CORRECTION = true');
-        return this.setHasChanged();
+    protected List<List<Sobject>> doGetResults() {
+        if(this.cacheResults) return this.getCachedResults();
+        else return Search.query(this.getSearch());
     }
 
-    public Sosl updateArticleReporting(Sosl.ArticleReporting articleReporting) {
-        this.articleReporting = articleReporting;
-        return this.setHasChanged();
-    }
-
-    public Sosl cacheResults() {
-        this.cacheResults = true;
-        return this.setHasChanged();
-    }
-
-    public String getSearchQuery() {
-        if(this.searchQuery != null && !this.hasChanged) return this.searchQuery;
-
-        this.searchQuery = 'FIND \'' + this.searchTerm + '\''
-            + this.getSearchGroupString()
-            + this.getReturningSobjectsString()
-            + this.getWithClauseString()
-            + this.getUpdateArticleReportingString();
-
-        // Change hasChanged to false so that subsequent calls to getSearchQuery() use the cached search query string
-        // If additional builder methods are later called, the builder methods will set hasChanged = true
-        this.hasChanged = false;
-
-        System.debug(LoggingLevel.FINEST, this.searchQuery);
-        return this.searchQuery;
-    }
-
-    public List<Sobject> getFirstSearchResults() {
-        return this.getSearchResults()[0];
-    }
-
-    public List<List<Sobject>> getSearchResults() {
-        if(this.cacheResults) return this.getCachedQuery();
-        else return Search.query(this.getSearchQuery());
-    }
-
-    private Sosl setHasChanged() {
-        this.hasChanged = true;
-        return this;
-    }
-
-    private List<List<Sobject>> getCachedQuery() {
-        String query     = this.getSearchQuery();
-        Integer hashCode = query.hashCode();
-
-        Boolean isCached = cachedSearchResultsByHashCode.containsKey(hashCode);
-        if(!isCached) cachedSearchResultsByHashCode.put(hashCode, Search.query(query));
-
-        // Always return a deep clone so the original cached version is never modified
-        List<List<Sobject>> cachedResults = cachedSearchResultsByHashCode.get(hashCode);
-        List<List<Sobject>> deepClonedResults = new List<List<Sobject>>();
-        for(List<Sobject> cachedListOfResults : cachedResults) {
-            deepClonedResults.add(cachedListOfResults.deepClone(true, true, true));
-        }
-        return deepClonedResults;
-    }
-
-    private String getSearchGroupString() {
+    protected String doGetSearchGroupString() {
         return ' IN ' + this.searchGroup.name().replace('_', ' ');
     }
 
-    private String getReturningSobjectsString() {
-        if(this.searchQueries.isEmpty()) return '';
+    protected String doGetReturningSobjectsString() {
+        if(this.sobjectQueries.isEmpty()) return '';
 
         List<String> queryStrings = new List<String>();
-        this.searchQueries.sort();
-        for(Soql query : this.searchQueries) {
+        this.sobjectQueries.sort();
+        for(SobjectQueryBuilder query : this.sobjectQueries) {
             queryStrings.add(query.getSearchQuery());
         }
         return ' RETURNING ' + String.join(queryStrings, ', ');
     }
 
-    private String getWithClauseString() {
+    protected String doGetWithClauseString() {
         List<String> combinedWithClauses = new List<String>(this.withClauses);
         if(!this.withDataCategoryClauses.isEmpty()) {
             String withDataCategoryClausesString = 'DATA CATEGORY ' + String.join(withDataCategoryClauses, ' AND ');
@@ -147,8 +85,24 @@ public class Sosl {
         return this.withClauses.isEmpty() ? '' : ' WITH ' + String.join(this.withClauses, ' WITH ');
     }
 
-    private String getUpdateArticleReportingString() {
+    protected String doGetUpdateArticleReportingString() {
         return this.articleReporting == null ? '' : ' UPDATE ' + this.articleReporting.name();
+    }
+
+    private List<List<Sobject>> getCachedResults() {
+        String searchQuery = this.getSearch();
+        Integer hashCode   = searchQuery.hashCode();
+
+        Boolean isCached = cachedSearchResultsByHashCode.containsKey(hashCode);
+        if(!isCached) cachedSearchResultsByHashCode.put(hashCode, Search.query(searchQuery));
+
+        // Always return a deep clone so the original cached version is never modified
+        List<List<Sobject>> cachedResults = cachedSearchResultsByHashCode.get(hashCode);
+        List<List<Sobject>> deepClonedResults = new List<List<Sobject>>();
+        for(List<Sobject> cachedListOfResults : cachedResults) {
+            deepClonedResults.add(cachedListOfResults.deepClone(true, true, true));
+        }
+        return deepClonedResults;
     }
 
 }
