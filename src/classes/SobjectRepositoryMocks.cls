@@ -23,8 +23,8 @@ public class SobjectRepositoryMocks {
             return Schema.User.SobjectType; // TODO change to be dynamic?
         }
 
-        public virtual Soql getSoql() {
-            return new Soql(this.getSobjectType());
+        public virtual SobjectQueryBuilder getSobjectQueryBuilder() {
+            return new SobjectQueryBuilder(this.getSobjectType());
         }
 
         public Base with(List<Sobject> records) {
