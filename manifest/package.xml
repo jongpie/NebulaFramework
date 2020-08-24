@@ -5,14 +5,8 @@
         <name>ApexClass</name>
     </types>
     <types>
-        <members>Nebula</members>
-        <name>CustomApplication</name>
-    </types>
-    <types>
         <members>NebulaLog__c</members>
         <members>NebulaLoggerSettings__c</members>
-        <members>NebulaRecordTypesSettings__c</members>
-        <members>NebulaSObjectQueryBuilderSettings__c</members>
         <members>TriggerHandlerSettings__c</members>
         <name>CustomObject</name>
     </types>
@@ -24,5 +18,5 @@
         <members>NebulaLog__c-Log Layout</members>
         <name>Layout</name>
     </types>
-    <version>39.0</version>
+    <version>49.0</version>
 </Package>
