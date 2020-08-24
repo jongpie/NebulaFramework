@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
     <customSettingsType>Hierarchy</customSettingsType>
-    <description>Controls the behavior of the class SObjectTriggerHandler.cls</description>
+    <description>Controls the behavior of the SObject trigger handlers</description>
     <enableFeeds>false</enableFeeds>
     <label>Nebula Trigger Handler Settings</label>
     <visibility>Public</visibility>
