@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>IncludeManagedRecordTypes__c</fullName>
+    <defaultValue>true</defaultValue>
+    <description>Determines if managed record types are included in queries. If you do not use any managed record types, then you can disable this.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Determines if managed record types are included in queries. If you do not use any managed record types, then you can disable this.</inlineHelpText>
+    <label>Include Managed Record Types</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

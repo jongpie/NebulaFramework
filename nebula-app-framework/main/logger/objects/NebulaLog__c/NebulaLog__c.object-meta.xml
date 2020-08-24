@@ -52,53 +52,7 @@
     <enableSearch>true</enableSearch>
     <enableSharing>true</enableSharing>
     <enableStreamingApi>true</enableStreamingApi>
-    <fields>
-        <fullName>InitialClass__c</fullName>
-        <externalId>false</externalId>
-        <label>Initial Class</label>
-        <length>255</length>
-        <required>false</required>
-        <trackHistory>false</trackHistory>
-        <trackTrending>false</trackTrending>
-        <type>Text</type>
-        <unique>false</unique>
-    </fields>
-    <fields>
-        <fullName>TransactionId__c</fullName>
-        <caseSensitive>false</caseSensitive>
-        <externalId>true</externalId>
-        <label>Transaction ID</label>
-        <length>36</length>
-        <required>true</required>
-        <trackHistory>false</trackHistory>
-        <trackTrending>false</trackTrending>
-        <type>Text</type>
-        <unique>true</unique>
-    </fields>
     <label>Nebula Log</label>
-    <listViews>
-        <fullName>All_Logs</fullName>
-        <columns>NAME</columns>
-        <columns>TransactionId__c</columns>
-        <columns>InitialClass__c</columns>
-        <columns>CREATEDBY_USER</columns>
-        <columns>CREATED_DATE</columns>
-        <columns>UPDATEDBY_USER</columns>
-        <columns>LAST_UPDATE</columns>
-        <filterScope>Everything</filterScope>
-        <label>All Logs</label>
-    </listViews>
-    <listViews>
-        <fullName>My_Logs</fullName>
-        <columns>NAME</columns>
-        <columns>TransactionId__c</columns>
-        <columns>InitialClass__c</columns>
-        <columns>CREATED_DATE</columns>
-        <columns>UPDATEDBY_USER</columns>
-        <columns>LAST_UPDATE</columns>
-        <filterScope>Mine</filterScope>
-        <label>My Logs</label>
-    </listViews>
     <nameField>
         <displayFormat>Log-{00000}</displayFormat>
         <label>Log Name</label>
