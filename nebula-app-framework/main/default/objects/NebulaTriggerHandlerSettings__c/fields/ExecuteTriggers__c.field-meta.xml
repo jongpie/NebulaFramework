@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ExecuteTriggers__c</fullName>
+    <defaultValue>true</defaultValue>
+    <description>Controls if any trigger handler classes run its execute() method. This should always be enabled unless you are doing a data fix, etc and need to temporarily disable all triggers.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Controls if any trigger handler classes run its execute() method. This should always be enabled unless you are doing a data fix, etc and need to temporarily disable all triggers.</inlineHelpText>
+    <label>Execute Triggers</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

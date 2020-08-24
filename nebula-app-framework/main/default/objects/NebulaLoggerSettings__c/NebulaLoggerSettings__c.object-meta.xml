@@ -3,14 +3,6 @@
     <customSettingsType>Hierarchy</customSettingsType>
     <description>Controls the behavior of the class Logger.cls</description>
     <enableFeeds>false</enableFeeds>
-    <fields>
-        <fullName>EnableLogging__c</fullName>
-        <defaultValue>true</defaultValue>
-        <externalId>false</externalId>
-        <label>Enable Logging</label>
-        <trackTrending>false</trackTrending>
-        <type>Checkbox</type>
-    </fields>
     <label>Nebula Logger Settings</label>
     <visibility>Public</visibility>
 </CustomObject>
