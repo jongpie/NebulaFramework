@@ -39,11 +39,11 @@ private class SObjectRepositoryMocks_Tests {
     }
 
     static QueryField getField() {
-        return new QueryField(Schema.Lead.LeadSource);
+        return new QueryField(Schema.Lead.LastName);
     }
 
     static String getFieldValue() {
-        return 'Web';
+        return 'Gillespie';
     }
 
     static Id getTestId() {
