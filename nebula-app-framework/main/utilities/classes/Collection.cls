@@ -10,7 +10,7 @@
 * @description A utility class to help with dealing with collections (lists, sets & maps)
 *
 */
-public without sharing class CollectionUtils {
+public without sharing class Collection {
 
     /**
    * @description Returns the last item in a list
@@ -18,7 +18,7 @@ public without sharing class CollectionUtils {
    * @return The last Object in the provided list
    * @example
    * List<String> myList = new List<String>{'A', B', 'C'};
-   * String lastItem = CollectionUtils.getLastItem(myList);
+   * String lastItem = Collection.getLastItem(myList);
    * System.assertEquals('C', lastItem);
    */
     public static Object getLastItem(List<Object> listOfItems) {
@@ -33,7 +33,7 @@ public without sharing class CollectionUtils {
    * @example
    * List<String> myList = new List<String>{'A', B', 'C'};
    * System.assertEquals(3, myList.size());
-   * String lastItem = CollectionUtils.getLastItem(myList);
+   * String lastItem = Collection.getLastItem(myList);
    * System.assertEquals('C', lastItem);
    * System.assertEquals(2, myList.size());
    */
@@ -49,7 +49,7 @@ public without sharing class CollectionUtils {
    * @example
    * List<String> myList = new List<String>{'A', B', 'C'};
    * System.assertEquals(3, myList.size());
-   * String itemToRemove = CollectionUtils.splice(myList, 1);
+   * String itemToRemove = Collection.splice(myList, 1);
    * System.assertEquals('B', itemToRemove);
    * System.assertEquals(2, myList.size());
    */
@@ -65,7 +65,7 @@ public without sharing class CollectionUtils {
    * @return true if the item is a type of collection, otherwise returns false
    * @example
    * List<String> myList = new List<String>{'A', 'B', 'C'};
-   * System.assert(CollectionUtils.isCollection(myList));
+   * System.assert(Collection.isCollection(myList));
    */
     public static Boolean isCollection(Object input) {
         return isList(input) || isSet(input) || isMap(input);
