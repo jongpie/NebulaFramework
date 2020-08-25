@@ -39,7 +39,7 @@ private class SObjectTriggerHandler_Tests {
 
     @isTest
     static void shouldNotExecuteTriggers() {
-        NebulaTriggerHandlerSettings__c triggerHandlerSettings = NebulaTriggerHandlerSettings__c.getInstance();
+        TriggerHandlerSettings__c triggerHandlerSettings = TriggerHandlerSettings__c.getInstance();
         triggerHandlerSettings.ExecuteTriggers__c = false;
         upsert triggerHandlerSettings;
 
