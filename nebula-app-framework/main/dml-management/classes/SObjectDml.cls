@@ -12,123 +12,123 @@ public abstract class SObjectDml implements ISObjectDml {
     }
 
     private CrudMode currentMode;
-    private List<Sobject> insertRecordList   = new List<Sobject>();
-    private List<Sobject> updateRecordList   = new List<Sobject>();
-    private List<Sobject> upsertRecordList   = new List<Sobject>();
-    private List<Sobject> deleteRecordList   = new List<Sobject>();
-    private List<Sobject> undeleteRecordList = new List<Sobject>();
+    private List<SObject> insertRecordList   = new List<SObject>();
+    private List<SObject> updateRecordList   = new List<SObject>();
+    private List<SObject> upsertRecordList   = new List<SObject>();
+    private List<SObject> deleteRecordList   = new List<SObject>();
+    private List<SObject> undeleteRecordList = new List<SObject>();
 
-    public SobjectDml () {
+    public SObjectDml () {
         this.currentMode = CrudMode.USER_MODE;
     }
 
-    public abstract Schema.SobjectType getSobjectType();
+    public abstract Schema.SObjectType getSObjectType();
 
     public virtual LoggingLevel getLoggingLevel() {
         return LoggingLevel.DEBUG;
     }
 
-    public ISobjectDml setMode(CrudMode mode) {
+    public ISObjectDml setMode(CrudMode mode) {
         this.currentMode = mode;
         return this;
     }
 
-    public void registerInsertRecords(List<Sobject> recordList) {
+    public void registerInsertRecords(List<SObject> recordList) {
         this.insertRecordList.addAll(recordList);
     }
 
-    public void registerUpdateRecords(List<Sobject> recordList) {
+    public void registerUpdateRecords(List<SObject> recordList) {
         this.updateRecordList.addAll(recordList);
     }
 
-    public void registerUpsertRecords(List<Sobject> recordList) {
+    public void registerUpsertRecords(List<SObject> recordList) {
         this.upsertRecordList.addAll(recordList);
     }
 
-    public void registerDeleteRecords(List<Sobject> recordList) {
+    public void registerDeleteRecords(List<SObject> recordList) {
         this.deleteRecordList.addAll(recordList);
     }
 
-    public void registerUndeleteRecords(List<Sobject> recordList) {
+    public void registerUndeleteRecords(List<SObject> recordList) {
         this.undeleteRecordList.addAll(recordList);
     }
 
-    public List<Sobject> getInsertRecords() {
+    public List<SObject> getInsertRecords() {
         return this.insertRecordList;
     }
 
-    public List<Sobject> getUpdateRecords() {
+    public List<SObject> getUpdateRecords() {
         return this.updateRecordList;
     }
 
-    public List<Sobject> getUpsertRecords() {
+    public List<SObject> getUpsertRecords() {
         return this.upsertRecordList;
     }
 
-    public List<Sobject> getDeleteRecords() {
+    public List<SObject> getDeleteRecords() {
         return this.deleteRecordList;
     }
 
-    public List<Sobject> getUndeleteRecords() {
+    public List<SObject> getUndeleteRecords() {
         return this.undeleteRecordList;
     }
 
-    public virtual List<Database.SaveResult> insertRecords(Sobject record) {
-        return this.insertRecords(new List<Sobject>{record});
+    public virtual List<Database.SaveResult> insertRecords(SObject record) {
+        return this.insertRecords(new List<SObject>{record});
     }
 
-    public virtual List<Database.SaveResult> insertRecords(List<Sobject> records) {
+    public virtual List<Database.SaveResult> insertRecords(List<SObject> records) {
         if(this.currentMode == CrudMode.USER_MODE) this.validateUserPermissions(records, DmlOperation.INSERT_RECORDS);
 
         this.registerInsertRecords(records);
         return Database.insert(records);
     }
 
-    public virtual List<Database.SaveResult> updateRecords(Sobject record) {
-        return this.updateRecords(new List<Sobject>{record});
+    public virtual List<Database.SaveResult> updateRecords(SObject record) {
+        return this.updateRecords(new List<SObject>{record});
     }
 
-    public virtual List<Database.SaveResult> updateRecords(List<Sobject> records) {
+    public virtual List<Database.SaveResult> updateRecords(List<SObject> records) {
         if(this.currentMode == CrudMode.USER_MODE) this.validateUserPermissions(records, DmlOperation.UPDATE_RECORDS);
 
         return Database.update(records);
     }
 
-    public virtual List<Database.UpsertResult> upsertRecords(Sobject record) {
+    public virtual List<Database.UpsertResult> upsertRecords(SObject record) {
         return this.upsertRecords(this.castRecords(record));
     }
 
-    public virtual List<Database.UpsertResult> upsertRecords(List<Sobject> records) {
+    public virtual List<Database.UpsertResult> upsertRecords(List<SObject> records) {
         if(this.currentMode == CrudMode.USER_MODE) this.validateUserPermissions(records, DmlOperation.UPSERT_RECORDS);
 
         return Database.upsert(records);
     }
 
-    public virtual List<Database.UndeleteResult> undeleteRecords(Sobject record) {
-        return this.undeleteRecords(new List<Sobject>{record});
+    public virtual List<Database.UndeleteResult> undeleteRecords(SObject record) {
+        return this.undeleteRecords(new List<SObject>{record});
     }
 
-    public virtual List<Database.UndeleteResult> undeleteRecords(List<Sobject> records) {
+    public virtual List<Database.UndeleteResult> undeleteRecords(List<SObject> records) {
         if(this.currentMode == CrudMode.USER_MODE) this.validateUserPermissions(records, DmlOperation.UNDELETE_RECORDS);
 
         return Database.undelete(records);
     }
 
-    public virtual List<Database.DeleteResult> deleteRecords(Sobject record) {
-        return this.deleteRecords(new List<Sobject>{record});
+    public virtual List<Database.DeleteResult> deleteRecords(SObject record) {
+        return this.deleteRecords(new List<SObject>{record});
     }
 
-    public virtual List<Database.DeleteResult> deleteRecords(List<Sobject> records) {
+    public virtual List<Database.DeleteResult> deleteRecords(List<SObject> records) {
         if(this.currentMode == CrudMode.USER_MODE) this.validateUserPermissions(records, DmlOperation.DELETE_RECORDS);
 
         return Database.delete(records);
     }
 
-    public virtual List<Database.DeleteResult> hardDeleteRecords(Sobject record) {
-        return this.hardDeleteRecords(new List<Sobject>{record});
+    public virtual List<Database.DeleteResult> hardDeleteRecords(SObject record) {
+        return this.hardDeleteRecords(new List<SObject>{record});
     }
 
-    public virtual List<Database.DeleteResult> hardDeleteRecords(List<Sobject> records) {
+    public virtual List<Database.DeleteResult> hardDeleteRecords(List<SObject> records) {
         if(this.currentMode == CrudMode.USER_MODE) this.validateUserPermissions(records, DmlOperation.HARD_DELETE_RECORDS);
 
         List<Database.DeleteResult> results = this.deleteRecords(records);
@@ -138,43 +138,43 @@ public abstract class SObjectDml implements ISObjectDml {
 
     // Not all objects are mergeable or will have external ID fields, so these methods are protected (instead of public)
     // Any object that needs these methods can expose these methods in their repos
-    protected virtual List<Database.MergeResult> mergeRecords(Sobject masterRecord, Sobject recordToMerge) {
+    protected virtual List<Database.MergeResult> mergeRecords(SObject masterRecord, SObject recordToMerge) {
         return this.mergeRecords(masterRecord, this.castRecords(recordToMerge));
     }
 
-    protected virtual List<Database.MergeResult> mergeRecords(Sobject masterRecord, List<Sobject> recordsToMerge) {
+    protected virtual List<Database.MergeResult> mergeRecords(SObject masterRecord, List<SObject> recordsToMerge) {
         if(this.currentMode == CrudMode.USER_MODE) this.validateUserPermissions(recordsToMerge, DmlOperation.MERGE_RECORDS);
 
         return Database.merge(masterRecord, recordsToMerge);
     }
 
-    protected virtual List<Database.UpsertResult> upsertRecords(Sobject record, Schema.SobjectField externalIdField) {
+    protected virtual List<Database.UpsertResult> upsertRecords(SObject record, Schema.SObjectField externalIdField) {
         return this.upsertRecords(this.castRecords(record), externalIdField);
     }
 
-    protected virtual List<Database.UpsertResult> upsertRecords(List<Sobject> records, Schema.SobjectField externalIdField) {
+    protected virtual List<Database.UpsertResult> upsertRecords(List<SObject> records, Schema.SObjectField externalIdField) {
         if(this.currentMode == CrudMode.USER_MODE) this.validateUserPermissions(records, DmlOperation.UPSERT_RECORDS);
 
         return Database.upsert(records, externalIdField);
     }
 
-    private List<Sobject> castRecords(Sobject record) {
-        // Salesforce will only allow upsert calls for Sobjects if a declared-type list is passed in.
+    private List<SObject> castRecords(SObject record) {
+        // Salesforce will only allow upsert calls for SObjects if a declared-type list is passed in.
         // This is fine for the bulk method, where we can assume the caller is passing in an explicit list, but for a single record,
-        // the only way to successfully perform the upsert is to dynamically spin up a list of the Sobject's type
+        // the only way to successfully perform the upsert is to dynamically spin up a list of the SObject's type
 
-        String listType = 'List<' + record.getSobjectType() + '>';
-        List<Sobject> castRecords = (List<Sobject>)Type.forName(listType).newInstance();
+        String listType = 'List<' + record.getSObjectType() + '>';
+        List<SObject> castRecords = (List<SObject>)Type.forName(listType).newInstance();
         castRecords.add(record);
 
         return castRecords;
     }
 
-    private void validateUserPermissions(List<Sobject> records, DmlOperation operation) {
+    private void validateUserPermissions(List<SObject> records, DmlOperation operation) {
         if(records == null || records.isEmpty()) return;
 
-        Schema.SobjectType sobjectType = records[0].getSobjectType();
-        DescribeSobjectResult sobjectDescribe = sobjectType.getDescribe();
+        Schema.SObjectType sobjectType = records[0].getSObjectType();
+        DescribeSObjectResult sobjectDescribe = sobjectType.getDescribe();
 
         switch on operation {
             when INSERT_RECORDS {

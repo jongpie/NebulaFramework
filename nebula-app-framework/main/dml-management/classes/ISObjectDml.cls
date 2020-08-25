@@ -4,33 +4,33 @@
 *************************************************************************************************/
 public interface ISObjectDml {
 
-    Schema.SobjectType getSobjectType();
+    Schema.SObjectType getSObjectType();
     //LoggingLevel getLoggingLevel();
 
-    ISobjectDml setMode(SobjectDml.CrudMode mode);
+    ISObjectDml setMode(SObjectDml.CrudMode mode);
 
-    void registerInsertRecords(List<Sobject> recordList);
-    void registerUpdateRecords(List<Sobject> recordList);
-    void registerUpsertRecords(List<Sobject> recordList);
-    void registerDeleteRecords(List<Sobject> recordList);
-    void registerUndeleteRecords(List<Sobject> recordList);
-    List<Sobject> getInsertRecords();
-    List<Sobject> getUpdateRecords();
-    List<Sobject> getUpsertRecords();
-    List<Sobject> getDeleteRecords();
-    List<Sobject> getUndeleteRecords();
+    void registerInsertRecords(List<SObject> recordList);
+    void registerUpdateRecords(List<SObject> recordList);
+    void registerUpsertRecords(List<SObject> recordList);
+    void registerDeleteRecords(List<SObject> recordList);
+    void registerUndeleteRecords(List<SObject> recordList);
+    List<SObject> getInsertRecords();
+    List<SObject> getUpdateRecords();
+    List<SObject> getUpsertRecords();
+    List<SObject> getDeleteRecords();
+    List<SObject> getUndeleteRecords();
 
-    List<Database.SaveResult> insertRecords(Sobject record);
-    List<Database.SaveResult> insertRecords(List<Sobject> recordList);
-    List<Database.SaveResult> updateRecords(Sobject record);
-    List<Database.SaveResult> updateRecords(List<Sobject> recordList);
-    List<Database.UpsertResult> upsertRecords(Sobject record);
-    List<Database.UpsertResult> upsertRecords(List<Sobject> recordList);
-    List<Database.UndeleteResult> undeleteRecords(Sobject record);
-    List<Database.UndeleteResult> undeleteRecords(List<Sobject> recordList);
-    List<Database.DeleteResult> deleteRecords(Sobject record);
-    List<Database.DeleteResult> deleteRecords(List<Sobject> recordList);
-    List<Database.DeleteResult> hardDeleteRecords(Sobject record);
-    List<Database.DeleteResult> hardDeleteRecords(List<Sobject> recordList);
+    List<Database.SaveResult> insertRecords(SObject record);
+    List<Database.SaveResult> insertRecords(List<SObject> recordList);
+    List<Database.SaveResult> updateRecords(SObject record);
+    List<Database.SaveResult> updateRecords(List<SObject> recordList);
+    List<Database.UpsertResult> upsertRecords(SObject record);
+    List<Database.UpsertResult> upsertRecords(List<SObject> recordList);
+    List<Database.UndeleteResult> undeleteRecords(SObject record);
+    List<Database.UndeleteResult> undeleteRecords(List<SObject> recordList);
+    List<Database.DeleteResult> deleteRecords(SObject record);
+    List<Database.DeleteResult> deleteRecords(List<SObject> recordList);
+    List<Database.DeleteResult> hardDeleteRecords(SObject record);
+    List<Database.DeleteResult> hardDeleteRecords(List<SObject> recordList);
 
 }

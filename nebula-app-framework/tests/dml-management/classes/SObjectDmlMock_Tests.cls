@@ -5,7 +5,7 @@
 @isTest
 private class SObjectDmlMock_Tests {
 
-    static ISobjectDml contactDmlRepo = new SobjectDmlMock.ContactDmlMock();
+    static ISObjectDml contactDmlRepo = new SObjectDmlMock.ContactDmlMock();
     static Schema.Contact contact = (Contact)new TestDataFactory(new Contact()).populateRequiredFields();
 
     @isTest
@@ -71,7 +71,7 @@ private class SObjectDmlMock_Tests {
         contactDmlRepo.updateRecords(l);
         Test.stoptest();
 
-        Sobject record = TestUtils.updatedRecords[0];
+        SObject record = TestUtils.updatedRecords[0];
         System.assert(record instanceof Schema.Lead);
         System.assert(record.get('IsConverted') != null);
     }

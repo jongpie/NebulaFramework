@@ -4,28 +4,28 @@
 *************************************************************************************************/
 public class SObjectComparator {
 
-    private Sobject recordVersion1, recordVersion2;
-    private Schema.SobjectType sobjectType;
-    private Map<String, Schema.SobjectField> sobjectTypeFieldMap;
+    private SObject recordVersion1, recordVersion2;
+    private Schema.SObjectType sobjectType;
+    private Map<String, Schema.SObjectField> sobjectTypeFieldMap;
 
-    public SobjectComparator(Sobject recordVersion1, Sobject recordVersion2) {
+    public SObjectComparator(SObject recordVersion1, SObject recordVersion2) {
         this.recordVersion1 = recordVersion1;
         this.recordVersion2 = recordVersion2;
 
-        this.sobjectType = recordVersion1.getSobjectType();
+        this.sobjectType = recordVersion1.getSObjectType();
         this.sobjectTypeFieldMap = sobjectType.getDescribe().fields.getMap();
 
         this.validate();
     }
 
-    public Set<Schema.SobjectField> getChangedFields() {
+    public Set<Schema.SObjectField> getChangedFields() {
         Set<String> populatedFieldNames = new Set<String>();
         populatedFieldNames.addAll(this.recordVersion1.getPopulatedFieldsAsMap().keySet());
         populatedFieldNames.addAll(this.recordVersion2.getPopulatedFieldsAsMap().keySet());
 
-        Set<Schema.SobjectField> changedFields = new Set<Schema.SobjectField>();
+        Set<Schema.SObjectField> changedFields = new Set<Schema.SObjectField>();
         for(String fieldName : populatedFieldNames) {
-            Schema.SobjectField field = this.sobjectTypeFieldMap.get(fieldName);
+            Schema.SObjectField field = this.sobjectTypeFieldMap.get(fieldName);
             if(this.hasFieldChanged(field)) changedFields.add(field);
         }
 
@@ -36,21 +36,21 @@ public class SObjectComparator {
         return this.getChangedFields().isEmpty() == false;
     }
 
-    public Boolean hasFieldChanged(Schema.SobjectField field) {
+    public Boolean hasFieldChanged(Schema.SObjectField field) {
         if(field == null) return false;
 
         String fieldName = field.getDescribe().getName();
         return this.recordVersion1.get(fieldName) != this.recordVersion2.get(fieldName);
     }
 
-    public Boolean hasAnyFieldChanged(Set<Schema.SobjectField> fields) {
-        return this.hasAnyFieldChanged(new List<Schema.SobjectField>(fields));
+    public Boolean hasAnyFieldChanged(Set<Schema.SObjectField> fields) {
+        return this.hasAnyFieldChanged(new List<Schema.SObjectField>(fields));
     }
 
-    public Boolean hasAnyFieldChanged(List<Schema.SobjectField> fields) {
+    public Boolean hasAnyFieldChanged(List<Schema.SObjectField> fields) {
         if(fields.isEmpty()) return false;
 
-        for(Schema.SobjectField field : fields) {
+        for(Schema.SObjectField field : fields) {
             if(this.hasFieldChanged(field)) return true;
         }
 
@@ -58,15 +58,15 @@ public class SObjectComparator {
     }
 
     private void validate() {
-        if(this.recordVersion1.getSobjectType() != this.recordVersion2.getSobjectType()) {
-            throw new SobjectComparatorException('Records must be the same type of Sobject');
+        if(this.recordVersion1.getSObjectType() != this.recordVersion2.getSObjectType()) {
+            throw new SObjectComparatorException('Records must be the same type of SObject');
         }
 
         if(this.recordVersion1.Id != null && this.recordVersion2.Id != null && this.recordVersion1.Id != this.recordVersion2.Id) {
-            throw new SobjectComparatorException('Records must have the same ID');
+            throw new SObjectComparatorException('Records must have the same ID');
         }
     }
 
-    public class SobjectComparatorException extends Exception {}
+    public class SObjectComparatorException extends Exception {}
 
 }

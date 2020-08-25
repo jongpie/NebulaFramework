@@ -24,11 +24,11 @@ private class SObjectComparator_Tests {
         Contact contact = createContact();
 
         try {
-            new SobjectComparator(account, contact);
+            new SObjectComparator(account, contact);
             System.assert(false, 'An exception is expected here');
         } catch(Exception e) {
-            System.assert(e instanceOf SobjectComparator.SobjectComparatorException);
-            String expectedErrorMessage = 'Records must be the same type of Sobject';
+            System.assert(e instanceOf SObjectComparator.SObjectComparatorException);
+            String expectedErrorMessage = 'Records must be the same type of SObject';
             System.assert(e.getMessage().contains(expectedErrorMessage));
         }
     }
@@ -36,9 +36,9 @@ private class SObjectComparator_Tests {
     @isTest
     static void it_should_throw_an_exception_for_different_records() {
         Account account1 = createAccount();
-        account1.Id = TestUtils.generateId(Schema.Account.SobjectType);
+        account1.Id = TestUtils.generateId(Schema.Account.SObjectType);
         Account account2 = createAccount();
-        account2.Id = TestUtils.generateId(Schema.Account.SobjectType);
+        account2.Id = TestUtils.generateId(Schema.Account.SObjectType);
 
         // Verify that the test IDs have been set and are different
         System.assertNotEquals(null, account1.Id);
@@ -46,10 +46,10 @@ private class SObjectComparator_Tests {
         System.assertNotEquals(account1.Id, account2.Id);
 
         try {
-            new SobjectComparator(account1, account2);
+            new SObjectComparator(account1, account2);
             System.assert(false, 'An exception is expected here');
         } catch(Exception e) {
-            System.assert(e instanceOf SobjectComparator.SobjectComparatorException);
+            System.assert(e instanceOf SObjectComparator.SObjectComparatorException);
             String expectedErrorMessage = 'Records must have the same ID';
             System.assert(e.getMessage().contains(expectedErrorMessage));
         }
@@ -68,12 +68,12 @@ private class SObjectComparator_Tests {
         account.AccountNumber = '123';
         System.assertNotEquals(account.AccountNumber, originalAccount.AccountNumber);
 
-        SobjectComparator sobjectComparator = new SobjectComparator(account, originalAccount);
+        SObjectComparator sobjectComparator = new SObjectComparator(account, originalAccount);
 
         Test.startTest();
 
         // Verify that the 2 changed fields are the only fields included in the returned set
-        Set<Schema.SobjectField> changedFields = sobjectComparator.getChangedFields();
+        Set<Schema.SObjectField> changedFields = sobjectComparator.getChangedFields();
         System.assertEquals(2, changedFields.size());
         System.assert(changedFields.contains(Schema.Account.AccountNumber));
         System.assert(changedFields.contains(Schema.Account.Name));
@@ -86,12 +86,12 @@ private class SObjectComparator_Tests {
         Account account = createAccount();
         Account originalAccount = account.clone(true, true, true, true);
 
-        SobjectComparator sobjectComparator = new SobjectComparator(account, originalAccount);
+        SObjectComparator sobjectComparator = new SObjectComparator(account, originalAccount);
 
         Test.startTest();
 
         // Verify that the 2 changed fields are the only fields included in the returned set
-        Set<Schema.SobjectField> changedFields = sobjectComparator.getChangedFields();
+        Set<Schema.SObjectField> changedFields = sobjectComparator.getChangedFields();
         System.assertNotEquals(null, changedFields);
         System.assert(changedFields.isEmpty());
 
@@ -105,7 +105,7 @@ private class SObjectComparator_Tests {
         account.Name = 'My New Name';
         System.assertNotEquals(account.Name, originalAccount.Name);
 
-        SobjectComparator sobjectComparator = new SobjectComparator(account, originalAccount);
+        SObjectComparator sobjectComparator = new SObjectComparator(account, originalAccount);
 
         Test.startTest();
 
@@ -120,7 +120,7 @@ private class SObjectComparator_Tests {
         Account account = createAccount();
         Account originalAccount = account.clone(true, true, true, true);
 
-        SobjectComparator sobjectComparator = new SobjectComparator(account, originalAccount);
+        SObjectComparator sobjectComparator = new SObjectComparator(account, originalAccount);
 
         Test.startTest();
 
@@ -132,7 +132,7 @@ private class SObjectComparator_Tests {
 
     @isTest
     static void it_should_return_true_when_any_field_in_set_has_changed() {
-        Set<Schema.SobjectField> fieldsToChange = new Set<Schema.SobjectField>{
+        Set<Schema.SObjectField> fieldsToChange = new Set<Schema.SObjectField>{
             Schema.Account.AccountNumber, Schema.Account.AccountSource, Schema.Account.Name
         };
 
@@ -143,7 +143,7 @@ private class SObjectComparator_Tests {
         System.assert(fieldsToChange.contains(Schema.Account.Name));
         System.assertNotEquals(account.Name, originalAccount.Name);
 
-        SobjectComparator sobjectComparator = new SobjectComparator(account, originalAccount);
+        SObjectComparator sobjectComparator = new SObjectComparator(account, originalAccount);
 
         Test.startTest();
 
@@ -157,14 +157,14 @@ private class SObjectComparator_Tests {
 
     @isTest
     static void it_should_return_false_when_no_field_in_set_has_changed() {
-        Set<Schema.SobjectField> fieldsToChange = new Set<Schema.SobjectField>{
+        Set<Schema.SObjectField> fieldsToChange = new Set<Schema.SObjectField>{
             Schema.Account.AccountNumber, Schema.Account.AccountSource, Schema.Account.Name
         };
 
         Account account = createAccount();
         Account originalAccount = account.clone(true, true, true, true);
 
-        SobjectComparator sobjectComparator = new SobjectComparator(account, originalAccount);
+        SObjectComparator sobjectComparator = new SObjectComparator(account, originalAccount);
 
         Test.startTest();
 
@@ -177,7 +177,7 @@ private class SObjectComparator_Tests {
 
     @isTest
     static void it_should_return_true_when_any_field_in_list_has_changed() {
-        List<Schema.SobjectField> fieldsToChange = new List<Schema.SobjectField>{
+        List<Schema.SObjectField> fieldsToChange = new List<Schema.SObjectField>{
             Schema.Account.AccountNumber, Schema.Account.AccountSource, Schema.Account.Name
         };
 
@@ -190,7 +190,7 @@ private class SObjectComparator_Tests {
         Test.startTest();
 
         // Verify that a field in the set causes it to return true
-        SobjectComparator sobjectComparator = new SobjectComparator(account, originalAccount);
+        SObjectComparator sobjectComparator = new SObjectComparator(account, originalAccount);
         Boolean hasAnyFieldChanged = sobjectComparator.hasAnyFieldChanged(fieldsToChange);
         System.assertEquals(true, hasAnyFieldChanged);
 
@@ -199,14 +199,14 @@ private class SObjectComparator_Tests {
 
     @isTest
     static void it_should_return_false_when_no_field_in_list_has_changed() {
-        List<Schema.SobjectField> fieldsToChange = new List<Schema.SobjectField>{
+        List<Schema.SObjectField> fieldsToChange = new List<Schema.SObjectField>{
             Schema.Account.AccountNumber, Schema.Account.AccountSource, Schema.Account.Name
         };
 
         Account account = createAccount();
         Account originalAccount = account.clone(true, true, true, true);
 
-        SobjectComparator sobjectComparator = new SobjectComparator(account, originalAccount);
+        SObjectComparator sobjectComparator = new SObjectComparator(account, originalAccount);
 
         Test.startTest();
 
