@@ -2,14 +2,6 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
-
-/**
-*
-* @group Utils
-*
-* @description A utility class to help with dealing with collections (lists, sets & maps)
-*
-*/
 public without sharing class Collection {
 
     /**
