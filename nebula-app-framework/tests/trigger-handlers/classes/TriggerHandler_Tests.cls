@@ -3,9 +3,9 @@
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
 @isTest
-private class SObjectTriggerHandler_Tests {
+private class TriggerHandler_Tests {
 
-    private class AccountTriggerHandlerTest extends SObjectTriggerHandler {
+    private class AccountTriggerHandlerTest extends TriggerHandler {
         public AccountTriggerHandlerTest() {
             this.isTestMode         = true;
             this.isTriggerExecuting = true;
@@ -33,7 +33,7 @@ private class SObjectTriggerHandler_Tests {
 
     @testSetup
     static void setupData() {
-        insert SObjectTriggerHandlerSettings__c.getInstance();
+        insert TriggerHandlerSettings__c.getInstance();
 
         for(Integer i = 0; i < 5; i++) {
             Account account = new Account(Name = 'Test account');
@@ -46,7 +46,7 @@ private class SObjectTriggerHandler_Tests {
 
     @isTest
     static void it_should_not_execute_triggers_when_setting_is_disabled() {
-        SObjectTriggerHandlerSettings__c triggerHandlerSettings = SObjectTriggerHandlerSettings__c.getInstance();
+        TriggerHandlerSettings__c triggerHandlerSettings = TriggerHandlerSettings__c.getInstance();
         triggerHandlerSettings.ExecuteTriggers__c = false;
         upsert triggerHandlerSettings;
 

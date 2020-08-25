@@ -7,7 +7,7 @@
     <types>
         <members>NebulaLog__c</members>
         <members>NebulaLoggerSettings__c</members>
-        <members>SObjectTriggerHandlerSettings__c</members>
+        <members>TriggerHandlerSettings__c</members>
         <name>CustomObject</name>
     </types>
     <types>
