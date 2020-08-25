@@ -2,15 +2,7 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
-
-/**
-*
-* @group Trigger Handler
-*
-* @description TODO
-*
-*/
-public abstract class SObjectTriggerHandler extends NebulaCore implements ISObjectTriggerHandler {
+public abstract class SObjectTriggerHandler {
 
     private static Map<Integer, Set<TriggerContext>> hashCodesForProcessedRecords = new Map<Integer, Set<TriggerContext>>();
 
