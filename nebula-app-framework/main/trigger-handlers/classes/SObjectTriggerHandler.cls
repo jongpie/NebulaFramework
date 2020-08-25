@@ -40,6 +40,10 @@ public abstract class SObjectTriggerHandler {
         this.setTriggerRecords();
     }
 
+    public String getClassName() {
+        return String.valueOf(this).split(':')[0];
+    }
+
     public void execute() {
         Logger.addEntry(this, 'Execute method called for ' + this.getClassName());
         // Check the custom setting. If it's disabled, stop everything, show's over
