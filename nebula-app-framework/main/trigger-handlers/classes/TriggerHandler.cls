@@ -5,7 +5,7 @@
 public abstract class TriggerHandler implements ISObjectHandler {
 
     private static Map<Integer, Set<System.TriggerOperation>> hashCodesForProcessedRecords    = new Map<Integer, Set<System.TriggerOperation>>();
-    private static Map<String, SObjectTriggerOperationHandler> triggerOperationHandlersByName = new Map<String, SObjectTriggerOperationHandler>();
+    private static Map<String, TriggerOperationHandler> triggerOperationHandlersByName = new Map<String, TriggerOperationHandler>();
 
     @testVisible
     private Boolean isTestMode;
@@ -34,7 +34,7 @@ public abstract class TriggerHandler implements ISObjectHandler {
 
     public abstract Schema.SObjectType getSObjectType();
 
-    public TriggerHandler setTriggerOperationHandler(SObjectTriggerOperationHandler triggerOperationHandler) {
+    public TriggerHandler setTriggerOperationHandler(TriggerOperationHandler triggerOperationHandler) {
         String triggerOperationHandlerName = this.getTriggerOperationHandlerName(this.getSObjectType(), triggerOperationHandler.getTriggerOperation());
         triggerOperationHandlersByName.put(triggerOperationHandlerName, triggerOperationHandler);
 
@@ -73,7 +73,7 @@ public abstract class TriggerHandler implements ISObjectHandler {
             System.debug('Records have not been processed for this context, continuing');
         }
 
-        SObjectTriggerOperationHandler triggerOperationHandler = getTriggerOperationHandler(this.currentTriggerOperation);
+        TriggerOperationHandler triggerOperationHandler = getTriggerOperationHandler(this.currentTriggerOperation);
         if(triggerOperationHandler != null) {
             triggerOperationHandler.execute();
             return;
@@ -104,7 +104,7 @@ public abstract class TriggerHandler implements ISObjectHandler {
         return String.valueOf(this).split(':')[0];
     }
 
-    private SObjectTriggerOperationHandler getTriggerOperationHandler(System.TriggerOperation triggerOperation) {
+    private TriggerOperationHandler getTriggerOperationHandler(System.TriggerOperation triggerOperation) {
         String triggerOperationHandlerName = this.getTriggerOperationHandlerName(this.getSObjectType(), triggerOperation);
         return triggerOperationHandlersByName.get(triggerOperationHandlerName);
     }
