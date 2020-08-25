@@ -5,21 +5,49 @@
 @isTest
 private class RecordBatchAssigner_Tests {
 
+    private static final String ACCOUNT_PREFIX      = 'Account #';
+    private static final Integer ACCOUNTS_TO_CREATE = 200;
+    private static final String USER_PREFIX         = 'User #';
+    private static final Integer USERS_TO_CREATE    = 10;
+
     @testSetup
     private static void setupData() {
-        List<Account> accounts = new List<Account>();
-        for(Integer i = 0; i < 200; i++) {
-            Account account = new Account(name = 'Account #' + i);
-            new TestDataFactory(account).populateRequiredFields();
+        Id currentUserId = UserInfo.getUserId();
 
-            accounts.add(account);
+        List<User> users = new List<User>();
+        for(Integer i = 0; i < USERS_TO_CREATE; i++) {
+            User user = new User(
+                IsActive          = true,
+                CommunityNickname = 'usr' + i,
+                LastName          = USER_PREFIX + i,
+                ProfileId         = UserInfo.getProfileId(),
+                Username          = 'user.number.' + i + '@example.com'
+            );
+            new TestDataFactory(user).populateRequiredFields();
+
+            users.add(user);
         }
-        insert accounts;
+        insert users;
+
+        // To avoid mixed-DML operations, run account insert as a separate user
+        System.runAs(users.get(0)) {
+            List<Account> accounts = new List<Account>();
+            for(Integer i = 0; i < ACCOUNTS_TO_CREATE; i++) {
+                Account account = new Account(
+                    Name    = ACCOUNT_PREFIX + i,
+                    OwnerId = currentUserId
+                );
+                new TestDataFactory(account).populateRequiredFields();
+
+                accounts.add(account);
+            }
+            insert accounts;
+        }
     }
 
     @isTest
     private static void it_should_evenly_assign_records_for_all_accounts() {
-        Set<Id> userIds = new Map<Id, User>([SELECT Id FROM User WHERE Id != :UserInfo.getUserId() AND UserType = 'Standard']).keySet();
+        Set<Id> userIds = new Map<Id, User>([SELECT Id FROM User WHERE LastName LIKE :USER_PREFIX + '%']).keySet();
 
         for(Account account : [SELECT Id, OwnerId FROM Account]) {
             System.assertEquals(UserInfo.getUserId(), account.OwnerId);
@@ -39,12 +67,14 @@ private class RecordBatchAssigner_Tests {
 
     @isTest
     private static void it_should_evenly_assign_records_for_specified_accounts() {
-        Set<Id> userIds = new Map<Id, User>([SELECT Id FROM User WHERE Id = :UserInfo.getUserId() OR UserType = 'Standard' LIMIT 3]).keySet();
+        Set<Id> userIds = new Map<Id, User>([SELECT Id FROM User WHERE LastName LIKE :USER_PREFIX + '%']).keySet();
 
         List<Id> accountIdsToAssign = new List<Id>();
-        for(Account account : [SELECT Id, OwnerId FROM Account LIMIT 75]) {
+        for(Account account : [SELECT Id, OwnerId FROM Account]) {
             accountIdsToAssign.add(account.Id);
         }
+
+        Integer expectedNumberOfAssignedRecords = accountIdsToAssign.size() / userIds.size();
 
         Test.startTest();
 
@@ -57,7 +87,7 @@ private class RecordBatchAssigner_Tests {
             Id ownerId = (Id)result.get('ownerId');
             Integer assignedRecordCount = Integer.valueOf(result.get('recordCount'));
 
-            System.assertEquals(25, assignedRecordCount);
+            System.assertEquals(expectedNumberOfAssignedRecords, assignedRecordCount);
         }
     }
 
