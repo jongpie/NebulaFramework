@@ -39,7 +39,7 @@ private class SObjectTriggerHandler_Tests {
 
     @isTest
     static void shouldNotExecuteTriggers() {
-        TriggerHandlerSettings__c triggerHandlerSettings = TriggerHandlerSettings__c.getInstance();
+        SObjectTriggerHandlerSettings__c triggerHandlerSettings = SObjectTriggerHandlerSettings__c.getInstance();
         triggerHandlerSettings.ExecuteTriggers__c = false;
         upsert triggerHandlerSettings;
 
