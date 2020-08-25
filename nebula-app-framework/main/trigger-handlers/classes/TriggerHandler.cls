@@ -2,7 +2,7 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
-public abstract class SObjectTriggerHandler implements ISObjectHandler {
+public abstract class TriggerHandler implements ISObjectHandler {
 
     private static Map<Integer, Set<System.TriggerOperation>> hashCodesForProcessedRecords    = new Map<Integer, Set<System.TriggerOperation>>();
     private static Map<String, SObjectTriggerOperationHandler> triggerOperationHandlersByName = new Map<String, SObjectTriggerOperationHandler>();
@@ -21,7 +21,7 @@ public abstract class SObjectTriggerHandler implements ISObjectHandler {
 
     private Integer hashCode; // The hash code for the current records
 
-    public SObjectTriggerHandler() {
+    public TriggerHandler() {
         this.isTestMode         = false;
 
         this.isTriggerExecuting = Trigger.isExecuting;
@@ -34,7 +34,7 @@ public abstract class SObjectTriggerHandler implements ISObjectHandler {
 
     public abstract Schema.SObjectType getSObjectType();
 
-    public SObjectTriggerHandler setTriggerOperationHandler(SObjectTriggerOperationHandler triggerOperationHandler) {
+    public TriggerHandler setTriggerOperationHandler(SObjectTriggerOperationHandler triggerOperationHandler) {
         String triggerOperationHandlerName = this.getTriggerOperationHandlerName(this.getSObjectType(), triggerOperationHandler.getTriggerOperation());
         triggerOperationHandlersByName.put(triggerOperationHandlerName, triggerOperationHandler);
 
@@ -117,7 +117,7 @@ public abstract class SObjectTriggerHandler implements ISObjectHandler {
         if(this.isTestMode) return;
 
         String errorMessage = 'Trigger handler called outside of trigger execution ' + this.isTriggerExecuting;
-        if(!this.isTriggerExecuting) throw new SObjectTriggerHandlerException(errorMessage);
+        if(!this.isTriggerExecuting) throw new TriggerHandlerException(errorMessage);
     }
 
     private void setTriggerRecords() {
@@ -128,15 +128,15 @@ public abstract class SObjectTriggerHandler implements ISObjectHandler {
     }
 
     private Boolean shouldExecuteTriggers() {
-        System.debug('SObjectTriggerHandlerSettings__c.getInstance().ExecuteTriggers__c=' + SObjectTriggerHandlerSettings__c.getInstance().ExecuteTriggers__c);
+        System.debug('TriggerHandlerSettings__c.getInstance().ExecuteTriggers__c=' + TriggerHandlerSettings__c.getInstance().ExecuteTriggers__c);
 
-        String handlerClassesToSkipString = SObjectTriggerHandlerSettings__c.getInstance().HandlerClassesToSkip__c;
+        String handlerClassesToSkipString = TriggerHandlerSettings__c.getInstance().HandlerClassesToSkip__c;
         if(handlerClassesToSkipString == null) handlerClassesToSkipString = '';
         Set<String> handlerClassesToSkip = new Set<String>(handlerClassesToSkipString.toLowerCase().split('\n'));
-        System.debug('SObjectTriggerHandlerSettings__c.getInstance().HandlerClassesToSkip__c=' + SObjectTriggerHandlerSettings__c.getInstance().HandlerClassesToSkip__c);
+        System.debug('TriggerHandlerSettings__c.getInstance().HandlerClassesToSkip__c=' + TriggerHandlerSettings__c.getInstance().HandlerClassesToSkip__c);
 
         // If ExecuteTriggers == true and the current class isn't in the list of handlers to skip, then execute
-        return SObjectTriggerHandlerSettings__c.getInstance().ExecuteTriggers__c && !handlerClassesToSkip.contains(this.getHandlerName().toLowerCase());
+        return TriggerHandlerSettings__c.getInstance().ExecuteTriggers__c && !handlerClassesToSkip.contains(this.getHandlerName().toLowerCase());
     }
 
     private void setHashCode() {
@@ -148,7 +148,7 @@ public abstract class SObjectTriggerHandler implements ISObjectHandler {
     }
 
     private Boolean haveRecordsAlreadyBeenProcessed() {
-        if(!SObjectTriggerHandlerSettings__c.getInstance().PreventRecursion__c) return false;
+        if(!TriggerHandlerSettings__c.getInstance().PreventRecursion__c) return false;
 
         // This method is a safeguard that checks to see if we have recursion problems and stops if we do
         // It allows each context to occur once for a given hash code
@@ -168,6 +168,6 @@ public abstract class SObjectTriggerHandler implements ISObjectHandler {
         }
     }
 
-    private class SObjectTriggerHandlerException extends Exception {}
+    private class TriggerHandlerException extends Exception {}
 
 }

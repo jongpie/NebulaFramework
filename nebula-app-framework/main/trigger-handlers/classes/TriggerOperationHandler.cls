@@ -2,45 +2,45 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
-public abstract class SObjectTriggerOperationHandler implements ISObjectHandler {
+public abstract class TriggerOperationHandler implements ISObjectHandler {
 
-    public abstract class SObjectBeforeInsertHandler extends SObjectTriggerOperationHandler {
+    public abstract class BeforeInsertHandler extends TriggerOperationHandler {
         public override System.TriggerOperation getTriggerOperation() {
             return System.TriggerOperation.BEFORE_INSERT;
         }
     }
 
-    public abstract class SObjectBeforeUpdateHandler extends SObjectTriggerOperationHandler {
+    public abstract class BeforeUpdateHandler extends TriggerOperationHandler {
         public override System.TriggerOperation getTriggerOperation() {
             return System.TriggerOperation.BEFORE_UPDATE;
         }
     }
 
-    public abstract class SObjectBeforeDeleteHandler extends SObjectTriggerOperationHandler {
+    public abstract class BeforeDeleteHandler extends TriggerOperationHandler {
         public override System.TriggerOperation getTriggerOperation() {
             return System.TriggerOperation.BEFORE_DELETE;
         }
     }
 
-    public abstract class SObjectAfterInsertHandler extends SObjectTriggerOperationHandler {
+    public abstract class AfterInsertHandler extends TriggerOperationHandler {
         public override System.TriggerOperation getTriggerOperation() {
             return System.TriggerOperation.AFTER_INSERT;
         }
     }
 
-    public abstract class SObjectAfterUpdatetHandler extends SObjectTriggerOperationHandler {
+    public abstract class AfterUpdateHandler extends TriggerOperationHandler {
         public override System.TriggerOperation getTriggerOperation() {
             return System.TriggerOperation.AFTER_UPDATE;
         }
     }
 
-    public abstract class SObjectAfterDeletetHandler extends SObjectTriggerOperationHandler {
+    public abstract class AfterDeleteHandler extends TriggerOperationHandler {
         public override System.TriggerOperation getTriggerOperation() {
             return System.TriggerOperation.AFTER_DELETE;
         }
     }
 
-    public abstract class SObjectAfterUndeleteandler extends SObjectTriggerOperationHandler {
+    public abstract class AfterUndeleteHandler extends TriggerOperationHandler {
         public override System.TriggerOperation getTriggerOperation() {
             return System.TriggerOperation.AFTER_UNDELETE;
         }
@@ -53,7 +53,7 @@ public abstract class SObjectTriggerOperationHandler implements ISObjectHandler 
     @testVisible
     private Map<Id, SObject> recordMap, oldRecordMap;
 
-    public SObjectTriggerOperationHandler() {
+    public TriggerOperationHandler() {
         this.isTriggerExecuting = Trigger.isExecuting;
         this.recordList         = Trigger.new;
         this.recordMap          = Trigger.newMap;
