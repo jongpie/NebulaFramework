@@ -21,7 +21,6 @@ public abstract class SObjectTriggerHandler {
 
     public SObjectTriggerHandler() {
         this(false);
-        this.currentModule = NebulaCore.Module.TRIGGER_HANDLER;
     }
 
     protected SObjectTriggerHandler(Boolean isTestMode) {
