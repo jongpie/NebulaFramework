@@ -18,5 +18,9 @@
         <members>NebulaLog__c-Log Layout</members>
         <name>Layout</name>
     </types>
+    <types>
+        <members>*</members>
+        <name>PlatformCachePartition</name>
+    </types>
     <version>49.0</version>
 </Package>

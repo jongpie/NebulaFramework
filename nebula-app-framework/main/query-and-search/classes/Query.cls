@@ -8,6 +8,15 @@ public class Query extends Soql {
     private List<String> polymorphicFieldStatements;
     private List<String> childRelationshipQueries;
     private Boolean forReference, forUpdate, forView, includeLabels, includeFormattedValues;
+    private Boolean hasCachedQuery;
+    private String queryName;
+
+    public Query(Schema.SObjectType sobjectType, String queryName) {
+        this(sobjectType);
+
+        this.queryName = queryName;
+        this.loadCachedQueryString();
+    }
 
     public Query(Schema.SObjectType sobjectType) {
         super(sobjectType, true);
@@ -18,10 +27,21 @@ public class Query extends Soql {
         this.forReference               = false;
         this.forUpdate                  = false;
         this.forView                    = false;
+        this.hasCachedQuery             = false;
         this.includeLabels              = false;
         this.includeFormattedValues     = false;
 
         this.addDefaultFields();
+    }
+
+    private void loadCachedQueryString() {
+        if(String.isBlank(this.queryName)) return;
+
+        String queryString = (String)Cache.Session.get(this.queryName);
+
+        this.hasCachedQuery = !String.isBlank(queryString);
+        this.hasChanged     = false;
+        this.query          = queryString;
     }
 
     public Query addField(Schema.SObjectField field) {
@@ -65,6 +85,8 @@ public class Query extends Soql {
     }
 
     public Query addFields(List<Soql.QueryField> queryFields, Soql.FieldCategory fieldCategory) {
+        if(this.hasCachedQuery) return this;
+
         super.doAddFields(queryFields, fieldCategory);
         return this.setHasChanged();
     }
@@ -74,6 +96,8 @@ public class Query extends Soql {
     }
 
     public Query addFieldSet(Schema.FieldSet fieldSet, Soql.FieldCategory fieldCategory) {
+        if(this.hasCachedQuery) return this;
+
         List<Soql.QueryField> queryFields = new List<Soql.QueryField>();
         for(Schema.FieldSetMember fieldSetMember : fieldSet.getFields()) {
             queryFields.add(new Soql.QueryField(this.sobjectType, fieldSetMember.getFieldPath()));
@@ -98,6 +122,8 @@ public class Query extends Soql {
     }
 
     public Query addPolymorphicFields(Schema.SObjectField polymorphicRelationshipField, Map<Schema.SObjectType, List<Soql.QueryField>> queryFieldsBySObjectType) {
+        if(this.hasCachedQuery) return this;
+
         String polymorphicFieldStatement = queryFieldsBySObjectType.isEmpty() ? '' : 'TYPEOF ' + polymorphicRelationshipField.getDescribe().getRelationshipName();
         for(Schema.SObjectType sobjectType : queryFieldsBySObjectType.keySet()) {
             List<String> fieldNames = new List<String>();
@@ -129,24 +155,34 @@ public class Query extends Soql {
     }
 
     public Query includeLabels() {
+        if(this.hasCachedQuery) return this;
+
         this.includeLabels = true;
         return this.setHasChanged();
     }
 
     public Query includeFormattedValues() {
+        if(this.hasCachedQuery) return this;
+
         this.includeFormattedValues = true;
         return this.setHasChanged();
     }
 
     public Query removeField(Schema.SObjectField field) {
+        if(this.hasCachedQuery) return this;
+
         return this.removeFields(new List<Schema.SObjectField>{field});
     }
 
     public Query removeField(Soql.QueryField queryField) {
+        if(this.hasCachedQuery) return this;
+
         return this.removeFields(new List<Soql.QueryField>{queryField});
     }
 
     public Query removeFields(Schema.FieldSet fieldSet) {
+        if(this.hasCachedQuery) return this;
+
         List<Soql.QueryField> queryFields = new List<Soql.QueryField>();
         for(Schema.FieldSetMember fieldSetMember : fieldSet.getFields()) {
             queryFields.add(new Soql.QueryField(this.getSObjectType(), fieldSetMember.getFieldPath()));
@@ -155,6 +191,8 @@ public class Query extends Soql {
     }
 
     public Query removeFields(List<Schema.SObjectField> fields) {
+        if(this.hasCachedQuery) return this;
+
         List<Soql.QueryField> queryFields = new List<Soql.QueryField>();
         for(Schema.SObjectField field : fields) {
             queryFields.add(new Soql.QueryField(field));
@@ -163,38 +201,54 @@ public class Query extends Soql {
     }
 
     public Query removeFields(List<Soql.QueryField> queryFields) {
+        if(this.hasCachedQuery) return this;
+
         super.doRemoveFields(queryFields);
         return this.setHasChanged();
     }
 
     public Query includeRelatedRecords(Schema.SObjectField childToParentRelationshipField, Query relatedSObjectQuery) {
-         this.childRelationshipQueries.add(relatedSObjectQuery.getRelatedRecordsQuery(childToParentRelationshipField));
-         return this.setHasChanged();
+        if(this.hasCachedQuery) return this;
+
+        this.childRelationshipQueries.add(relatedSObjectQuery.getRelatedRecordsQuery(childToParentRelationshipField));
+        return this.setHasChanged();
     }
 
     public Query usingScope(Scope scope) {
+        if(this.hasCachedQuery) return this;
+
         super.doUsingScope(scope);
         return this.setHasChanged();
     }
 
     public Query filterWhere(Schema.SObjectField field, Soql.Operator operator, Object value) {
+        if(this.hasCachedQuery) return this;
+
         return this.filterWhere(new Soql.QueryField(field), operator, value);
     }
 
     public Query filterWhere(Soql.QueryField queryField, Soql.Operator operator, Object value) {
+        if(this.hasCachedQuery) return this;
+
         return this.filterWhere(new Soql.QueryFilter(queryField, operator, value));
     }
 
     public Query filterWhere(Soql.QueryFilter filter) {
+        if(this.hasCachedQuery) return this;
+
         return this.filterWhere(new List<Soql.QueryFilter>{filter});
     }
 
     public Query filterWhere(List<Soql.QueryFilter> filters) {
+        if(this.hasCachedQuery) return this;
+
         super.doFilterWhere(filters);
         return this.setHasChanged();
     }
 
     public Query orFilterWhere(List<Soql.QueryFilter> filters) {
+        if(this.hasCachedQuery) return this;
+
         super.doOrFilterWhere(filters);
         return this.setHasChanged();
     }
@@ -222,51 +276,73 @@ public class Query extends Soql {
     //}
 
     public Query orderByField(Schema.SObjectField field) {
+        if(this.hasCachedQuery) return this;
+
         return this.orderByField(new Soql.QueryField(field));
     }
 
     public Query orderByField(Soql.QueryField queryField) {
+        if(this.hasCachedQuery) return this;
+
         return this.orderByField(queryField, null);
     }
 
     public Query orderByField(Schema.SObjectField field, Soql.SortOrder sortOrder) {
+        if(this.hasCachedQuery) return this;
+
         return this.orderByField(field, sortOrder, null);
     }
 
     public Query orderByField(Soql.QueryField queryField, Soql.SortOrder sortOrder) {
+        if(this.hasCachedQuery) return this;
+
         return this.orderByField(queryField, sortOrder, null);
     }
 
     public Query orderByField(Schema.SObjectField field, Soql.SortOrder sortOrder, Boolean sortNullsFirst) {
+        if(this.hasCachedQuery) return this;
+
         return this.orderByField(new Soql.QueryField(field), sortOrder, sortNullsFirst);
     }
 
     public Query orderByField(Soql.QueryField queryField, Soql.SortOrder sortOrder, Boolean sortNullsFirst) {
+        if(this.hasCachedQuery) return this;
+
         super.doOrderBy(queryField, sortOrder, sortNullsFirst);
         return this.setHasChanged();
     }
 
     public Query limitTo(Integer numberOfRecords) {
+        if(this.hasCachedQuery) return this;
+
         super.doLimitTo(numberOfRecords);
         return this.setHasChanged();
     }
 
     public Query offsetBy(Integer offset) {
+        if(this.hasCachedQuery) return this;
+
         super.doOffsetBy(offset);
         return this.setHasChanged();
     }
 
     public Query forReference() {
+        if(this.hasCachedQuery) return this;
+
         this.forReference = true;
         return this.setHasChanged();
     }
 
     public Query forUpdate() {
+        if(this.hasCachedQuery) return this;
+
         this.forUpdate = true;
         return this.setHasChanged();
     }
 
     public Query forView() {
+        if(this.hasCachedQuery) return this;
+
         this.forView = true;
         return this.setHasChanged();
     }
@@ -277,6 +353,8 @@ public class Query extends Soql {
     }
 
     public override String getQuery() {
+        if(this.hasCachedQuery) return this.query;
+
         if(this.query != null && !this.hasChanged) return this.query;
 
         String queryFieldString = this.getQueryFieldString();
@@ -386,7 +464,6 @@ public class Query extends Soql {
             List<String> fieldsToQuery = this.getFieldsToQuery(queryField, fieldCategory);
             if(!fieldsToQuery.isEmpty()) distinctFieldApiNamesToQuery.addAll(fieldsToQuery);
         }
-
 
         // Remove an excluded field paths
         for(Soql.QueryField excludedQueryField : this.excludedQueryFields) {
