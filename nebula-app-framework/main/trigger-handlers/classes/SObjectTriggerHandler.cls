@@ -11,12 +11,15 @@ public abstract class SObjectTriggerHandler implements ISObjectHandler {
     private Boolean isTestMode;
 
     @testVisible
+    private Boolean isTriggerExecuting; // Checks if the code was called by a trigger
+    @testVisible
+    private System.TriggerOperation currentTriggerOperation;
+    @testVisible
     private List<SObject> recordList, oldRecordList;
     @testVisible
     private Map<Id, SObject> recordMap, oldRecordMap;
 
     private Integer hashCode; // The hash code for the current records
-    private Boolean isTriggerExecuting; // Checks if the code was called by a trigger
 
     public SObjectTriggerHandler() {
         this.isTestMode         = false;
@@ -27,7 +30,6 @@ public abstract class SObjectTriggerHandler implements ISObjectHandler {
         this.oldRecordList      = Trigger.old;
         this.oldRecordMap       = Trigger.oldMap;
 
-        this.validateTriggerContext();
     }
 
     public abstract Schema.SObjectType getSObjectType();
@@ -41,6 +43,10 @@ public abstract class SObjectTriggerHandler implements ISObjectHandler {
 
     public void execute() {
         System.debug('Execute method called');
+
+        this.validateTriggerContext();
+
+        if(!this.isTestMode) this.currentTriggerOperation = Trigger.operationType;
 
         // Check the custom setting. If it's disabled, stop everything, show's over
         // You don't have to go home but you can't stay here
@@ -57,7 +63,7 @@ public abstract class SObjectTriggerHandler implements ISObjectHandler {
         System.debug('Starting execute method for: ' + this.getSObjectType());
         System.debug('Hash codes already processed: ' + hashCodesForProcessedRecords);
         System.debug('Hash code for current records: ' + this.hashCode);
-        System.debug('Trigger context for current records: ' + Trigger.operationType);
+        System.debug('Trigger context for current records: ' + this.currentTriggerOperation);
         System.debug('Number of current records: ' + Trigger.size);
 
         if(this.haveRecordsAlreadyBeenProcessed()) {
@@ -67,13 +73,13 @@ public abstract class SObjectTriggerHandler implements ISObjectHandler {
             System.debug('Records have not been processed for this context, continuing');
         }
 
-        SObjectTriggerOperationHandler triggerOperationHandler = getTriggerOperationHandler(Trigger.operationType);
+        SObjectTriggerOperationHandler triggerOperationHandler = getTriggerOperationHandler(this.currentTriggerOperation);
         if(triggerOperationHandler != null) {
             triggerOperationHandler.execute();
             return;
         }
 
-        switch on Trigger.operationType {
+        switch on this.currentTriggerOperation {
             when BEFORE_INSERT  { this.executeBeforeInsert(this.recordList); }
             when BEFORE_UPDATE  { this.executeBeforeUpdate(this.recordList, this.recordMap, this.oldRecordList, this.oldRecordMap); }
             when BEFORE_DELETE  { this.executeBeforeDelete(this.oldRecordList, this.oldRecordMap); }
@@ -147,15 +153,15 @@ public abstract class SObjectTriggerHandler implements ISObjectHandler {
         // This method is a safeguard that checks to see if we have recursion problems and stops if we do
         // It allows each context to occur once for a given hash code
 
-        if(Trigger.operationType == System.TriggerOperation.BEFORE_INSERT) {
+        if(this.currentTriggerOperation == System.TriggerOperation.BEFORE_INSERT) {
             // BEFORE_INSERT doesn't have record IDs yet, so the hash here will never match the other hashes
             // Since Salesforce makes it impossible to recursively run "insert record", we can let the platform handle it
             return false;
         } else if(!hashCodesForProcessedRecords.containsKey(this.hashCode)) {
-            hashCodesForProcessedRecords.put(this.hashCode, new Set<System.TriggerOperation>{Trigger.operationType});
+            hashCodesForProcessedRecords.put(this.hashCode, new Set<System.TriggerOperation>{this.currentTriggerOperation});
             return false;
-        } else if(!hashCodesForProcessedRecords.get(this.hashCode).contains(Trigger.operationType)) {
-            hashCodesForProcessedRecords.get(this.hashCode).add(Trigger.operationType);
+        } else if(!hashCodesForProcessedRecords.get(this.hashCode).contains(this.currentTriggerOperation)) {
+            hashCodesForProcessedRecords.get(this.hashCode).add(this.currentTriggerOperation);
             return false;
         } else {
             return true;

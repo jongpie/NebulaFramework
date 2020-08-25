@@ -7,7 +7,8 @@ private class SObjectTriggerHandler_Tests {
 
     private class AccountTriggerHandlerTest extends SObjectTriggerHandler {
         public AccountTriggerHandlerTest() {
-            super(true);
+            this.isTestMode         = true;
+            this.isTriggerExecuting = true;
         }
 
         public override Schema.SObjectType getSObjectType() {
@@ -49,7 +50,7 @@ private class SObjectTriggerHandler_Tests {
         triggerHandlerSettings.ExecuteTriggers__c = false;
         upsert triggerHandlerSettings;
 
-        AccountTriggerHandlerTest accountTriggerHandler  = new AccountTriggerHandlerTest();
+        AccountTriggerHandlerTest accountTriggerHandler = new AccountTriggerHandlerTest();
         accountTriggerHandler.currentTriggerOperation = System.TriggerOperation.BEFORE_INSERT;
         accountTriggerHandler.recordList = accountList;
 
@@ -76,7 +77,6 @@ private class SObjectTriggerHandler_Tests {
     @isTest
     static void it_should_execute_before_insert() {
         AccountTriggerHandlerTest accountTriggerHandler = new AccountTriggerHandlerTest();
-        // Set the variables for the relevant context
         accountTriggerHandler.currentTriggerOperation = System.TriggerOperation.BEFORE_INSERT;
         accountTriggerHandler.recordList              = accountList;
 
@@ -90,7 +90,6 @@ private class SObjectTriggerHandler_Tests {
     @isTest
     static void it_should_execute_before_update() {
         AccountTriggerHandlerTest accountTriggerHandler = new AccountTriggerHandlerTest();
-        // Set the variables for the relevant context
         accountTriggerHandler.currentTriggerOperation = System.TriggerOperation.BEFORE_UPDATE;
         accountTriggerHandler.recordList              = accountList;
         accountTriggerHandler.recordMap               = new Map<Id, Account>(accountList);
