@@ -4,8 +4,8 @@
 *************************************************************************************************/
 public abstract class SObjectTriggerHandler implements ISObjectHandler {
 
-    private static Map<String, SObjectTriggerOperationHandler> triggerOperationHandlersByName     = new Map<String, SObjectTriggerOperationHandler>();
-    private static Map<Integer, Set<System.TriggerOperation>> hashCodesForProcessedRecords = new Map<Integer, Set<System.TriggerOperation>>();
+    private static Map<Integer, Set<System.TriggerOperation>> hashCodesForProcessedRecords    = new Map<Integer, Set<System.TriggerOperation>>();
+    private static Map<String, SObjectTriggerOperationHandler> triggerOperationHandlersByName = new Map<String, SObjectTriggerOperationHandler>();
 
     @testVisible
     private Boolean isTestMode;

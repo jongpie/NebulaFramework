@@ -4,6 +4,48 @@
 *************************************************************************************************/
 public abstract class SObjectTriggerOperationHandler implements ISObjectHandler {
 
+    public abstract class SObjectBeforeInsertHandler extends SObjectTriggerOperationHandler {
+        public override System.TriggerOperation getTriggerOperation() {
+            return System.TriggerOperation.BEFORE_INSERT;
+        }
+    }
+
+    public abstract class SObjectBeforeUpdateHandler extends SObjectTriggerOperationHandler {
+        public override System.TriggerOperation getTriggerOperation() {
+            return System.TriggerOperation.BEFORE_UPDATE;
+        }
+    }
+
+    public abstract class SObjectBeforeDeleteHandler extends SObjectTriggerOperationHandler {
+        public override System.TriggerOperation getTriggerOperation() {
+            return System.TriggerOperation.BEFORE_DELETE;
+        }
+    }
+
+    public abstract class SObjectAfterInsertHandler extends SObjectTriggerOperationHandler {
+        public override System.TriggerOperation getTriggerOperation() {
+            return System.TriggerOperation.AFTER_INSERT;
+        }
+    }
+
+    public abstract class SObjectAfterUpdatetHandler extends SObjectTriggerOperationHandler {
+        public override System.TriggerOperation getTriggerOperation() {
+            return System.TriggerOperation.AFTER_UPDATE;
+        }
+    }
+
+    public abstract class SObjectAfterDeletetHandler extends SObjectTriggerOperationHandler {
+        public override System.TriggerOperation getTriggerOperation() {
+            return System.TriggerOperation.AFTER_DELETE;
+        }
+    }
+
+    public abstract class SObjectAfterUndeleteandler extends SObjectTriggerOperationHandler {
+        public override System.TriggerOperation getTriggerOperation() {
+            return System.TriggerOperation.AFTER_UNDELETE;
+        }
+    }
+
     @testVisible
     private Boolean isTriggerExecuting;
     @testVisible
