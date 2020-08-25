@@ -2,82 +2,87 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
+public abstract class SObjectRepository extends SObjectDml implements ISObjectRepository {
 
-/**
-*
-* @group Repository
-*
-* @description TODO
-*
-*/
-public abstract class SObjectRepository extends DML implements ISObjectRepository, IDML {
-
-    private List<Schema.SObjectField> sobjectFieldList;
-    private Map<String, Schema.SObjectField> sobjectFieldMap;
-    private QueryField idQueryField;
+    protected Schema.SObjectField idField {get; private set;}
 
     public SObjectRepository() {
-        this.currentModule = NebulaCore.Module.REPOSITORY;
-
-        this.sobjectFieldMap = this.getSObjectType().getDescribe().fields.getMap();
-        this.idQueryField    = new QueryField(this.getField('Id'));
+        this.idField = this.getField('Id');
     }
 
-    public abstract Schema.SObjectType getSObjectType();
+    public override abstract Schema.SObjectType getSObjectType();
 
-    // SOQL
-    public virtual SObject getById(Id recordId) {
-        return new SObjectQueryBuilder(this.getSObjectType())
-            .filterBy(new QueryFilter().filterByField(this.idQueryField, QueryOperator.EQUALS, recordId))
-            .filterBy(new QueryFilter().filterByField(this.idQueryField, QueryOperator.EQUALS, recordId))
-            .getFirstQueryResult();
+    public virtual Query getQuery() {
+        return new Query(this.getSObjectType());
     }
 
-    public virtual List<SObject> getById(List<Id> recordIds) {
-        return new SObjectQueryBuilder(this.getSObjectType())
-            .filterBy(new QueryFilter().filterByField(this.idQueryField, QueryOperator.IS_IN, recordIds))
-            .getQueryResults();
+    public virtual RecordSearch getRecordSearch(String searchTerm) {
+        return new RecordSearch(searchTerm, this.getQuery());
     }
 
-    public virtual List<SObject> get(IQueryFilter queryFilter) {
-        return this.get(new List<IQueryFilter>{queryFilter});
+    public virtual SObject get(Id recordId) {
+        return this.getQuery()
+            .filterWhere(new Soql.QueryFilter(this.idField, Soql.Operator.EQUALS, recordId))
+            .getFirstResult();
     }
 
-    public virtual List<SObject> get(List<IQueryFilter> queryFilters) {
-        return new SObjectQueryBuilder(this.getSObjectType())
-            .filterBy(queryFilters)
-            .getQueryResults();
+    public virtual List<SObject> get(Set<Id> recordIds) {
+        return this.get(new List<Id>(recordIds));
     }
 
-    public virtual List<SObject> getByIdAndQueryFilters(Set<Id> idSet, List<IQueryFilter> queryFilters) {
-        return this.getByIdAndQueryFilters(new List<Id>(idSet), queryFilters);
+    public virtual List<SObject> get(List<Id> recordIds) {
+        return this.get(new Soql.QueryFilter(this.idField, Soql.Operator.IS_IN, recordIds));
     }
 
-    public virtual List<SObject> getByIdAndQueryFilters(List<Id> idList, List<IQueryFilter> queryFilters) {
-        return new SObjectQueryBuilder(this.getSObjectType())
-            .filterBy(new QueryFilter().filterByField(this.idQueryField, QueryOperator.IS_IN, idList))
-            .filterBy(queryFilters)
-            .getQueryResults();
+    public virtual List<SObject> get(Soql.QueryFilter queryFilter) {
+        return this.get(new List<Soql.QueryFilter>{queryFilter});
     }
 
-    // SOSL
-    public virtual List<SObject> getSearchResults(String searchTerm) {
-        return this.getSearchResults(searchTerm, QuerySearchGroup.ALL_FIELDS, null);
+    public virtual List<SObject> get(List<Soql.QueryFilter> queryFilters) {
+        return this.getQuery()
+            .filterWhere(queryFilters)
+            .getResults();
     }
 
-    public virtual List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup) {
-        return this.getSearchResults(searchTerm, searchGroup, null);
+    public virtual List<SObject> get(Set<Id> idSet, List<Soql.QueryFilter> queryFilters) {
+        return this.get(new List<Id>(idSet), queryFilters);
     }
 
-    public virtual List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup, List<IQueryFilter> queryFilters) {
-        return new SearchQueryBuilder(searchTerm, new SObjectQueryBuilder(this.getSObjectType())
-            .filterBy(queryFilters))
-            .inQuerySearchGroup(searchGroup)
-            .getFirstSearchResult();
+    public virtual List<SObject> get(List<Id> idList, List<Soql.QueryFilter> queryFilters) {
+        return this.getQuery()
+            .filterWhere(new Soql.QueryFilter(this.idField, Soql.Operator.IS_IN, idList))
+            .filterWhere(queryFilters)
+            .getResults();
+    }
+
+    public virtual void set(SObject record, Schema.SObjectField field, Object value) {
+        this.set(new List<SObject>{record}, field, value);
+    }
+
+    public virtual void set(List<SObject> records, Schema.SObjectField field, Object value) {
+        for(SObject record : records) {
+            record.put(field, value);
+        }
+    }
+
+    public virtual List<SObject> search(String searchTerm) {
+        return this.search(searchTerm, Sosl.SearchGroup.ALL_FIELDS, null);
+    }
+
+    public virtual List<SObject> search(String searchTerm, Sosl.SearchGroup searchGroup) {
+        return this.search(searchTerm, searchGroup, null);
+    }
+
+    public virtual List<SObject> search(String searchTerm, Sosl.SearchGroup searchGroup, List<Soql.QueryFilter> queryFilters) {
+        Query queryBuilder = this.getQuery().filterWhere(queryFilters);
+
+        return new RecordSearch(searchTerm, queryBuilder)
+            .inSearchGroup(searchGroup)
+            .getFirstResults();
     }
 
     private Schema.SObjectField getField(String fieldName) {
-        return this.sobjectFieldMap.get(fieldName);
+        return this.getSObjectType().getDescribe().fields.getMap().get(fieldName);
     }
 
 }

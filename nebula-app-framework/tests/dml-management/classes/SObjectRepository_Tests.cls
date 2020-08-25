@@ -12,24 +12,25 @@ private class SObjectRepository_Tests {
         }
 
         public List<Account> getMyRecentAccounts(Integer limitCount) {
-            return (List<Account>)new SObjectQueryBuilder(this.getSObjectType())
-                .usingScope(QueryFilterScope.MINE)
-                .limitCount(limitCount)
-                .orderBy(new QueryField(Schema.Account.LastActivityDate))
-                .getQueryResults();
+            return (List<Account>)new Query(this.getSObjectType())
+                .usingScope(Soql.Scope.MINE)
+                .limitTo(limitCount)
+                .orderByField(new Soql.QueryField(Schema.Account.LastActivityDate))
+                .getResults();
         }
 
-        public Account getAccountAndContactsWithEmails(Id accountId) {
-            return (Account)new SObjectQueryBuilder(this.getSObjectType())
-                .filterBy(new QueryFilter().filterByField(new QueryField(Schema.Account.Id), QueryOperator.EQUALS, accountId))
+        // TODO reintroduce includeChildrenRecords method
+        /*public Account getAccountAndContactsWithEmails(Id accountId) {
+            return (Account)new Soql(this.getSObjectType())
+                .filterBy(new Soql.QueryFilter(new Soql.QueryField(Schema.Account.Id), '=', accountId))
                 .includeChildrenRecords(
                     Schema.Contact.AccountId,
-                    new SObjectQueryBuilder(Schema.Contact.SObjectType)
+                    new Soql(Schema.Contact.SObjectType)
                         .addAllStandardFields()
-                        .filterBy(new QueryFilter().filterByField(new QueryField(Schema.Contact.Email), QueryOperator.NOT_EQUAL_TO, null))
+                        .filterBy(new Soql.QueryFilter(new Soql.QueryField(Schema.Contact.Email), '!=', null))
                 )
                 .getFirstQueryResult();
-        }
+        }*/
     }
 
     private class UserRepository extends SObjectRepository {
@@ -42,26 +43,11 @@ private class SObjectRepository_Tests {
         }
     }
 
-    static Account createAccount() {
-        Account account = new Account(
-            Name  = 'My Test Company'
-        );
-        return account;
-    }
-
-    static Contact createContact(Id accountId) {
-        Contact contact = new Contact(
-            AccountId = accountId,
-            LastName  = 'Gillespie'
-        );
-        return contact;
-    }
-
     @testSetup
     static void setupData() {
         List<Account> accountList = new List<Account>();
         for(Integer i = 0; i < 5; i++) {
-            accountList.add(createAccount());
+            accountList.add((Account)new TestDataFactory(new Account()).populateRequiredFields());
         }
         insert accountList;
     }
@@ -83,7 +69,7 @@ private class SObjectRepository_Tests {
         Account expectedAccount = [SELECT Id FROM Account LIMIT 1];
 
         Test.startTest();
-        Account returnedAccount = (Account)new SObjectRepository_Tests.AccountRepository().getById(expectedAccount.Id);
+        Account returnedAccount = (Account)new SObjectRepository_Tests.AccountRepository().get(expectedAccount.Id);
         Test.stopTest();
 
         System.assertEquals(expectedAccount.Id, returnedAccount.Id);
@@ -92,7 +78,7 @@ private class SObjectRepository_Tests {
     @isTest
     static void it_should_get_by_id_using_query_filter() {
         Account expectedAccount = [SELECT Id FROM Account LIMIT 1];
-        IQueryFilter queryFilter = new QueryFilter().filterByField(new QueryField(Schema.Account.Id), QueryOperator.EQUALS, expectedAccount.Id);
+        Soql.QueryFilter queryFilter = new Soql.QueryFilter(new Soql.QueryField(Schema.Account.Id), Soql.Operator.EQUALS, expectedAccount.Id);
 
         Test.startTest();
         Account returnedAccount = ((List<Account>)new SObjectRepository_Tests.AccountRepository().get(queryFilter))[0];
@@ -104,10 +90,10 @@ private class SObjectRepository_Tests {
     @isTest
     static void it_should_get_by_id_using_list_of_query_filters() {
         Account expectedAccount = [SELECT Id FROM Account LIMIT 1];
-        IQueryFilter queryFilter = new QueryFilter().filterByField(new QueryField(Schema.Account.Id), QueryOperator.EQUALS, expectedAccount.Id);
+        Soql.QueryFilter queryFilter = new Soql.QueryFilter(new Soql.QueryField(Schema.Account.Id), Soql.Operator.EQUALS, expectedAccount.Id);
 
         Test.startTest();
-        Account returnedAccount = ((List<Account>)new SObjectRepository_Tests.AccountRepository().get(new List<IQueryFilter>{queryFilter}))[0];
+        Account returnedAccount = ((List<Account>)new SObjectRepository_Tests.AccountRepository().get(new List<Soql.QueryFilter>{queryFilter}))[0];
         Test.stopTest();
 
         System.assertEquals(expectedAccount.Id, returnedAccount.Id);
@@ -118,7 +104,7 @@ private class SObjectRepository_Tests {
         Map<Id, Account> expectedAccountList = new Map<Id, Account>([SELECT Id FROM Account]);
 
         Test.startTest();
-        List<Account> returnedAccountList = (List<Account>)new SObjectRepository_Tests.AccountRepository().getById(new List<Id>(expectedAccountList.keySet()));
+        List<Account> returnedAccountList = (List<Account>)new SObjectRepository_Tests.AccountRepository().get(new List<Id>(expectedAccountList.keySet()));
         Test.stopTest();
 
         System.assertNotEquals(null, expectedAccountList);
@@ -145,9 +131,9 @@ private class SObjectRepository_Tests {
         ISObjectRepository repo = new SObjectRepository_Tests.AccountRepository();
 
         Test.startTest();
-        IQueryFilter queryFilter = new QueryFilter().filterByField(new QueryField(Schema.Account.Name), QueryOperator.EQUALS, 'My Test Company');
-        List<IQueryFilter> queryFilters = new List<IQueryFilter>{queryFilter};
-        List<Account> returnedAccountList = (List<Account>)repo.getByIdAndQueryFilters(expectedAccountMap.keyset(), queryFilters);
+        Soql.QueryFilter queryFilter = new Soql.QueryFilter(new Soql.QueryField(Schema.Account.Name), Soql.Operator.EQUALS, 'Test string for String');
+        List<Soql.QueryFilter> queryFilters = new List<Soql.QueryFilter>{queryFilter};
+        List<Account> returnedAccountList = (List<Account>)repo.get(expectedAccountMap.keyset(), queryFilters);
         Test.stopTest();
 
         System.assertNotEquals(null, expectedAccountMap);
@@ -157,14 +143,14 @@ private class SObjectRepository_Tests {
 
     @isTest
     static void it_should_return_by_field_for_ids_in_list() {
-        Map<Id, Account> expectedAccountMap = new Map<Id, Account>([SELECT Id FROM Account]);
+        Map<Id, Account> expectedAccountMap = new Map<Id, Account>([SELECT Id FROM Account ]);
         List<Schema.SObjectField> accountFields = new List<Schema.SObjectField>{Schema.Account.Id, Schema.Account.Name};
         ISObjectRepository repo = new SObjectRepository_Tests.AccountRepository();
 
         Test.startTest();
-        IQueryFilter queryFilter = new QueryFilter().filterByField(new QueryField(Schema.Account.Name), QueryOperator.EQUALS, 'My Test Company');
-        List<IQueryFilter> queryFilters = new List<IQueryFilter>{queryFilter};
-        List<Account> returnedAccountList = (List<Account>)repo.getByIdAndQueryFilters(new List<Id>(expectedAccountMap.keyset()), queryFilters);
+        Soql.QueryFilter queryFilter = new Soql.QueryFilter(Schema.Account.Name, Soql.Operator.EQUALS, 'Test string for String');
+        List<Soql.QueryFilter> queryFilters = new List<Soql.QueryFilter>{queryFilter};
+        List<Account> returnedAccountList = (List<Account>)repo.get(new List<Id>(expectedAccountMap.keyset()), queryFilters);
         Test.stopTest();
 
         System.assertNotEquals(null, expectedAccountMap);
@@ -172,13 +158,16 @@ private class SObjectRepository_Tests {
         System.assertEquals(expectedAccountMap.size(), returnedAccountList.size());
     }
 
-    @isTest
+    /*@isTest //TODO re-add getAccountAndContactsWithEmails method
     static void it_should_return_account_and_contacts_as_children_records() {
         Account account = [SELECT Id FROM Account LIMIT 1];
 
-        Contact contact = createContact(account.Id);
-        contact.Email = 'test@email.com';
-        insert contact;
+        Contact contact = (Contact)TestSObjectBuilder.getTestContactBuilder()
+            .set(Schema.Contact.AccountId, account.Id)
+            .set(Schema.Contact.Email, 'test@email.com')
+            .set(Schema.Contact.AccountId, account.Id)
+            .build(true);
+
         contact = [SELECT Id, AccountId FROM Contact WHERE Id = :contact.Id];
         System.assertEquals(account.Id, contact.AccountId);
 
@@ -202,7 +191,7 @@ private class SObjectRepository_Tests {
         System.assertEquals(expectedAccount.Contacts.size(), account.Contacts.size());
         Contact firstContact = account.Contacts[0];
         System.assertEquals(contact.Id, firstContact.Id);
-    }
+    }*/
 
     @isTest
     static void it_should_search_for_search_term() {
@@ -214,7 +203,7 @@ private class SObjectRepository_Tests {
         System.assertNotEquals(0, expectedAccountList.size());
 
         Test.startTest();
-        List<Account> returnedAccountList = (List<Account>)new SObjectRepository_Tests.AccountRepository().getSearchResults(searchTerm);
+        List<Account> returnedAccountList = (List<Account>)new SObjectRepository_Tests.AccountRepository().search(searchTerm);
         Test.stopTest();
 
         System.assertNotEquals(null, expectedAccountList);
@@ -232,7 +221,7 @@ private class SObjectRepository_Tests {
         System.assertNotEquals(0, expectedAccountList.size());
 
         Test.startTest();
-        List<Account> returnedAccountList = (List<Account>)new SObjectRepository_Tests.AccountRepository().getSearchResults(searchTerm, QuerySearchGroup.NAME_FIELDS);
+        List<Account> returnedAccountList = (List<Account>)new SObjectRepository_Tests.AccountRepository().search(searchTerm, Sosl.SearchGroup.NAME_FIELDS);
         Test.stopTest();
 
         System.assertNotEquals(null, expectedAccountList);
@@ -250,9 +239,9 @@ private class SObjectRepository_Tests {
         System.assertNotEquals(0, expectedAccountList.size());
 
         Test.startTest();
-        IQueryFilter queryFilter = new QueryFilter().filterByField(new QueryField(Schema.Account.CreatedDate), QueryOperator.EQUALS, QueryDateLiteral.TODAY);
-        List<IQueryFilter> queryFilters = new List<IQueryFilter>{queryFilter};
-        List<Account> returnedAccountList = (List<Account>)new SObjectRepository_Tests.AccountRepository().getSearchResults(searchTerm, QuerySearchGroup.NAME_FIELDS, queryFilters);
+        Soql.QueryFilter queryFilter = new Soql.QueryFilter(new Soql.QueryField(Schema.Account.CreatedDate), Soql.Operator.EQUALS, new Soql.DateLiteral(Soql.FixedDateLiteral.TODAY));
+        List<Soql.QueryFilter> queryFilters = new List<Soql.QueryFilter>{queryFilter};
+        List<Account> returnedAccountList = (List<Account>)new SObjectRepository_Tests.AccountRepository().search(searchTerm, Sosl.SearchGroup.NAME_FIELDS, queryFilters);
         Test.stopTest();
 
         System.assertNotEquals(null, expectedAccountList);
@@ -262,7 +251,8 @@ private class SObjectRepository_Tests {
 
     @isTest
     static void it_should_insert_a_single_record() {
-        Account account = createAccount();
+        Account account = new Account();
+        new TestDataFactory(account).populateRequiredFields();
         System.assertEquals(null, account.Id);
 
         Test.startTest();
@@ -291,14 +281,15 @@ private class SObjectRepository_Tests {
 
     @isTest
     static void it_should_upsert_a_single_new_record() {
-        Account newAccount = createAccount();
-        System.assertEquals(null, newAccount.Id);
+        Account account = new Account();
+        new TestDataFactory(account).populateRequiredFields();
+        System.assertEquals(null, account.Id);
 
         Test.startTest();
-        new SObjectRepository_Tests.AccountRepository().upsertRecords(newAccount);
+        new SObjectRepository_Tests.AccountRepository().upsertRecords(account);
         Test.stopTest();
 
-        System.assertNotEquals(null, newAccount.Id);
+        System.assertNotEquals(null, account.Id);
     }
 
     @isTest
@@ -316,16 +307,17 @@ private class SObjectRepository_Tests {
 
     @isTest
     static void it_should_upsert_a_single_existing_record_with_external_id() {
-        User existingUser = [SELECT Id, LastModifiedDate, Username FROM User WHERE Id = :UserInfo.getUserId()];
-        Datetime originalLastModifiedDate = existingUser.LastModifiedDate;
+        User existingUser = [SELECT Id, LastName, LastModifiedDate, Username FROM User WHERE Id = :UserInfo.getUserId()];
+        String newLastName = existingUser.LastName + 'test';
         System.assertNotEquals(null, existingUser.Username);
 
         Test.startTest();
+        existingUser.LastName = newLastName;
         new SObjectRepository_Tests.UserRepository().upsertRecords(existingUser, Schema.User.Username);
         Test.stopTest();
 
-        existingUser = [SELECT Id, LastModifiedDate FROM User LIMIT 1];
-        System.assert(existingUser.LastModifiedDate > originalLastModifiedDate, existingUser);
+        existingUser = [SELECT Id, LastName FROM User WHERE Id = :UserInfo.getUserId()];
+        System.assertEquals(newLastName, existingUser.LastName);
     }
 
     @isTest

@@ -2,30 +2,29 @@
 * This file is part of the Nebula Framework project, released under the MIT License.             *
 * See LICENSE file or go to https://github.com/jongpie/NebulaFramework for full license details. *
 *************************************************************************************************/
-
-/**
-*
-* @group Repository
-*
-* @description TODO
-*
-*/
 public interface ISObjectRepository {
 
     // Setup methods
     Schema.SObjectType getSObjectType();
+    Query getQuery();
+    RecordSearch getRecordSearch(String searchTerm);
 
-    // SOQL
-    SObject getById(Id recordId);
-    List<SObject> getById(List<Id> recordIdList);
-    List<SObject> get(IQueryFilter queryFilter);
-    List<SObject> get(List<IQueryFilter> queryFilters);
-    List<SObject> getByIdAndQueryFilters(Set<Id> idSet, List<IQueryFilter> queryFilters);
-    List<SObject> getByIdAndQueryFilters(List<Id> idList, List<IQueryFilter> queryFilters);
+    // SOQL methods
+    SObject get(Id recordId);
+    List<SObject> get(Set<Id> recordIdList);
+    List<SObject> get(List<Id> recordIdList);
+    List<SObject> get(Soql.QueryFilter queryFilter);
+    List<SObject> get(List<Soql.QueryFilter> queryFilters);
+    List<SObject> get(Set<Id> idSet, List<Soql.QueryFilter> queryFilters);
+    List<SObject> get(List<Id> idList, List<Soql.QueryFilter> queryFilters);
 
-    // SOSL
-    List<SObject> getSearchResults(String searchTerm);
-    List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup);
-    List<SObject> getSearchResults(String searchTerm, QuerySearchGroup searchGroup, List<IQueryFilter> queryFilters);
+    // Setter methods
+    //void set(SObject record, Schema.SObjectField field, Object value);
+    //void set(List<SObject> records, Schema.SObjectField field, Object value);
+
+    // SOSL methods
+    List<SObject> search(String searchTerm);
+    List<SObject> search(String searchTerm, Sosl.SearchGroup searchGroup);
+    List<SObject> search(String searchTerm, Sosl.SearchGroup searchGroup, List<Soql.QueryFilter> queryFilters);
 
 }
