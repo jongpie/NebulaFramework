@@ -5,98 +5,103 @@
 @isTest
 private class SObjectTriggerHandler_Tests {
 
-    private class LeadTriggerHandlerTest extends SObjectTriggerHandler {
-        public LeadTriggerHandlerTest() {
+    private class AccountTriggerHandlerTest extends SObjectTriggerHandler {
+        public AccountTriggerHandlerTest() {
             super(true);
         }
-        public override void executeBeforeInsert(List<SObject> newRecordList) {
-            List<Lead> newLeadList = (List<Lead>)this.recordList;
 
-            for(Lead newLead : newLeadList) {
-                this.setStatus(newLead);
+        public override Schema.SObjectType getSObjectType() {
+            return Schema.Account.SObjectType;
+        }
+
+        public override void executeBeforeInsert(List<SObject> newRecordList) {
+            List<Account> newAccountList = (List<Account>)this.recordList;
+
+            for(Account newAccount : newAccountList) {
+                this.setDescription(newAccount);
             }
         }
 
-        private void setStatus(Lead lead) {
+        private void setDescription(Account account) {
             // Add logic here. Methods should be simple & independent from each other (except for overloaded methods)
-            lead.Status = 'Open - Not Contacted';
+            account.Description = 'Open - Not Contacted';
         }
     }
 
-    static List<Lead> leadList = new List<Lead>();
+    static List<Account> accountList = new List<Account>();
 
+    @testSetup
     static void setupData() {
+        insert SObjectTriggerHandlerSettings__c.getInstance();
+
         for(Integer i = 0; i < 5; i++) {
-            Lead lead = new Lead(
-                Company  = 'My Test Company',
-                LastName = 'Gillespie',
-                Status = ''
-            );
-            leadList.add(lead);
+            Account account = new Account(Name = 'Test account');
+            new TestDataFactory(account).populateRequiredFields();
+
+            accountList.add(account);
         }
-        insert leadList;
+        insert accountList;
     }
 
     @isTest
-    static void shouldNotExecuteTriggers() {
+    static void it_should_not_execute_triggers_when_setting_is_disabled() {
         SObjectTriggerHandlerSettings__c triggerHandlerSettings = SObjectTriggerHandlerSettings__c.getInstance();
         triggerHandlerSettings.ExecuteTriggers__c = false;
         upsert triggerHandlerSettings;
 
-        LeadTriggerHandlerTest leadTriggerHandler = new LeadTriggerHandlerTest();
-        leadTriggerHandler.currentTriggerContext  = SObjectTriggerHandler.TriggerContext.BEFORE_INSERT;
-        leadTriggerHandler.recordList = leadList;
+        AccountTriggerHandlerTest accountTriggerHandler  = new AccountTriggerHandlerTest();
+        accountTriggerHandler.currentTriggerOperation = System.TriggerOperation.BEFORE_INSERT;
+        accountTriggerHandler.recordList = accountList;
 
         Test.startTest();
 
-        leadTriggerHandler.execute();
+        accountTriggerHandler.execute();
 
         Test.stopTest();
     }
 
-    // @isTest
-    // static void executeAllContexts() {
-    //     setupData();
-    //     LeadTriggerHandlerTest leadTriggerHandler = new LeadTriggerHandlerTest();
-    //     leadTriggerHandler.recordList = leadList;
+    @isTest
+    static void it_should_execute_all_contexts() {
+        AccountTriggerHandlerTest accountTriggerHandler = new AccountTriggerHandlerTest();
+        accountTriggerHandler.recordList = accountList;
 
-    //     Test.startTest();
-    //     for(SObjectTriggerHandler.TriggerContext context : SObjectTriggerHandler.TriggerContext.values()) {
-    //         leadTriggerHandler.currentTriggerContext = context;
-    //         leadTriggerHandler.execute();
-    //     }
-    //     Test.stopTest();
-    // }
+        Test.startTest();
+        for(System.TriggerOperation operation : System.TriggerOperation.values()) {
+            accountTriggerHandler.currentTriggerOperation = operation;
+            accountTriggerHandler.execute();
+        }
+        Test.stopTest();
+    }
 
-    // @isTest
-    // static void executeBeforeInsert() {
-    //     LeadTriggerHandlerTest leadTriggerHandler = new LeadTriggerHandlerTest();
-    //     // Set the variables for the relevant context
-    //     leadTriggerHandler.currentTriggerContext = SObjectTriggerHandler.TriggerContext.BEFORE_INSERT;
-    //     leadTriggerHandler.recordList = leadList;
+    @isTest
+    static void it_should_execute_before_insert() {
+        AccountTriggerHandlerTest accountTriggerHandler = new AccountTriggerHandlerTest();
+        // Set the variables for the relevant context
+        accountTriggerHandler.currentTriggerOperation = System.TriggerOperation.BEFORE_INSERT;
+        accountTriggerHandler.recordList              = accountList;
 
-    //     Test.startTest();
+        Test.startTest();
 
-    //     leadTriggerHandler.execute();
+        accountTriggerHandler.execute();
 
-    //     Test.stopTest();
-    // }
+        Test.stopTest();
+    }
 
-    // @isTest
-    // static void executeBeforeUpdate() {
-    //     LeadTriggerHandlerTest leadTriggerHandler = new LeadTriggerHandlerTest();
-    //     // Set the variables for the relevant context
-    //     leadTriggerHandler.currentTriggerContext = SObjectTriggerHandler.TriggerContext.BEFORE_UPDATE;
-    //     leadTriggerHandler.recordList            = leadList;
-    //     leadTriggerHandler.recordMap             = new Map<Id, Lead>(leadList);
-    //     leadTriggerHandler.oldRecordList         = leadList;
-    //     leadTriggerHandler.oldRecordMap          = new Map<Id, Lead>(leadList);
+    @isTest
+    static void it_should_execute_before_update() {
+        AccountTriggerHandlerTest accountTriggerHandler = new AccountTriggerHandlerTest();
+        // Set the variables for the relevant context
+        accountTriggerHandler.currentTriggerOperation = System.TriggerOperation.BEFORE_UPDATE;
+        accountTriggerHandler.recordList              = accountList;
+        accountTriggerHandler.recordMap               = new Map<Id, Account>(accountList);
+        accountTriggerHandler.oldRecordList           = accountList;
+        accountTriggerHandler.oldRecordMap            = new Map<Id, Account>(accountList);
 
-    //     Test.startTest();
+        Test.startTest();
 
-    //     leadTriggerHandler.execute();
+        accountTriggerHandler.execute();
 
-    //     Test.stopTest();
-    // }
+        Test.stopTest();
+    }
 
 }
