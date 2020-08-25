@@ -22,16 +22,16 @@ public without sharing class Logger {
     }
 
     public static void addEntry(String message) {
-        addEntry(null, message);
+        //addEntry(null, message);
     }
 
-    public static void addEntry(INebulaCore moduleClass, String message) {
-        Logger.Message logMessage = new Logger.Message(moduleClass, message);
-        Logger.logMessages.add(logMessage);
-    }
+    // public static void addEntry(INebulaCore moduleClass, String message) {
+    //     Logger.Message logMessage = new Logger.Message(moduleClass, message);
+    //     Logger.logMessages.add(logMessage);
+    // }
 
     public static void saveLogs() {
-        if(!NebulaSettings.LoggerSettings.EnableLogging__c) return;
+        //if(!NebulaSettings.LoggerSettings.EnableLogging__c) return;
 
         saveTransactionLog();
         saveSingleLogFile();
@@ -41,37 +41,37 @@ public without sharing class Logger {
         if(Logger.logId != null) return;
 
         NebulaLog__c newLog = new NebulaLog__c(
-            InitialClass__c  = NebulaCore.INITIAL_CLASS,
-            TransactionId__c = NebulaCore.TRANSACTION_ID
+            // InitialClass__c  = NebulaCore.INITIAL_CLASS,
+            // TransactionId__c = NebulaCore.TRANSACTION_ID
         );
         insert newLog;
         Logger.logId = newLog.Id;
     }
 
     private static void saveSingleLogFile() {
-        String parsedMessageString =
-            'NebulaCore.TRANSACTION_ID: ' + NebulaCore.TRANSACTION_ID
-            + '\nInitial Class: ' + NebulaCore.INITIAL_CLASS;
-        String divider = '\n______________________________\n';
+        // String parsedMessageString =
+        //     'NebulaCore.TRANSACTION_ID: ' + NebulaCore.TRANSACTION_ID
+        //     + '\nInitial Class: ' + NebulaCore.INITIAL_CLASS;
+        // String divider = '\n______________________________\n';
 
-        for(Logger.Message logMessage : logMessages) {
-            parsedMessageString =
-                parsedMessageString
-                + divider
-                + '\nCurrent Module: ' + logMessage.ClassModule
-                + '\nCurrent Class: ' + logMessage.ClassName
-                + '\nTimestamp: ' + logMessage.Timestamp.format('yyyy-MM-dd_hh:mm:ss.SS')
-                + '\n\n' + logMessage.Message;
-        }
+        // for(Logger.Message logMessage : logMessages) {
+        //     parsedMessageString =
+        //         parsedMessageString
+        //         + divider
+        //         + '\nCurrent Module: ' + logMessage.ClassModule
+        //         + '\nCurrent Class: ' + logMessage.ClassName
+        //         + '\nTimestamp: ' + logMessage.Timestamp.format('yyyy-MM-dd_hh:mm:ss.SS')
+        //         + '\n\n' + logMessage.Message;
+        // }
 
-        if(Logger.logAttachment.Id == null) {
-            Logger.logAttachment.Name = NebulaCore.TRANSACTION_ID;
-            Logger.logAttachment.ParentId = Logger.logId;
-        }
+        // if(Logger.logAttachment.Id == null) {
+        //     Logger.logAttachment.Name = NebulaCore.TRANSACTION_ID;
+        //     Logger.logAttachment.ParentId = Logger.logId;
+        // }
 
-        Logger.logAttachment.Body = Blob.valueOf(parsedMessageString);
+        // Logger.logAttachment.Body = Blob.valueOf(parsedMessageString);
 
-        upsert Logger.logAttachment;
+        // upsert Logger.logAttachment;
     }
 
     private static Attachment createLogAttachment() {
@@ -85,17 +85,17 @@ public without sharing class Logger {
     }
 
     private class Message {
-        public NebulaCore.Module ClassModule {get; private set;}
+        //public NebulaCore.Module ClassModule {get; private set;}
         public String ClassName {get; private set;}
         public String Message {get; private set;}
         public Datetime Timestamp {get; private set;}
 
-        public Message(INebulaCore moduleClass, String message) {
-            this.ClassModule = moduleClass == null ? null : moduleClass.getClassModule();
-            this.ClassName   = moduleClass == null ? null : moduleClass.getClassName();
-            this.Message     = message;
-            this.Timestamp   = System.now();
-        }
+        // public Message(INebulaCore moduleClass, String message) {
+        //     this.ClassModule = moduleClass == null ? null : moduleClass.getClassModule();
+        //     this.ClassName   = moduleClass == null ? null : moduleClass.getClassName();
+        //     this.Message     = message;
+        //     this.Timestamp   = System.now();
+        // }
     }
 
 }

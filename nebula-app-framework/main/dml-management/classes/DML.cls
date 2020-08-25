@@ -10,7 +10,7 @@
 * @description Provides methods with default behavior for DML actions (insert, upsert, etc)
 *
 */
-public abstract class DML extends NebulaCore implements IDML {
+public abstract class DML implements IDML {
 
     public virtual List<Database.SaveResult> insertRecords(SObject record) {
         return this.insertRecords(new List<SObject>{record});
