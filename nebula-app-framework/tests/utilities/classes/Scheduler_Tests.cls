@@ -5,25 +5,37 @@
 @isTest
 private class Scheduler_Tests {
 
-    private static final String SCHEDULABLE_JOB_ID = '7';
-    private static final String DAILY_CRON_EXP = '0 59 23 * * ?';
+    //private static final String  JOB_ID = '7';
+    private static final String DAILY_CRON_EXP     = '0 {0} {1} * * ?';
+    private final static String HOURLY_CRON        = '0 {0} * * * ?';
 
     private class TestSchedulable implements Schedulable {
         public void execute(SchedulableContext sc) {}
     }
 
     @isTest
-    static void it_should_successfully_schedule_daily() {
-        String jobId = new Scheduler(new TestSchedulable()).scheduleDaily(SCHEDULABLE_JOB_ID, '59', '23');
+    static void it_should_successfully_schedule_hourly() {
+        Integer startingMinuteInHour = 59;
+
+        Test.startTest();
+        String jobId = Scheduler.scheduleHourly(new TestSchedulable(), startingMinuteInHour);
+        Test.stopTest();
+
         CronTrigger ct = [SELECT Id, CronExpression, TimesTriggered, NextFireTime FROM CronTrigger WHERE Id = :jobId];
-        System.assertEquals(DAILY_CRON_EXP, ct.CronExpression);
+        System.assertEquals(String.format(HOURLY_CRON, new List<String>{String.valueOf(startingMinuteInHour)}), ct.CronExpression);
     }
 
     @isTest
-    static void it_should_successfully_schedule_hourly() {
-        String jobId = new Scheduler(new TestSchedulable()).scheduleHourly(SCHEDULABLE_JOB_ID, '59');
+    static void it_should_successfully_schedule_daily() {
+        Integer startingHour         = 8;
+        Integer startingMinuteInHour = 23;
+
+        Test.startTest();
+        String jobId = Scheduler.scheduleDaily(new TestSchedulable(), startingHour, startingMinuteInHour);
+        Test.stopTest();
+
         CronTrigger ct = [SELECT Id, CronExpression, TimesTriggered, NextFireTime FROM CronTrigger WHERE Id = :jobId];
-        System.assertEquals(String.format(Scheduler.HOURLY_CRON, new List<String>{'59'}), ct.CronExpression);
+        System.assertEquals(String.format(DAILY_CRON_EXP, new List<String>{String.valueOf(startingHour), String.valueOf(startingMinuteInHour)}), ct.CronExpression);
     }
 
 }
